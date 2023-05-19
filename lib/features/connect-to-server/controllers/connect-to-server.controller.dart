@@ -4,7 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
-import 'package:nextcloudnotes/core/di/di.dart';
+import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/models/user.model.dart';
 import 'package:nextcloudnotes/core/storage/auth.storage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -18,8 +18,8 @@ class ConnectToServerController = _ConnectToServerControllerBase
 abstract class _ConnectToServerControllerBase with Store {
   final _authStorage = getIt<AuthStorage>();
 
-  void onLoadCustomScheme(
-      NavigationRequest request, BuildContext context) async {
+  void onLoadCustomScheme(NavigationRequest request, String serverAddress,
+      BuildContext context) async {
     final splittedUrl = request.url.split("&");
 
     final username =
@@ -32,6 +32,7 @@ abstract class _ConnectToServerControllerBase with Store {
     final userModel = User()
       ..password = password
       ..username = username
+      ..server = serverAddress
       ..token = stringToBase64.encode("$username:$password");
 
     _authStorage.saveUser(userModel);

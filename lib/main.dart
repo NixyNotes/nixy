@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nextcloudnotes/core/di/di.dart';
+import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/models/user.model.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
 

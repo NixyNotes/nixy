@@ -13,5 +13,7 @@ class User {
 
   String? token;
 
+  String? server;
+
   bool? isCurrent = false;
 }

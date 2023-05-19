@@ -1,12 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:nextcloudnotes/core/di/di.dart';
+import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/features/connect-to-server/controllers/connect-to-server.controller.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 @RoutePage()
 class ConnectToServerView extends StatelessWidget {
-  const ConnectToServerView({super.key, required this.url});
+  const ConnectToServerView({super.key, required this.url, this.onResult});
+
+  final Function(bool success)? onResult;
 
   final String url;
   String get modifiedUrl => "$url/index.php/login/flow";
@@ -21,7 +23,8 @@ class ConnectToServerView extends StatelessWidget {
         NavigationDelegate(
           onNavigationRequest: (request) {
             if (request.url.startsWith('nc://')) {
-              controller.onLoadCustomScheme(request, context);
+              controller.onLoadCustomScheme(request, url, context);
+              onResult?.call(true);
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;

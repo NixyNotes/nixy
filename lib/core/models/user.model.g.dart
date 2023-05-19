@@ -27,13 +27,18 @@ const UserSchema = CollectionSchema(
       name: r'password',
       type: IsarType.string,
     ),
-    r'token': PropertySchema(
+    r'server': PropertySchema(
       id: 2,
+      name: r'server',
+      type: IsarType.string,
+    ),
+    r'token': PropertySchema(
+      id: 3,
       name: r'token',
       type: IsarType.string,
     ),
     r'username': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'username',
       type: IsarType.string,
     )
@@ -65,6 +70,12 @@ int _userEstimateSize(
     }
   }
   {
+    final value = object.server;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.token;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -87,8 +98,9 @@ void _userSerialize(
 ) {
   writer.writeBool(offsets[0], object.isCurrent);
   writer.writeString(offsets[1], object.password);
-  writer.writeString(offsets[2], object.token);
-  writer.writeString(offsets[3], object.username);
+  writer.writeString(offsets[2], object.server);
+  writer.writeString(offsets[3], object.token);
+  writer.writeString(offsets[4], object.username);
 }
 
 User _userDeserialize(
@@ -101,8 +113,9 @@ User _userDeserialize(
   object.id = id;
   object.isCurrent = reader.readBoolOrNull(offsets[0]);
   object.password = reader.readStringOrNull(offsets[1]);
-  object.token = reader.readStringOrNull(offsets[2]);
-  object.username = reader.readStringOrNull(offsets[3]);
+  object.server = reader.readStringOrNull(offsets[2]);
+  object.token = reader.readStringOrNull(offsets[3]);
+  object.username = reader.readStringOrNull(offsets[4]);
   return object;
 }
 
@@ -120,6 +133,8 @@ P _userDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -432,6 +447,150 @@ extension UserQueryFilter on QueryBuilder<User, User, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'password',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'server',
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'server',
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'server',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'server',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'server',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'server',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'server',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'server',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverContains(String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'server',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverMatches(String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'server',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'server',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> serverIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'server',
         value: '',
       ));
     });
@@ -756,6 +915,18 @@ extension UserQuerySortBy on QueryBuilder<User, User, QSortBy> {
     });
   }
 
+  QueryBuilder<User, User, QAfterSortBy> sortByServer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'server', Sort.asc);
+    });
+  }
+
+  QueryBuilder<User, User, QAfterSortBy> sortByServerDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'server', Sort.desc);
+    });
+  }
+
   QueryBuilder<User, User, QAfterSortBy> sortByToken() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'token', Sort.asc);
@@ -818,6 +989,18 @@ extension UserQuerySortThenBy on QueryBuilder<User, User, QSortThenBy> {
     });
   }
 
+  QueryBuilder<User, User, QAfterSortBy> thenByServer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'server', Sort.asc);
+    });
+  }
+
+  QueryBuilder<User, User, QAfterSortBy> thenByServerDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'server', Sort.desc);
+    });
+  }
+
   QueryBuilder<User, User, QAfterSortBy> thenByToken() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'token', Sort.asc);
@@ -857,6 +1040,13 @@ extension UserQueryWhereDistinct on QueryBuilder<User, User, QDistinct> {
     });
   }
 
+  QueryBuilder<User, User, QDistinct> distinctByServer(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'server', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<User, User, QDistinct> distinctByToken(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -888,6 +1078,12 @@ extension UserQueryProperty on QueryBuilder<User, User, QQueryProperty> {
   QueryBuilder<User, String?, QQueryOperations> passwordProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'password');
+    });
+  }
+
+  QueryBuilder<User, String?, QQueryOperations> serverProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'server');
     });
   }
 

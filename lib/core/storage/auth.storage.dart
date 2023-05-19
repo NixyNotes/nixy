@@ -11,12 +11,14 @@ class AuthStorage {
     });
   }
 
-  Future<List<User>> getUsers() async {
-    return await isarInstance.users.where().findAll();
+  Future<List<User>> getUsers() {
+    return isarInstance.users.where().findAll();
   }
 
-  Future<int> hasUser() async {
-    return isarInstance.users;
+  Future<bool> hasUsers() async {
+    final usersCount = await isarInstance.users.count();
+
+    return usersCount > 0;
   }
 
   Future<void> deleteAll() async {

@@ -1,13 +1,15 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:nextcloudnotes/core/di/di.dart';
+import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/login/controllers/login_view.controller.dart';
 
 @RoutePage()
 class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+  const LoginView({super.key, this.onResult});
+
+  final Function(bool success)? onResult;
 
   @override
   Widget build(BuildContext context) {

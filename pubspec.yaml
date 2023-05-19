@@ -11,6 +11,7 @@ dependencies:
   injectable: ^2.1.1
   get_it: ^7.6.0
   mobx: ^2.2.0
+  flutter_mobx: ^2.0.6+5
   auto_route: ^7.1.0
   dio: ^5.1.2
   flutter_secure_storage: ^8.0.0
@@ -20,6 +21,8 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
   path_provider: ^2.0.15
   webview_flutter: ^4.2.0
+  freezed_annotation: ^2.2.0
+  json_annotation: ^4.8.1
 
 dev_dependencies:
   auto_route_generator: ^7.0.0
@@ -31,6 +34,8 @@ dev_dependencies:
 
   flutter_lints: ^2.0.0
   isar_generator: ^3.1.0+1
+  freezed: ^2.3.4
+  json_serializable: ^6.7.0
 
 flutter:
   uses-material-design: true

@@ -6,14 +6,22 @@ import 'package:nextcloudnotes/core/router/router.gr.dart';
 class AppRouter extends $AppRouter {
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(page: HomeRoute.page, guards: [AuthGuard()], initial: true),
         AutoRoute(
-          page: LoginRoute.page,
-          title: (context, data) => "Login to a instance",
-        ),
-        AutoRoute(
-            page: ConnectToServerRoute.page,
-            title: (context, data) => "Nextcloud",
-            fullscreenDialog: true),
+          page: AppRoute.page,
+          initial: true,
+          children: [
+            AutoRoute(
+                page: HomeRoute.page, guards: [AuthGuard()], initial: true),
+            AutoRoute(page: NoteRoute.page, guards: [AuthGuard()]),
+            AutoRoute(
+              page: LoginRoute.page,
+              title: (context, data) => "Login to a instance",
+            ),
+            AutoRoute(
+                page: ConnectToServerRoute.page,
+                title: (context, data) => "Nextcloud",
+                fullscreenDialog: true),
+          ],
+        )
       ];
 }
