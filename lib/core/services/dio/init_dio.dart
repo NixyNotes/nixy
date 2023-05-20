@@ -15,7 +15,7 @@ class DioService {
   String? get baseUrl => _authController.currentAccount.value?.server;
 
   BaseOptions get _baseOptions => BaseOptions(
-        baseUrl: baseUrl ?? "NONNE",
+        baseUrl: baseUrl ?? "",
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 3),
         contentType: "application/json",
@@ -53,12 +53,20 @@ class DioService {
     try {
       final request = await _dio.delete(path);
 
-      if (request.statusCode == HttpStatus.noContent) {
-        return request;
-      }
+      return request;
     } catch (e) {
       throw Exception("Could not send DELETE request: $path");
     }
-    return null;
+  }
+
+  Future<Response<dynamic>?> put(
+      String path, Map<String, dynamic> payload) async {
+    try {
+      final request = await _dio.put(path, data: payload);
+
+      return request;
+    } catch (e) {
+      throw Exception("Could not send DELETE request: $path");
+    }
   }
 }

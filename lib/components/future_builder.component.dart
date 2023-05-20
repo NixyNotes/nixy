@@ -15,8 +15,11 @@ class AppFutureBuilder<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget renderLoading() {
-      return const Center(
-        child: CircularProgressIndicator.adaptive(),
+      return Scaffold(
+        appBar: AppBar(),
+        body: const Center(
+          child: CircularProgressIndicator.adaptive(),
+        ),
       );
     }
 

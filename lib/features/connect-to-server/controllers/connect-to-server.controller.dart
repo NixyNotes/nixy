@@ -4,8 +4,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
-import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/models/user.model.dart';
+import 'package:nextcloudnotes/core/router/router.gr.dart';
+import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/storage/auth.storage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -37,7 +38,7 @@ abstract class _ConnectToServerControllerBase with Store {
 
     _authStorage.saveUser(userModel);
 
-    AutoRouter.of(context).back();
+    AutoRouter.of(context).replace(const HomeRoute());
 
     return null;
   }
