@@ -34,8 +34,7 @@ class LoginView extends StatelessWidget {
                             options: Options(headers: {
                               "Accept": "application/json",
                               "OCS-APIRequest": "true",
-                              "Authorization":
-                                  >token
+                             
                             }))
                         .then((value) => print(value))
                         .catchError((err) => print(err))
