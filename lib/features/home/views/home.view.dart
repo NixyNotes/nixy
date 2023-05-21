@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/extensions/async_value.extension.dart';
+import 'package:nextcloudnotes/core/router/router.gr.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
@@ -49,6 +50,8 @@ class _HomeViewState extends State<HomeView> {
                     return ListTile(
                       title: Text(note.title),
                       subtitle: Text(note.category),
+                      onTap: () =>
+                          context.router.navigate(NoteRoute(noteId: note.id)),
                     );
                   },
                   itemCount: data.length,
