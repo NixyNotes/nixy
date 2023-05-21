@@ -9,11 +9,20 @@ class NoteRepositories {
   NoteRepositories(this._dio);
   final DioService _dio;
 
+  Future<List<Note>> fetchNotes() async {
+    final response = await _dio.get("/index.php/apps/notes/api/v1/notes");
+
+    List<Note> noteFromJson(List<dynamic> e) =>
+        List<Note>.from(e.map((e) => Note.fromJson(e)));
+
+    return noteFromJson(response.data);
+  }
+
   Future<Note> fetchNote(int noteId) async {
     final response =
         await _dio.get("/index.php/apps/notes/api/v1/notes/$noteId");
 
-    return Note.fromJson(response!.data);
+    return Note.fromJson(response.data);
   }
 
   Future<bool> deleteNote(int noteId) async {

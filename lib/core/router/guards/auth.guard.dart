@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
-import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/router/router.gr.dart';
+import 'package:nextcloudnotes/core/services/di/di.dart';
 
 class AuthGuard extends AutoRouteGuard {
   @override
@@ -21,7 +21,15 @@ class AuthGuard extends AutoRouteGuard {
     }
 
     loginState.observe((p0) {
-      print("a");
+      if (loginState.value == LoginState.loggedIn) {
+        return resolver.next(true);
+      } else {
+        router.replace(LoginRoute(
+          onResult: (success) {
+            resolver.next(success);
+          },
+        ));
+      }
     });
   }
 }

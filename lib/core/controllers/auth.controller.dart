@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/models/user.model.dart';
 import 'package:nextcloudnotes/core/storage/auth.storage.dart';
+
 part 'auth.controller.g.dart';
 
 @lazySingleton
@@ -33,6 +34,15 @@ abstract class _AuthControllerBase with Store {
       loginState.value = LoginState.loggedIn;
       currentAccount.value = users.first;
     }
+  }
+
+  @action
+  Future<void> logout() async {
+    if (currentAccount.value != null) {
+      await _authStorage.deleteAccount(currentAccount.value!.id);
+    }
+    loginState.value = LoginState.none;
+    currentAccount.value = null;
   }
 
   @action

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:nextcloudnotes/core/router/guards/auth.guard.dart';
 import 'package:nextcloudnotes/core/router/router.gr.dart';
+import 'package:nextcloudnotes/core/router/router_meta.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'View,Route')
 class AppRouter extends $AppRouter {
@@ -11,15 +12,19 @@ class AppRouter extends $AppRouter {
           initial: true,
           children: [
             AutoRoute(
-                page: HomeRoute.page, guards: [AuthGuard()], initial: true),
+              page: RouterMeta.Home.page,
+              title: RouterMeta.Home.titleToWidget(),
+              guards: [AuthGuard()],
+              initial: true,
+            ),
             AutoRoute(page: NoteRoute.page, guards: [AuthGuard()]),
             AutoRoute(
-              page: LoginRoute.page,
-              title: (context, data) => "Login to a instance",
+              page: RouterMeta.Login.page,
+              title: RouterMeta.Login.titleToWidget(),
             ),
             AutoRoute(
-                page: ConnectToServerRoute.page,
-                title: (context, data) => "Nextcloud",
+                page: RouterMeta.ConnectToServer.page,
+                title: RouterMeta.ConnectToServer.titleToWidget(),
                 fullscreenDialog: true),
           ],
         )

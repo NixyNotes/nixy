@@ -10,8 +10,7 @@ part 'login_view.controller.g.dart';
 class LoginViewController = _LoginViewControllerBase with _$LoginViewController;
 
 abstract class _LoginViewControllerBase with Store {
-  TextEditingController serverFormController =
-      TextEditingController(text: "https://hasanisabbah.duckdns.org");
+  TextEditingController serverFormController = TextEditingController();
 
   onPressLogin(BuildContext context) {
     context.router

@@ -1,8 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:intl/intl.dart';
 import 'package:markdown_editor_plus/markdown_editor_plus.dart';
 import 'package:nextcloudnotes/components/future_builder.component.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
@@ -18,13 +17,6 @@ class NoteView extends StatefulWidget {
 
   @override
   State<NoteView> createState() => _NoteViewState();
-}
-
-class CheckBoxBuilder extends MarkdownElementBuilder {
-  @override
-  Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
-    return Text("test", style: preferredStyle);
-  }
 }
 
 class _NoteViewState extends State<NoteView> {
@@ -56,14 +48,22 @@ class _NoteViewState extends State<NoteView> {
                   icon: const Icon(EvaIcons.trash2Outline)),
             ],
             body: SingleChildScrollView(
-              child: MarkdownAutoPreview(
-                key: key,
-                controller: controller.markdownController,
-                toolbarBackground: Theme.of(context).colorScheme.background,
-                onChanged: (value) {
-                  Future.delayed(const Duration(seconds: 2),
-                      () => controller.updateNote(data?.id ?? 0, data!));
-                },
+              child: Column(
+                children: [
+                  SelectableText(data!.modified.toString()),
+                  Text(DateFormat("yyyy-MM-dd HH:mm").format(
+                      DateTime.utc(1970, 1, 1)
+                          .add(const Duration(seconds: 1684543279)))),
+                  MarkdownAutoPreview(
+                    key: key,
+                    controller: controller.markdownController,
+                    toolbarBackground: Theme.of(context).colorScheme.background,
+                    onChanged: (value) {
+                      Future.delayed(const Duration(seconds: 2),
+                          () => controller.updateNote(data.id ?? 0, data));
+                    },
+                  ),
+                ],
               ),
             ));
       },

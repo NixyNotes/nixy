@@ -11,7 +11,7 @@ class Note with _$Note {
     required bool readonly,
     required int modified,
     required String title,
-    required String? category,
+    required String category,
     required String content,
     required bool favorite,
   }) = _Note;

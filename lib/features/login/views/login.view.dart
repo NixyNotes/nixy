@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
@@ -17,29 +16,36 @@ class LoginView extends StatelessWidget {
 
     return AppScaffold(
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextFormField(
-            controller: controller.serverFormController,
-            decoration: const InputDecoration(label: Text("https://")),
-            onFieldSubmitted: (value) => controller.onPressLogin(context),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Text(
+              "Login to your Nextcloud",
+              style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
           ),
-          ElevatedButton(
-              onPressed: () => controller.onPressLogin(context),
-              child: const Text("Login")),
-          ElevatedButton(
-              onPressed: () => {
-                    Dio()
-                        .get(
-                            "https://hasanisabbah.duckdns.org/ocs/v1.php/cloud/user",
-                            options: Options(headers: {
-                              "Accept": "application/json",
-                              "OCS-APIRequest": "true",
-                             
-                            }))
-                        .then((value) => print(value))
-                        .catchError((err) => print(err))
-                  },
-              child: const Text("Logint"))
+          Text(
+            "Make sure Nextcloud Notes is installed before you contiune.",
+            style: Theme.of(context).textTheme.labelMedium,
+            textAlign: TextAlign.center,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: TextFormField(
+              controller: controller.serverFormController,
+              keyboardType: TextInputType.url,
+              decoration: const InputDecoration(
+                  label: Text("https://yournextcloud.server")),
+              onFieldSubmitted: (value) => controller.onPressLogin(context),
+            ),
+          ),
+          OutlinedButton(
+            onPressed: () => controller.onPressLogin(context),
+            child: const Text("Login"),
+          ),
         ],
       ),
     );

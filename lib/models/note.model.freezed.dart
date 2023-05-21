@@ -25,7 +25,7 @@ mixin _$Note {
   bool get readonly => throw _privateConstructorUsedError;
   int get modified => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
-  String? get category => throw _privateConstructorUsedError;
+  String get category => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   bool get favorite => throw _privateConstructorUsedError;
 
@@ -45,7 +45,7 @@ abstract class $NoteCopyWith<$Res> {
       bool readonly,
       int modified,
       String title,
-      String? category,
+      String category,
       String content,
       bool favorite});
 }
@@ -68,7 +68,7 @@ class _$NoteCopyWithImpl<$Res, $Val extends Note>
     Object? readonly = null,
     Object? modified = null,
     Object? title = null,
-    Object? category = freezed,
+    Object? category = null,
     Object? content = null,
     Object? favorite = null,
   }) {
@@ -93,10 +93,10 @@ class _$NoteCopyWithImpl<$Res, $Val extends Note>
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      category: freezed == category
+      category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
       content: null == content
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
@@ -121,7 +121,7 @@ abstract class _$$_NoteCopyWith<$Res> implements $NoteCopyWith<$Res> {
       bool readonly,
       int modified,
       String title,
-      String? category,
+      String category,
       String content,
       bool favorite});
 }
@@ -140,7 +140,7 @@ class __$$_NoteCopyWithImpl<$Res> extends _$NoteCopyWithImpl<$Res, _$_Note>
     Object? readonly = null,
     Object? modified = null,
     Object? title = null,
-    Object? category = freezed,
+    Object? category = null,
     Object? content = null,
     Object? favorite = null,
   }) {
@@ -165,10 +165,10 @@ class __$$_NoteCopyWithImpl<$Res> extends _$NoteCopyWithImpl<$Res, _$_Note>
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      category: freezed == category
+      category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
       content: null == content
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
@@ -207,7 +207,7 @@ class _$_Note implements _Note {
   @override
   final String title;
   @override
-  final String? category;
+  final String category;
   @override
   final String content;
   @override
@@ -263,7 +263,7 @@ abstract class _Note implements Note {
       required final bool readonly,
       required final int modified,
       required final String title,
-      required final String? category,
+      required final String category,
       required final String content,
       required final bool favorite}) = _$_Note;
 
@@ -280,7 +280,7 @@ abstract class _Note implements Note {
   @override
   String get title;
   @override
-  String? get category;
+  String get category;
   @override
   String get content;
   @override

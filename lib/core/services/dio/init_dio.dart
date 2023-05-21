@@ -16,8 +16,8 @@ class DioService {
 
   BaseOptions get _baseOptions => BaseOptions(
         baseUrl: baseUrl ?? "",
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 3),
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
         contentType: "application/json",
         responseType: ResponseType.json,
       );
@@ -27,7 +27,7 @@ class DioService {
     _dio.interceptors.add(_authInterceptor);
   }
 
-  Future<Response<dynamic>?> get(String path) async {
+  Future<Response<dynamic>> get(String path) async {
     final request = await _dio.get(path);
 
     if (request.statusCode == HttpStatus.ok) {
@@ -66,7 +66,7 @@ class DioService {
 
       return request;
     } catch (e) {
-      throw Exception("Could not send DELETE request: $path");
+      throw Exception("Could not send PUT request: $path: $e");
     }
   }
 }
