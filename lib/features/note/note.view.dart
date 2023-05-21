@@ -8,6 +8,7 @@ import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/note/controllers/note-view.controller.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
+import 'package:nixi_markdown/formatters/newline_formatter.dart';
 
 @RoutePage()
 class NoteView extends StatefulWidget {
@@ -54,15 +55,24 @@ class _NoteViewState extends State<NoteView> {
                   Text(DateFormat("yyyy-MM-dd HH:mm").format(
                       DateTime.utc(1970, 1, 1)
                           .add(const Duration(seconds: 1684543279)))),
-                  MarkdownAutoPreview(
-                    key: key,
-                    controller: controller.markdownController,
-                    toolbarBackground: Theme.of(context).colorScheme.background,
-                    onChanged: (value) {
-                      Future.delayed(const Duration(seconds: 2),
-                          () => controller.updateNote(data.id ?? 0, data));
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        editMode = !editMode;
+                      });
                     },
-                  ),
+                    child: editMode
+                        ? TextField(
+                            maxLines: null,
+                            controller: controller.markdownController,
+                            inputFormatters: [NewlineFormatter()],
+                            onChanged: (value) {
+                              Future.delayed(const Duration(seconds: 2),
+                                  () => controller.updateNote(data.id, data));
+                            },
+                          )
+                        : MarkdownParse(data: data.content),
+                  )
                 ],
               ),
             ));
