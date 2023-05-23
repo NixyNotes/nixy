@@ -4,7 +4,8 @@ import 'package:nextcloudnotes/core/router/router.gr.dart';
 enum RouterMeta {
   Home(page: HomeRoute.page, title: "Notes"),
   Login(page: LoginRoute.page, title: "Login to a instance"),
-  ConnectToServer(page: ConnectToServerRoute.page, title: "Nextcloud");
+  ConnectToServer(page: ConnectToServerRoute.page, title: "Nextcloud"),
+  NewNote(page: NewNoteRoute.page, title: "New Note");
 
   final PageInfo<dynamic> page;
   final String title;

@@ -17,7 +17,9 @@ import '../../../features/connect-to-server/controllers/connect-to-server.contro
     as _i15;
 import '../../../features/home/controllers/home.controller.dart' as _i16;
 import '../../../features/login/controllers/login_view.controller.dart' as _i5;
-import '../../../features/note/controllers/note_view.controller.dart' as _i17;
+import '../../../features/new_note/controllers/new_note.controller.dart'
+    as _i17;
+import '../../../features/note/controllers/note_view.controller.dart' as _i18;
 import '../../../repositories/login.repository.dart' as _i11;
 import '../../../repositories/notes.repositories.dart' as _i12;
 import '../../controllers/auth.controller.dart' as _i7;
@@ -73,12 +75,16 @@ extension GetItInjectableX on _i1.GetIt {
             ));
     gh.lazySingleton<_i16.HomeViewController>(
         () => _i16.HomeViewController(gh<_i12.NoteRepositories>()));
-    gh.lazySingleton<_i17.NoteViewController>(
-      () => _i17.NoteViewController(
+    gh.lazySingleton<_i17.NewNoteController>(
+      () => _i17.NewNoteController(gh<_i12.NoteRepositories>()),
+      dispose: _i17.disposeNewNoteController,
+    );
+    gh.lazySingleton<_i18.NoteViewController>(
+      () => _i18.NoteViewController(
         gh<_i12.NoteRepositories>(),
         gh<_i13.QueueController>(),
       ),
-      dispose: _i17.disposeNoteViewController,
+      dispose: _i18.disposeNoteViewController,
     );
     return this;
   }

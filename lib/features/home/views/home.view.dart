@@ -117,6 +117,17 @@ class _HomeViewState extends State<HomeView> {
 
   BottomNavigationBar _renderBottomBar(BuildContext context) {
     return BottomNavigationBar(
+      onTap: (value) {
+        switch (value) {
+          case 0:
+            break;
+          case 1:
+            context.router.navigate(const NewNoteRoute());
+            break;
+          case 2:
+            break;
+        }
+      },
       items: [
         const BottomNavigationBarItem(icon: Icon(EvaIcons.search), label: ""),
         BottomNavigationBarItem(
@@ -129,7 +140,9 @@ class _HomeViewState extends State<HomeView> {
             ),
             label: ""),
         const BottomNavigationBarItem(
-            icon: Icon(EvaIcons.moreHorizontalOutline), label: ""),
+          icon: Icon(EvaIcons.moreHorizontalOutline),
+          label: "",
+        ),
       ],
       showUnselectedLabels: false,
       showSelectedLabels: false,

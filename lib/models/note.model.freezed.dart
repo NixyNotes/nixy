@@ -289,3 +289,193 @@ abstract class _Note implements Note {
   @JsonKey(ignore: true)
   _$$_NoteCopyWith<_$_Note> get copyWith => throw _privateConstructorUsedError;
 }
+
+NewNote _$NewNoteFromJson(Map<String, dynamic> json) {
+  return _NewNote.fromJson(json);
+}
+
+/// @nodoc
+mixin _$NewNote {
+  int get modified => throw _privateConstructorUsedError;
+  String get title => throw _privateConstructorUsedError;
+  String get content => throw _privateConstructorUsedError;
+  String get category => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $NewNoteCopyWith<NewNote> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $NewNoteCopyWith<$Res> {
+  factory $NewNoteCopyWith(NewNote value, $Res Function(NewNote) then) =
+      _$NewNoteCopyWithImpl<$Res, NewNote>;
+  @useResult
+  $Res call({int modified, String title, String content, String category});
+}
+
+/// @nodoc
+class _$NewNoteCopyWithImpl<$Res, $Val extends NewNote>
+    implements $NewNoteCopyWith<$Res> {
+  _$NewNoteCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? modified = null,
+    Object? title = null,
+    Object? content = null,
+    Object? category = null,
+  }) {
+    return _then(_value.copyWith(
+      modified: null == modified
+          ? _value.modified
+          : modified // ignore: cast_nullable_to_non_nullable
+              as int,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_NewNoteCopyWith<$Res> implements $NewNoteCopyWith<$Res> {
+  factory _$$_NewNoteCopyWith(
+          _$_NewNote value, $Res Function(_$_NewNote) then) =
+      __$$_NewNoteCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int modified, String title, String content, String category});
+}
+
+/// @nodoc
+class __$$_NewNoteCopyWithImpl<$Res>
+    extends _$NewNoteCopyWithImpl<$Res, _$_NewNote>
+    implements _$$_NewNoteCopyWith<$Res> {
+  __$$_NewNoteCopyWithImpl(_$_NewNote _value, $Res Function(_$_NewNote) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? modified = null,
+    Object? title = null,
+    Object? content = null,
+    Object? category = null,
+  }) {
+    return _then(_$_NewNote(
+      modified: null == modified
+          ? _value.modified
+          : modified // ignore: cast_nullable_to_non_nullable
+              as int,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$_NewNote implements _NewNote {
+  const _$_NewNote(
+      {required this.modified,
+      required this.title,
+      required this.content,
+      required this.category});
+
+  factory _$_NewNote.fromJson(Map<String, dynamic> json) =>
+      _$$_NewNoteFromJson(json);
+
+  @override
+  final int modified;
+  @override
+  final String title;
+  @override
+  final String content;
+  @override
+  final String category;
+
+  @override
+  String toString() {
+    return 'NewNote(modified: $modified, title: $title, content: $content, category: $category)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_NewNote &&
+            (identical(other.modified, modified) ||
+                other.modified == modified) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.content, content) || other.content == content) &&
+            (identical(other.category, category) ||
+                other.category == category));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, modified, title, content, category);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_NewNoteCopyWith<_$_NewNote> get copyWith =>
+      __$$_NewNoteCopyWithImpl<_$_NewNote>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_NewNoteToJson(
+      this,
+    );
+  }
+}
+
+abstract class _NewNote implements NewNote {
+  const factory _NewNote(
+      {required final int modified,
+      required final String title,
+      required final String content,
+      required final String category}) = _$_NewNote;
+
+  factory _NewNote.fromJson(Map<String, dynamic> json) = _$_NewNote.fromJson;
+
+  @override
+  int get modified;
+  @override
+  String get title;
+  @override
+  String get content;
+  @override
+  String get category;
+  @override
+  @JsonKey(ignore: true)
+  _$$_NewNoteCopyWith<_$_NewNote> get copyWith =>
+      throw _privateConstructorUsedError;
+}

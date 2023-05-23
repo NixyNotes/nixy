@@ -18,3 +18,16 @@ class Note with _$Note {
 
   factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
 }
+
+@freezed
+class NewNote with _$NewNote {
+  const factory NewNote({
+    required int modified,
+    required String title,
+    required String content,
+    required String category,
+  }) = _NewNote;
+
+  factory NewNote.fromJson(Map<String, dynamic> json) =>
+      _$NewNoteFromJson(json);
+}

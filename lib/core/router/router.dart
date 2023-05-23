@@ -23,6 +23,12 @@ class AppRouter extends $AppRouter {
               fullscreenDialog: true,
             ),
             AutoRoute(
+              page: RouterMeta.NewNote.page,
+              title: RouterMeta.NewNote.titleToWidget(),
+              guards: [AuthGuard()],
+              fullscreenDialog: true,
+            ),
+            AutoRoute(
               page: RouterMeta.Login.page,
               title: RouterMeta.Login.titleToWidget(),
             ),
