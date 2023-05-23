@@ -34,12 +34,18 @@ class LoginView extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: TextFormField(
-              controller: controller.serverFormController,
-              keyboardType: TextInputType.url,
-              decoration: const InputDecoration(
-                  label: Text("https://yournextcloud.server")),
-              onFieldSubmitted: (value) => controller.onPressLogin(context),
+            child: Form(
+              autovalidateMode: AutovalidateMode.always,
+              key: controller.formKey,
+              child: TextFormField(
+                initialValue: null,
+                controller: controller.serverFormController,
+                validator: controller.urlFormValidator,
+                keyboardType: TextInputType.url,
+                decoration: const InputDecoration(
+                    label: Text("https://yournextcloud.server")),
+                onFieldSubmitted: (value) => controller.onPressLogin(context),
+              ),
             ),
           ),
           OutlinedButton(

@@ -34,8 +34,8 @@ class DioService {
     throw Exception("Could not fetch: $path");
   }
 
-  Future<Response<dynamic>?> post(
-      String path, Map<String, dynamic> payload) async {
+  Future<Response<dynamic>> post(String path,
+      [Map<String, dynamic>? payload]) async {
     final request = await _dio.post(path, data: payload);
 
     if (request.statusCode == HttpStatus.ok ||

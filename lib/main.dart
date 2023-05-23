@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:nextcloudnotes/core/models/user.model.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
@@ -11,6 +13,9 @@ void main() async {
   configureDependencies();
 
   WidgetsFlutterBinding.ensureInitialized();
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    await InAppWebViewController.setWebContentsDebuggingEnabled(true);
+  }
   await initDb([UserSchema]);
 
   runApp(const MyApp());

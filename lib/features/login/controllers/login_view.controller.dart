@@ -10,10 +10,24 @@ part 'login_view.controller.g.dart';
 class LoginViewController = _LoginViewControllerBase with _$LoginViewController;
 
 abstract class _LoginViewControllerBase with Store {
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController serverFormController = TextEditingController();
 
   onPressLogin(BuildContext context) {
-    context.router
-        .navigate(ConnectToServerRoute(url: serverFormController.text));
+    if (formKey.currentState!.validate()) {
+      context.router
+          .navigate(ConnectToServerRoute(url: serverFormController.text));
+    }
+  }
+
+  String? urlFormValidator(String? value) {
+    if (value != null) {
+      if (!value.startsWith("http")) {
+        return "Url please";
+      }
+
+      return null;
+    }
+    return null;
   }
 }

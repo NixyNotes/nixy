@@ -12,19 +12,22 @@
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
-import '../../../features/app/controllers/app.controller.dart' as _i12;
+import '../../../features/app/controllers/app.controller.dart' as _i14;
 import '../../../features/connect-to-server/controllers/connect-to-server.controller.dart'
-    as _i4;
-import '../../../features/home/controllers/home.controller.dart' as _i13;
+    as _i15;
+import '../../../features/home/controllers/home.controller.dart' as _i16;
 import '../../../features/login/controllers/login_view.controller.dart' as _i5;
-import '../../../features/note/controllers/note-view.controller.dart' as _i14;
-import '../../../repositories/notes.repositories.dart' as _i10;
-import '../../controllers/auth.controller.dart' as _i6;
-import '../../controllers/queue.controller.dart' as _i11;
+import '../../../features/note/controllers/note-view.controller.dart' as _i17;
+import '../../../repositories/login.repository.dart' as _i11;
+import '../../../repositories/notes.repositories.dart' as _i12;
+import '../../controllers/auth.controller.dart' as _i7;
+import '../../controllers/queue.controller.dart' as _i13;
 import '../../storage/auth.storage.dart' as _i3;
-import '../dio/init_dio.dart' as _i9;
-import '../dio/interceptors/auth.interceptor.dart' as _i7;
-import '../dio/interceptors/base_url.interceptor.dart' as _i8;
+import '../dio/init_dio.dart' as _i10;
+import '../dio/interceptors/auth.interceptor.dart' as _i8;
+import '../dio/interceptors/base_url.interceptor.dart' as _i9;
+import '../log.service.dart' as _i4;
+import '../toast.service.dart' as _i6;
 
 extension GetItInjectableX on _i1.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -38,32 +41,41 @@ extension GetItInjectableX on _i1.GetIt {
       environmentFilter,
     );
     gh.factory<_i3.AuthStorage>(() => _i3.AuthStorage());
-    gh.factory<_i4.ConnectToServerController>(
-        () => _i4.ConnectToServerController());
+    gh.lazySingleton<_i4.LogService>(() => _i4.LogService());
     gh.factory<_i5.LoginViewController>(() => _i5.LoginViewController());
-    gh.lazySingleton<_i6.AuthController>(
-        () => _i6.AuthController(gh<_i3.AuthStorage>()));
-    gh.lazySingleton<_i7.AuthInterceptor>(
-        () => _i7.AuthInterceptor(gh<_i6.AuthController>()));
-    gh.lazySingleton<_i8.BaseUrlInterceptor>(
-        () => _i8.BaseUrlInterceptor(gh<_i6.AuthController>()));
-    gh.lazySingleton<_i9.DioService>(() => _i9.DioService(
-          gh<_i7.AuthInterceptor>(),
-          gh<_i8.BaseUrlInterceptor>(),
+    gh.lazySingleton<_i6.ToastService>(() => _i6.ToastService());
+    gh.lazySingleton<_i7.AuthController>(
+        () => _i7.AuthController(gh<_i3.AuthStorage>()));
+    gh.lazySingleton<_i8.AuthInterceptor>(
+        () => _i8.AuthInterceptor(gh<_i7.AuthController>()));
+    gh.lazySingleton<_i9.BaseUrlInterceptor>(
+        () => _i9.BaseUrlInterceptor(gh<_i7.AuthController>()));
+    gh.lazySingleton<_i10.DioService>(() => _i10.DioService(
+          gh<_i8.AuthInterceptor>(),
+          gh<_i9.BaseUrlInterceptor>(),
         ));
-    gh.lazySingleton<_i10.NoteRepositories>(
-        () => _i10.NoteRepositories(gh<_i9.DioService>()));
-    gh.lazySingleton<_i11.QueueController>(
-        () => _i11.QueueController(gh<_i10.NoteRepositories>()));
-    gh.lazySingleton<_i12.AppViewController>(() => _i12.AppViewController(
-          gh<_i6.AuthController>(),
-          gh<_i11.QueueController>(),
+    gh.lazySingleton<_i11.LoginRepository>(
+        () => _i11.LoginRepository(gh<_i10.DioService>()));
+    gh.lazySingleton<_i12.NoteRepositories>(
+        () => _i12.NoteRepositories(gh<_i10.DioService>()));
+    gh.lazySingleton<_i13.QueueController>(
+        () => _i13.QueueController(gh<_i12.NoteRepositories>()));
+    gh.lazySingleton<_i14.AppViewController>(() => _i14.AppViewController(
+          gh<_i7.AuthController>(),
+          gh<_i13.QueueController>(),
         ));
-    gh.lazySingleton<_i13.HomeViewController>(
-        () => _i13.HomeViewController(gh<_i10.NoteRepositories>()));
-    gh.lazySingleton<_i14.NoteViewController>(() => _i14.NoteViewController(
-          gh<_i10.NoteRepositories>(),
-          gh<_i11.QueueController>(),
+    gh.factory<_i15.ConnectToServerController>(
+        () => _i15.ConnectToServerController(
+              gh<_i7.AuthController>(),
+              gh<_i11.LoginRepository>(),
+              gh<_i6.ToastService>(),
+              gh<_i4.LogService>(),
+            ));
+    gh.lazySingleton<_i16.HomeViewController>(
+        () => _i16.HomeViewController(gh<_i12.NoteRepositories>()));
+    gh.lazySingleton<_i17.NoteViewController>(() => _i17.NoteViewController(
+          gh<_i12.NoteRepositories>(),
+          gh<_i13.QueueController>(),
         ));
     return this;
   }
