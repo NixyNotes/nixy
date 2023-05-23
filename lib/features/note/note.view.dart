@@ -79,11 +79,12 @@ class _NoteViewState extends State<NoteView> {
                               keyboardType: TextInputType.multiline,
                               inputFormatters: [NewlineFormatter()],
                             )
-                          : MarkdownBody(
+                          : Markdown(
                               data: controller.markdownController.text,
                               styleSheet: MarkdownStyleSheet(
-                                  checkbox: const TextStyle(
-                                      color: Colors.orangeAccent)),
+                                checkbox:
+                                    const TextStyle(color: Colors.orangeAccent),
+                              ),
                             ),
                     );
                   }),

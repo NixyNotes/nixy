@@ -17,7 +17,11 @@ class AppRouter extends $AppRouter {
               guards: [AuthGuard()],
               initial: true,
             ),
-            AutoRoute(page: NoteRoute.page, guards: [AuthGuard()]),
+            AutoRoute(
+              page: NoteRoute.page,
+              guards: [AuthGuard()],
+              fullscreenDialog: true,
+            ),
             AutoRoute(
               page: RouterMeta.Login.page,
               title: RouterMeta.Login.titleToWidget(),

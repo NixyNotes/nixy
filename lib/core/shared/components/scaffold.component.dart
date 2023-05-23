@@ -7,12 +7,14 @@ class AppScaffold extends StatelessWidget {
       required this.body,
       this.title,
       this.actions,
-      this.showAppBar = true});
+      this.showAppBar = true,
+      this.bottomBar});
 
   final Widget body;
   final String? title;
   final List<Widget>? actions;
   final bool? showAppBar;
+  final Widget? bottomBar;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class AppScaffold extends StatelessWidget {
               actions: actions,
             )
           : null,
+      bottomNavigationBar: bottomBar,
       body: Padding(padding: const EdgeInsets.all(10), child: body),
     );
   }

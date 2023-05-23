@@ -31,12 +31,26 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp.router(
       title: 'Flutter Demo',
-      darkTheme: ThemeData.dark(useMaterial3: true),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+            brightness: Brightness.dark,
+            seedColor: Colors.orangeAccent,
+            primary: Colors.orangeAccent,
+            primaryContainer: Colors.grey.shade800),
+        useMaterial3: true,
+        dividerTheme: DividerThemeData(color: Colors.grey.shade100),
+        scaffoldBackgroundColor: Colors.grey.shade800,
+      ),
       themeMode: ThemeMode.system,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.orangeAccent, primary: Colors.orangeAccent),
+            seedColor: Colors.orangeAccent,
+            primary: Colors.orangeAccent,
+            primaryContainer: Colors.grey.shade500),
         useMaterial3: true,
+        scaffoldBackgroundColor: Colors.blueGrey.shade50,
+        dividerTheme: DividerThemeData(color: Colors.grey.shade100),
       ),
       routerConfig: appRouter.config(),
       scaffoldMessengerKey: scaffolMessengerKey,
