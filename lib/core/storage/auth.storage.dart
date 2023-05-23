@@ -29,7 +29,7 @@ class AuthStorage {
 
   Future<void> deleteAccount(int accountId) async {
     isarInstance.writeTxn(() async {
-      await isarInstance.users.where().idEqualTo(accountId).deleteFirst();
+      await isarInstance.users.where().idEqualTo(accountId).deleteAll();
     });
   }
 }
