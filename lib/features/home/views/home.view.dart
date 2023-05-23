@@ -37,11 +37,15 @@ class _HomeViewState extends State<HomeView> {
         ],
         body: Observer(
           builder: (context) {
+            if (controller.notes == null) {
+              return const SizedBox.shrink();
+            }
+
             return controller.notes!.asyncValue<List<Note>>(
               pending: () => const Center(
                 child: CircularProgressIndicator.adaptive(),
               ),
-              rejected: (error) => Text(error),
+              rejected: (error) => Text(error.toString()),
               fulfilled: (data) {
                 return ListView.builder(
                   itemBuilder: (context, index) {

@@ -14,13 +14,14 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   final AppViewController _appViewController = getIt<AppViewController>();
+
   bool stateInited = false;
 
   @override
   void initState() {
     super.initState();
 
-    _appViewController.initState().then((value) {
+    _appViewController.initState(context).then((value) {
       setState(() {
         stateInited = true;
       });

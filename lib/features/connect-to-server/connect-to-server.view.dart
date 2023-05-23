@@ -24,7 +24,6 @@ class ConnectToServerView extends StatelessWidget {
           onNavigationRequest: (request) {
             if (request.url.startsWith('nc://')) {
               controller.onLoadCustomScheme(request, url, context);
-              onResult?.call(true);
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;

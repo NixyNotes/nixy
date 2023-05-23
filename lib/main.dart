@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/models/user.model.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
@@ -13,9 +12,6 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await initDb([UserSchema]);
-
-  final authController = getIt<AuthController>();
-  await authController.initState();
 
   runApp(const MyApp());
 }

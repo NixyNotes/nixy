@@ -5,7 +5,7 @@ import 'package:nextcloudnotes/core/services/init_isar.dart';
 
 @injectable
 class AuthStorage {
-  saveUser(User user) async {
+  saveUser(User user) {
     isarInstance.writeTxn(() async {
       await isarInstance.users.put(user);
     });

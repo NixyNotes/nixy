@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
@@ -15,8 +16,8 @@ abstract class _AppViewControllerBase with Store {
   final QueueController _queueController;
 
   @action
-  Future<void> initState() async {
-    await _authController.initState();
+  Future<void> initState(BuildContext context) async {
+    await _authController.initState(context);
     _queueController.init();
   }
 }

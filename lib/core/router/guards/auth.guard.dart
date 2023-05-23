@@ -8,28 +8,14 @@ class AuthGuard extends AutoRouteGuard {
   void onNavigation(NavigationResolver resolver, StackRouter router) async {
     final authStorage = getIt<AuthController>();
 
-    final loginState = authStorage.loginState;
-
-    if (loginState.value == LoginState.loggedIn) {
-      return resolver.next(true);
+    if (authStorage.isLoggedIn) {
+      return resolver.next();
     } else {
-      router.replace(LoginRoute(
-        onResult: (success) {
-          resolver.next(success);
+      router.push(LoginRoute(
+        onResult: (_) {
+          router.replaceAll([const HomeRoute()]);
         },
       ));
     }
-
-    loginState.observe((p0) {
-      if (loginState.value == LoginState.loggedIn) {
-        return resolver.next(true);
-      } else {
-        router.replace(LoginRoute(
-          onResult: (success) {
-            resolver.next(success);
-          },
-        ));
-      }
-    });
   }
 }

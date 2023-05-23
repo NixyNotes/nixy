@@ -2,29 +2,26 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/services/dio/interceptors/auth.interceptor.dart';
+import 'package:nextcloudnotes/core/services/dio/interceptors/base_url.interceptor.dart';
 
 @lazySingleton
 class DioService {
-  final AuthController _authController;
   final AuthInterceptor _authInterceptor;
+  final BaseUrlInterceptor _baseUrlInterceptor;
 
   late Dio _dio;
 
-  String? get baseUrl => _authController.currentAccount.value?.server;
-
   BaseOptions get _baseOptions => BaseOptions(
-        baseUrl: baseUrl ?? "",
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         contentType: "application/json",
         responseType: ResponseType.json,
       );
 
-  DioService(this._authController, this._authInterceptor) {
+  DioService(this._authInterceptor, this._baseUrlInterceptor) {
     _dio = Dio(_baseOptions);
-    _dio.interceptors.add(_authInterceptor);
+    _dio.interceptors.addAll([_authInterceptor, _baseUrlInterceptor]);
   }
 
   Future<Response<dynamic>> get(String path) async {
