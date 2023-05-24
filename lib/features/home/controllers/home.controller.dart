@@ -1,6 +1,8 @@
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
+import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
@@ -14,9 +16,12 @@ disposeHomeController(HomeViewController instance) {
 class HomeViewController = _HomeViewControllerBase with _$HomeViewController;
 
 abstract class _HomeViewControllerBase with Store {
-  _HomeViewControllerBase(this._noteRepositories, this._toastService);
+  _HomeViewControllerBase(this._noteRepositories, this._toastService,
+      this._noteStorage, this._offlineService);
   final NoteRepositories _noteRepositories;
   final ToastService _toastService;
+  final NoteStorage _noteStorage;
+  final OfflineService _offlineService;
 
   @observable
   ObservableList<Note> notes = ObservableList();
@@ -40,9 +45,18 @@ abstract class _HomeViewControllerBase with Store {
   @action
   fetchNotes() async {
     isLoading = true;
-    final response = await _noteRepositories.fetchNotes();
+    final data = await _offlineService.fetch<List<Note>>(
+        _noteStorage.getAllNotes, _noteRepositories.fetchNotes);
+    notes = ObservableList.of(data.localData);
 
-    notes = ObservableList.of(response);
+    if (data.shouldMerge != null && data.shouldMerge!) {
+      if (data.remoteData != null) {
+        _noteStorage.saveAllNotes(data.remoteData!);
+
+        notes = ObservableList.of(data.remoteData!);
+      }
+    }
+
     isLoading = false;
   }
 
