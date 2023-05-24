@@ -3,6 +3,8 @@ import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/queue.controller.dart';
+import 'package:nextcloudnotes/core/services/offline.service.dart';
+import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/main.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
@@ -17,9 +19,12 @@ disposeNoteViewController(NoteViewController instance) {
 class NoteViewController = _NoteViewControllerBase with _$NoteViewController;
 
 abstract class _NoteViewControllerBase with Store {
-  _NoteViewControllerBase(this._noteRepositories, this._queueController);
+  _NoteViewControllerBase(this._noteRepositories, this._queueController,
+      this._offlineService, this._noteStorage);
   final NoteRepositories _noteRepositories;
   final QueueController _queueController;
+  final OfflineService _offlineService;
+  final NoteStorage _noteStorage;
 
   final FocusNode focusNode = FocusNode();
 
@@ -38,8 +43,6 @@ abstract class _NoteViewControllerBase with Store {
   late Note note;
 
   init(int noteId) {
-    fetchNote(noteId);
-
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isTextFieldFocused = true;
@@ -49,10 +52,27 @@ abstract class _NoteViewControllerBase with Store {
 
   dispose() {
     focusNode.dispose();
+    markdownController.dispose();
   }
 
+  @action
   Future<Note> fetchNote(int noteId) async {
-    note = await _noteRepositories.fetchNote(noteId);
+    final data = await _offlineService.fetch<Note>(
+      _noteStorage.getSingleNote,
+      _noteRepositories.fetchNote,
+      localStorageArg: noteId,
+      remoteDataArgs: noteId,
+    );
+
+    note = data.localData;
+
+    if (data.shouldMerge != null && data.shouldMerge!) {
+      if (data.remoteData != null) {
+        _noteStorage.saveNote(data.remoteData!);
+
+        note = data.remoteData!;
+      }
+    }
 
     return note;
   }

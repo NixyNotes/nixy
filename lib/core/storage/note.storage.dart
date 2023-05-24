@@ -29,4 +29,12 @@ class NoteStorage {
 
     return modifiedNote;
   }
+
+  void saveNote(Note note) {
+    isarInstance.writeTxn(() async {
+      final object = LocalNote.merge(note);
+
+      await isarInstance.localNotes.put(object);
+    });
+  }
 }

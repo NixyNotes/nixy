@@ -13,15 +13,20 @@ class OfflineData<T> {
 
 @lazySingleton
 class OfflineService {
-  Future<OfflineData<T>> fetch<T>(Future<T> Function() localStorage,
-      Future<T> Function() remoteDataCall) async {
+  Future<OfflineData<T>> fetch<T>(
+      Function localStorage, Function remoteDataCall,
+      {dynamic localStorageArg, dynamic remoteDataArgs}) async {
     final internetAccess = await checkForInternetAccess();
-    final localData = await localStorage.call();
+    final localData = localStorageArg != null
+        ? await localStorage.call(localStorageArg)
+        : await localStorage.call();
     bool shouldMerge = false;
     T? remoteData;
 
     if (internetAccess) {
-      remoteData = await remoteDataCall.call();
+      remoteData = remoteDataArgs != null
+          ? await remoteDataCall.call(remoteDataArgs)
+          : await remoteDataCall.call();
 
       if (localData is List && remoteData is List) {
         shouldMerge = !listEquals(remoteData, localData);
