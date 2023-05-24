@@ -1,21 +1,24 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 class NoteGrid extends StatelessWidget {
-  const NoteGrid({
-    super.key,
-    required this.title,
-    required this.date,
-    required this.content,
-    required this.onTap,
-    this.onLongPress,
-  });
+  const NoteGrid(
+      {super.key,
+      required this.title,
+      required this.date,
+      required this.content,
+      required this.onTap,
+      this.onLongPress,
+      this.isFavorite = false});
 
   final String title;
   final int date;
   final String content;
+  final bool isFavorite;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -39,7 +42,20 @@ class NoteGrid extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface),
         child: Column(
           children: [
-            Text(title),
+            Row(
+              mainAxisAlignment: isFavorite
+                  ? MainAxisAlignment.spaceAround
+                  : MainAxisAlignment.center,
+              children: [
+                if (isFavorite)
+                  const Icon(
+                    EvaIcons.star,
+                    color: Colors.orangeAccent,
+                    size: 12,
+                  ),
+                Text(title),
+              ],
+            ),
             Text(
               "Yesterday, 07:26",
               style: Theme.of(context)

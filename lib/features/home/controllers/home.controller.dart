@@ -6,7 +6,11 @@ import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
 part 'home.controller.g.dart';
 
-@lazySingleton
+disposeHomeController(HomeViewController instance) {
+  instance.dispose();
+}
+
+@LazySingleton(dispose: disposeHomeController)
 class HomeViewController = _HomeViewControllerBase with _$HomeViewController;
 
 abstract class _HomeViewControllerBase with Store {
@@ -23,6 +27,16 @@ abstract class _HomeViewControllerBase with Store {
   @observable
   ObservableList<Note> selectedNotes = ObservableList();
 
+  late ReactionDisposer sortAutomaticallyDisposer;
+
+  void init() {
+    sortAutomaticallyDisposer = autorun((_) {
+      notes.sort((a, b) => b.favorite ? 1 : 0);
+    });
+
+    fetchNotes();
+  }
+
   @action
   fetchNotes() async {
     isLoading = true;
@@ -30,6 +44,26 @@ abstract class _HomeViewControllerBase with Store {
 
     notes = ObservableList.of(response);
     isLoading = false;
+  }
+
+  Future<void> toggleFavorite(Note note) async {
+    final model = Note(
+        id: note.id,
+        etag: note.etag,
+        readonly: note.readonly,
+        modified: DateTime.now().millisecondsSinceEpoch,
+        title: note.title,
+        category: note.category,
+        content: note.content,
+        favorite: !note.favorite);
+
+    await _noteRepositories.updateNote(note.id, model);
+
+    final updatedList = notes
+        .map((element) => element.id == note.id ? model : element)
+        .toList();
+
+    notes = ObservableList.of(updatedList);
   }
 
   @action
@@ -69,5 +103,9 @@ abstract class _HomeViewControllerBase with Store {
     }
 
     selectedNotes.add(note);
+  }
+
+  dispose() {
+    sortAutomaticallyDisposer();
   }
 }

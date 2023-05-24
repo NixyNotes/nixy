@@ -39,7 +39,13 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    controller.fetchNotes();
+    controller.init();
+  }
+
+  @override
+  void dispose() {
+    getIt.resetLazySingleton<HomeViewController>();
+    super.dispose();
   }
 
   @override
@@ -89,15 +95,21 @@ class _HomeViewState extends State<HomeView> {
                       return PullDownButton(
                           itemBuilder: (context) => [
                                 PullDownMenuItem(
+                                  onTap: () =>
+                                      controller.addToSelectedNote(note),
+                                  title: "Select",
+                                ),
+                                PullDownMenuItem(
+                                  icon: EvaIcons.star,
+                                  iconColor: Colors.yellowAccent,
+                                  onTap: () => controller.toggleFavorite(note),
+                                  title: "Favorite",
+                                ),
+                                PullDownMenuItem(
                                   onTap: () => controller.deleteNote(note),
                                   title: "Delete",
                                   isDestructive: true,
                                 ),
-                                PullDownMenuItem(
-                                  onTap: () =>
-                                      controller.addToSelectedNote(note),
-                                  title: "Select",
-                                )
                               ],
                           buttonBuilder: (context, showMenu) => Observer(
                                 builder: (context) {
@@ -120,6 +132,7 @@ class _HomeViewState extends State<HomeView> {
           title: note.title,
           content: note.content,
           date: note.modified,
+          isFavorite: note.favorite,
           onTap: () => controller.selectedNotes.isEmpty
               ? context.router.navigate(NoteRoute(noteId: note.id))
               : controller.addToSelectedNote(note),
