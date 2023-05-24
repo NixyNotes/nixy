@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 
-part 'user.model.g.dart';
+part 'user.scheme.g.dart';
 
 // Full encrpytion is coming soon.
 @collection
