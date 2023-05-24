@@ -2,8 +2,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
-import 'package:nextcloudnotes/core/models/user.model.dart';
 import 'package:nextcloudnotes/core/router/router.gr.dart';
+import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/storage/auth.storage.dart';
 
 part 'auth.controller.g.dart';
