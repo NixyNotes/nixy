@@ -37,4 +37,16 @@ class NoteStorage {
       await isarInstance.localNotes.put(object);
     });
   }
+
+  void deleteNote(Note note) {
+    isarInstance.writeTxn(() async {
+      await isarInstance.localNotes.deleteById(note.id);
+    });
+  }
+
+  void deleteAll() {
+    isarInstance.writeTxn(() async {
+      await isarInstance.localNotes.clear();
+    });
+  }
 }

@@ -27,37 +27,38 @@ abstract class _HomeViewControllerBase with Store {
   ObservableList<Note> notes = ObservableList();
 
   @observable
-  bool isLoading = false;
+  bool syncing = false;
 
   @observable
   ObservableList<Note> selectedNotes = ObservableList();
 
   late ReactionDisposer sortAutomaticallyDisposer;
 
-  void init() {
+  void init() async {
     sortAutomaticallyDisposer = autorun((_) {
       notes.sort((a, b) => b.favorite ? 1 : 0);
     });
 
-    fetchNotes();
+    syncing = true;
+    await _offlineService.runQueue();
+    await fetchNotes();
+    syncing = false;
   }
 
   @action
   fetchNotes() async {
-    isLoading = true;
     final data = await _offlineService.fetch<List<Note>>(
         _noteStorage.getAllNotes, _noteRepositories.fetchNotes);
     notes = ObservableList.of(data.localData);
 
     if (data.shouldMerge != null && data.shouldMerge!) {
       if (data.remoteData != null) {
+        _noteStorage.deleteAll();
         _noteStorage.saveAllNotes(data.remoteData!);
 
         notes = ObservableList.of(data.remoteData!);
       }
     }
-
-    isLoading = false;
   }
 
   Future<void> toggleFavorite(Note note) async {

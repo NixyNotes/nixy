@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
+import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
@@ -17,7 +18,7 @@ void main() async {
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     await InAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
-  await initDb([UserSchema, LocalNoteSchema]);
+  await initDb([UserSchema, LocalNoteSchema, OfflineQueueSchema]);
 
   runApp(const MyApp());
 }

@@ -24,8 +24,11 @@ class DioService {
   DioService(this._authInterceptor, this._baseUrlInterceptor,
       this._networkCheckerInterceptor) {
     _dio = Dio(_baseOptions);
-    _dio.interceptors.addAll(
-        [_authInterceptor, _baseUrlInterceptor, _networkCheckerInterceptor]);
+    _dio.interceptors.addAll([
+      _authInterceptor,
+      _networkCheckerInterceptor,
+      _baseUrlInterceptor,
+    ]);
   }
 
   Future<Response<dynamic>> get(String path) async {

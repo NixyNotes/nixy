@@ -1,6 +1,15 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
+import 'package:nextcloudnotes/core/services/offline.service.dart';
+import 'package:nextcloudnotes/core/services/toast.service.dart';
+import 'package:nextcloudnotes/core/storage/note.storage.dart';
+import 'package:nextcloudnotes/core/utils/network_checker.dart';
+import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 part 'new_note.controller.g.dart';
@@ -13,8 +22,14 @@ disposeNewNoteController(NewNoteController instance) {
 class NewNoteController = _NewNoteControllerBase with _$NewNoteController;
 
 abstract class _NewNoteControllerBase with Store {
-  _NewNoteControllerBase(this._noteRepositories);
+  _NewNoteControllerBase(this._noteRepositories, this._notesStorage,
+      this._offlineService, this._homeViewController, this._toastService);
   final NoteRepositories _noteRepositories;
+  final NoteStorage _notesStorage;
+  final OfflineService _offlineService;
+  final HomeViewController _homeViewController;
+  final ToastService _toastService;
+
   final FocusNode focusNode = FocusNode();
   final TextEditingController markdownController =
       TextEditingController(text: "# New Note");
@@ -61,9 +76,39 @@ abstract class _NewNoteControllerBase with Store {
   }
 
   Future<void> createNote() async {
+    final internetAccess = await checkForInternetAccess();
+    final unixTimestamp = DateTime.now().millisecondsSinceEpoch;
+    if (!internetAccess) {
+      if (alreadyCreatedNote) {
+        return _updateNote();
+      }
+
+      final model = Note(
+          id: Random().nextInt(9999),
+          etag: "etag",
+          readonly: false,
+          modified: unixTimestamp,
+          title: title!,
+          category: "",
+          content: markdownController.text,
+          favorite: false);
+      _notesStorage.saveNote(model);
+
+      _offlineService.addQueue(OfflineQueueAction.ADD,
+          noteAsJson: jsonEncode(model));
+
+      alreadyCreatedNote = true;
+      note = model;
+
+      _toastService.showTextToast("Created $title", type: ToastType.success);
+
+      return;
+    }
+
     if (alreadyCreatedNote) {
       return _updateNote();
     }
+
     isLoading = true;
 
     final newNote = NewNote(
@@ -79,6 +124,7 @@ abstract class _NewNoteControllerBase with Store {
       isLoading = false;
       alreadyCreatedNote = true;
       note = response;
+      _toastService.showTextToast("Created $title", type: ToastType.success);
     }
   }
 
@@ -92,12 +138,21 @@ abstract class _NewNoteControllerBase with Store {
         category: note.title,
         content: markdownController.text,
         favorite: note.favorite);
+    final internetAccess = await checkForInternetAccess();
+
+    if (!internetAccess) {
+      _notesStorage.saveNote(updateNote);
+
+      return;
+    }
+
     isLoading = true;
     await _noteRepositories.updateNote(note.id, updateNote);
     isLoading = false;
   }
 
-  void dispose() {
+  void dispose() async {
+    await _homeViewController.fetchNotes();
     focusNode.dispose();
     markdownController.dispose();
   }

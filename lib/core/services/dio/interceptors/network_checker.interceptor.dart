@@ -4,7 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/utils/network_checker.dart';
 import 'package:nextcloudnotes/main.dart';
 
-@LazySingleton()
+@lazySingleton
 class NetworkCheckerInterceptor extends Interceptor {
   @override
   void onRequest(
