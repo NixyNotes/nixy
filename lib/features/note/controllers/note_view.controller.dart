@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
-import 'package:nextcloudnotes/core/controllers/queue.controller.dart';
+import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
+import 'package:nextcloudnotes/core/services/offline.service.dart';
+import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/main.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
@@ -17,9 +21,11 @@ disposeNoteViewController(NoteViewController instance) {
 class NoteViewController = _NoteViewControllerBase with _$NoteViewController;
 
 abstract class _NoteViewControllerBase with Store {
-  _NoteViewControllerBase(this._noteRepositories, this._queueController);
+  _NoteViewControllerBase(
+      this._noteRepositories, this._offlineService, this._noteStorage);
   final NoteRepositories _noteRepositories;
-  final QueueController _queueController;
+  final OfflineService _offlineService;
+  final NoteStorage _noteStorage;
 
   final FocusNode focusNode = FocusNode();
 
@@ -38,8 +44,6 @@ abstract class _NoteViewControllerBase with Store {
   late Note note;
 
   init(int noteId) {
-    fetchNote(noteId);
-
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isTextFieldFocused = true;
@@ -49,20 +53,33 @@ abstract class _NoteViewControllerBase with Store {
 
   dispose() {
     focusNode.dispose();
+    markdownController.dispose();
   }
 
+  @action
   Future<Note> fetchNote(int noteId) async {
-    note = await _noteRepositories.fetchNote(noteId);
+    final data = await _noteStorage.getSingleNote(noteId);
 
-    return note;
+    return data;
   }
 
   Future<bool> deleteNote(int noteId) async {
+    final checkInternetAccess = _offlineService.hasInternetAccess;
+
+    if (!checkInternetAccess) {
+      _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
+      _noteStorage.deleteNote(note);
+
+      return false;
+    }
+
     final deleted = await _noteRepositories.deleteNote(noteId);
 
     if (deleted) {
       scaffolMessengerKey.currentState
           ?.showSnackBar(const SnackBar(content: Text("ok")));
+
+      _noteStorage.deleteNote(note);
 
       return true;
     }
@@ -72,11 +89,21 @@ abstract class _NoteViewControllerBase with Store {
 
   @action
   Future<void> updateNote(int noteId, Note note) async {
+    final checkInternetAccess = _offlineService.hasInternetAccess;
     final note0 = note.toJson();
     note0["content"] = markdownController.text;
+    note = Note.fromJson(note0);
 
-    _queueController.queue.sink.add(
-        QueueAction(type: QueueActionTypes.UPDATE, note: Note.fromJson(note0)));
+    if (!checkInternetAccess) {
+      _offlineService.addQueue(OfflineQueueAction.UPDATE,
+          noteId: note.id, noteAsJson: jsonEncode(note));
+      _noteStorage.saveNote(note);
+
+      return;
+    }
+
+    await _noteRepositories.updateNote(noteId, note);
+    _noteStorage.saveNote(note);
   }
 
   onTapDone(int noteId, Note note) {

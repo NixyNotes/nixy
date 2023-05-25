@@ -4,11 +4,13 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/services/dio/interceptors/auth.interceptor.dart';
 import 'package:nextcloudnotes/core/services/dio/interceptors/base_url.interceptor.dart';
+import 'package:nextcloudnotes/core/services/dio/interceptors/network_checker.interceptor.dart';
 
 @lazySingleton
 class DioService {
   final AuthInterceptor _authInterceptor;
   final BaseUrlInterceptor _baseUrlInterceptor;
+  final NetworkCheckerInterceptor _networkCheckerInterceptor;
 
   late Dio _dio;
 
@@ -19,9 +21,14 @@ class DioService {
         responseType: ResponseType.json,
       );
 
-  DioService(this._authInterceptor, this._baseUrlInterceptor) {
+  DioService(this._authInterceptor, this._baseUrlInterceptor,
+      this._networkCheckerInterceptor) {
     _dio = Dio(_baseOptions);
-    _dio.interceptors.addAll([_authInterceptor, _baseUrlInterceptor]);
+    _dio.interceptors.addAll([
+      _authInterceptor,
+      _networkCheckerInterceptor,
+      _baseUrlInterceptor,
+    ]);
   }
 
   Future<Response<dynamic>> get(String path) async {

@@ -55,10 +55,6 @@ class _HomeViewState extends State<HomeView> {
         bottomBar: _renderBottomBar(context),
         body: Observer(
           builder: (context) {
-            if (controller.isLoading) {
-              return const Center(child: CircularProgressIndicator.adaptive());
-            }
-
             return RefreshIndicator.adaptive(
               onRefresh: () => controller.fetchNotes(),
               child: GridView.builder(
@@ -157,6 +153,21 @@ class _HomeViewState extends State<HomeView> {
   Widget _renderBottomBar(BuildContext context) {
     return Observer(
       builder: (context) {
+        if (controller.syncing) {
+          return Container(
+              height: 80,
+              alignment: Alignment.centerLeft,
+              color: Theme.of(context).primaryColor,
+              child: const SafeArea(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator.adaptive(),
+                      Text("Synchronizing...")
+                    ]),
+              ));
+        }
+
         if (controller.selectedNotes.isNotEmpty) {
           return Container(
             height: 80,

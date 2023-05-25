@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:isar/isar.dart';
-import 'package:nextcloudnotes/core/models/user.model.dart';
+import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
 
 @injectable

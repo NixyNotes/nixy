@@ -29,6 +29,12 @@ class _AppViewState extends State<AppView> {
   }
 
   @override
+  void dispose() {
+    getIt.resetLazySingleton<AppViewController>();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (stateInited) {
       return const AutoRouter();
