@@ -126,7 +126,11 @@ abstract class _HomeViewControllerBase with Store {
     if (!internetAccess) {
       for (var note in selectedNotes) {
         _noteStorage.deleteNote(note);
+        notes.removeWhere((element) => element.id == note.id);
       }
+      _toastService.showTextToast("Deleted (${selectedNotes.length}) notes.",
+          type: ToastType.success);
+      selectedNotes.clear();
       return;
     }
 
