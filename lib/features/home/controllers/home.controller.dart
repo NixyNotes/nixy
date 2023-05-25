@@ -111,9 +111,22 @@ abstract class _HomeViewControllerBase with Store {
   @action
   bunchDeleteNotes() async {
     final List<Future<bool>> futures = [];
+    final internetAccess = await checkForInternetAccess();
+
     for (var note in selectedNotes) {
-      final future = _noteRepositories.deleteNote(note.id);
-      futures.add(future);
+      if (!internetAccess) {
+        _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
+      } else {
+        final future = _noteRepositories.deleteNote(note.id);
+        futures.add(future);
+      }
+    }
+
+    if (!internetAccess) {
+      for (var note in selectedNotes) {
+        _noteStorage.deleteNote(note);
+      }
+      return;
     }
 
     Future.wait<bool>(futures).then((value) {
