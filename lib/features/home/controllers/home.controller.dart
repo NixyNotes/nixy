@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
@@ -42,27 +43,57 @@ abstract class _HomeViewControllerBase with Store {
       notes.sort((a, b) => b.favorite ? 1 : 0);
     });
 
-    syncing = true;
-    await _offlineService.runQueue();
     await fetchNotes();
-    syncing = false;
+  }
+
+  Future<List<Note>> _fetchRemoteNotes() async {
+    final remoteNotes = await _noteRepositories.fetchNotes();
+
+    return remoteNotes;
+  }
+
+  Future<List<Note>> _fetchLocalNotes() async {
+    final localNotes = await _noteStorage.getAllNotes();
+
+    return localNotes;
   }
 
   @action
-  fetchNotes() async {
-    final shouldCheckForNotes = notes.isEmpty;
-    final data = await _offlineService.fetch<List<Note>>(
-        _noteStorage.getAllNotes, _noteRepositories.fetchNotes,
-        shouldCheckForRemote: shouldCheckForNotes);
-    notes = ObservableList.of(data.localData);
+  Future<void> fetchNotes() async {
+    final localNotes = await _fetchLocalNotes();
 
-    if (data.shouldMerge != null && data.shouldMerge!) {
-      if (data.remoteData != null) {
-        _noteStorage.deleteAll();
-        _noteStorage.saveAllNotes(data.remoteData!);
+    if (localNotes.isNotEmpty) {
+      notes = ObservableList.of(localNotes);
 
-        notes = ObservableList.of(data.remoteData!);
+      if (_offlineService.hasInternetAccess) {
+        syncing = true;
+        await _offlineService.runQueue();
+        final remoteNotes = await _fetchRemoteNotes();
+        notes = ObservableList.of(remoteNotes);
+        syncing = false;
+
+        await _noteStorage.saveAllNotes(remoteNotes);
+        await _syncLocalWithRemote(localNotes, remoteNotes);
       }
+    } else {
+      if (_offlineService.hasInternetAccess) {
+        final remoteNotes = await _fetchRemoteNotes();
+
+        notes = ObservableList.of(remoteNotes);
+        await _noteStorage.saveAllNotes(remoteNotes);
+      }
+    }
+  }
+
+  Future<void> _syncLocalWithRemote(
+    List<Note> localNotes,
+    List<Note> remoteNotes,
+  ) async {
+    final isNoteEquals = listEquals(remoteNotes, localNotes);
+
+    if (!isNoteEquals) {
+      _noteStorage.deleteAll();
+      _noteStorage.saveAllNotes(remoteNotes);
     }
   }
 
@@ -101,7 +132,13 @@ abstract class _HomeViewControllerBase with Store {
 
   @action
   deleteNote(Note note) async {
-    await _noteRepositories.deleteNote(note.id);
+    if (_offlineService.hasInternetAccess) {
+      await _noteRepositories.deleteNote(note.id);
+    } else {
+      _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
+    }
+
+    _noteStorage.deleteNote(note);
 
     notes.removeWhere((element) => element.id == note.id);
 
@@ -115,9 +152,7 @@ abstract class _HomeViewControllerBase with Store {
     final internetAccess = _offlineService.hasInternetAccess;
 
     for (var note in selectedNotes) {
-      if (!internetAccess) {
-        _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
-      } else {
+      if (internetAccess) {
         final future = _noteRepositories.deleteNote(note.id);
         futures.add(future);
       }
@@ -127,6 +162,7 @@ abstract class _HomeViewControllerBase with Store {
       for (var note in selectedNotes) {
         _noteStorage.deleteNote(note);
         notes.removeWhere((element) => element.id == note.id);
+        _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
       }
       _toastService.showTextToast("Deleted (${selectedNotes.length}) notes.",
           type: ToastType.success);
