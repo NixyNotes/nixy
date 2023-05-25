@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
+import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 
 part 'app.controller.g.dart';
 
-@lazySingleton
+disposeAppViewController(AppViewController instance) {
+  instance.dispose();
+}
+
+@LazySingleton(dispose: disposeAppViewController)
 class AppViewController = _AppViewControllerBase with _$AppViewController;
 
 abstract class _AppViewControllerBase with Store {
@@ -19,5 +24,9 @@ abstract class _AppViewControllerBase with Store {
   Future<void> initState(BuildContext context) async {
     await _authController.initState(context);
     _offlineService.checkForNetworkConditions();
+  }
+
+  dispose() {
+    getIt.resetLazySingleton<OfflineService>();
   }
 }

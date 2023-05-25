@@ -50,8 +50,10 @@ abstract class _HomeViewControllerBase with Store {
 
   @action
   fetchNotes() async {
+    final shouldCheckForNotes = notes.isEmpty;
     final data = await _offlineService.fetch<List<Note>>(
-        _noteStorage.getAllNotes, _noteRepositories.fetchNotes);
+        _noteStorage.getAllNotes, _noteRepositories.fetchNotes,
+        shouldCheckForRemote: shouldCheckForNotes);
     notes = ObservableList.of(data.localData);
 
     if (data.shouldMerge != null && data.shouldMerge!) {

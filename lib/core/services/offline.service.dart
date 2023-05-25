@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
@@ -18,19 +19,43 @@ class OfflineData<T> {
   final bool? shouldMerge;
 }
 
-@lazySingleton
+disposeOfflineService(OfflineService instance) {
+  instance.dispose();
+}
+
+@LazySingleton(dispose: disposeOfflineService)
 class OfflineService {
   OfflineService(this._offlineQueueStorage, this._noteRepositories);
   final OfflineQueueStorage _offlineQueueStorage;
   final NoteRepositories _noteRepositories;
-  bool hasInternetAccess = false;
+  bool hasInternetAccess = true;
+
+  late StreamSubscription<ConnectivityResult> subscription;
+  late Timer timer;
 
   Future<void> checkForNetworkConditions() async {
     hasInternetAccess = await checkForInternetAccess();
 
-    Timer.periodic(const Duration(minutes: 5), (timer) async {
+    timer = Timer.periodic(const Duration(minutes: 5), (timer) async {
       hasInternetAccess = await checkForInternetAccess();
     });
+
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      print(result);
+      if (result == ConnectivityResult.none) {
+        hasInternetAccess = false;
+      } else {
+        hasInternetAccess = true;
+      }
+      // Got a new connectivity status!
+    });
+  }
+
+  dispose() {
+    timer.cancel();
+    subscription.cancel();
   }
 
   Future<void> runQueue() async {
@@ -46,14 +71,18 @@ class OfflineService {
 
   Future<OfflineData<T>> fetch<T>(
       Function localStorage, Function remoteDataCall,
-      {dynamic localStorageArg, dynamic remoteDataArgs}) async {
+      {dynamic localStorageArg,
+      dynamic remoteDataArgs,
+      bool? shouldCheckForRemote = false}) async {
     final localData = localStorageArg != null
         ? await localStorage.call(localStorageArg)
         : await localStorage.call();
     bool shouldMerge = false;
     T? remoteData;
 
-    if (hasInternetAccess) {
+    if (hasInternetAccess &&
+        shouldCheckForRemote != null &&
+        shouldCheckForRemote) {
       remoteData = remoteDataArgs != null
           ? await remoteDataCall.call(remoteDataArgs)
           : await remoteDataCall.call();

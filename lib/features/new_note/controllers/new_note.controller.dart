@@ -77,20 +77,21 @@ abstract class _NewNoteControllerBase with Store {
   Future<void> createNote() async {
     final internetAccess = _offlineService.hasInternetAccess;
     final unixTimestamp = DateTime.now().millisecondsSinceEpoch;
+    final model = Note(
+        id: Random().nextInt(9999),
+        etag: "etag",
+        readonly: false,
+        modified: unixTimestamp,
+        title: title!,
+        category: "",
+        content: markdownController.text,
+        favorite: false);
+
     if (!internetAccess) {
       if (alreadyCreatedNote) {
         return _updateNote();
       }
 
-      final model = Note(
-          id: Random().nextInt(9999),
-          etag: "etag",
-          readonly: false,
-          modified: unixTimestamp,
-          title: title!,
-          category: "",
-          content: markdownController.text,
-          favorite: false);
       _notesStorage.saveNote(model);
 
       _offlineService.addQueue(OfflineQueueAction.ADD,
@@ -103,6 +104,8 @@ abstract class _NewNoteControllerBase with Store {
 
       return;
     }
+
+    _notesStorage.saveNote(model);
 
     if (alreadyCreatedNote) {
       return _updateNote();
@@ -139,13 +142,14 @@ abstract class _NewNoteControllerBase with Store {
         favorite: note.favorite);
     final internetAccess = _offlineService.hasInternetAccess;
 
-    if (!internetAccess) {
-      _notesStorage.saveNote(updateNote);
+    _notesStorage.saveNote(updateNote);
 
+    if (!internetAccess) {
       return;
     }
 
     isLoading = true;
+
     await _noteRepositories.updateNote(note.id, updateNote);
     isLoading = false;
   }
