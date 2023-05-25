@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
+import 'package:nextcloudnotes/core/utils/network_checker.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
@@ -72,13 +76,26 @@ abstract class _HomeViewControllerBase with Store {
         content: note.content,
         favorite: !note.favorite);
 
-    await _noteRepositories.updateNote(note.id, model);
+    await updateNote(model);
 
     final updatedList = notes
         .map((element) => element.id == note.id ? model : element)
         .toList();
 
     notes = ObservableList.of(updatedList);
+  }
+
+  Future<void> updateNote(Note note) async {
+    final internetAccess = await checkForInternetAccess();
+
+    if (!internetAccess) {
+      _offlineService.addQueue(OfflineQueueAction.UPDATE,
+          noteId: note.id, noteAsJson: jsonEncode(note));
+
+      return;
+    }
+
+    await _noteRepositories.updateNote(note.id, note);
   }
 
   @action
