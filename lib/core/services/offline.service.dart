@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/storage/offline_queue.storage.dart';
@@ -67,38 +66,6 @@ class OfflineService {
     }
   }
 
-  Future<OfflineData<T>> fetch<T>(
-      Function localStorage, Function remoteDataCall,
-      {dynamic localStorageArg,
-      dynamic remoteDataArgs,
-      bool? shouldCheckForRemote = false}) async {
-    final localData = localStorageArg != null
-        ? await localStorage.call(localStorageArg)
-        : await localStorage.call();
-    bool shouldMerge = false;
-    T? remoteData;
-
-    if (hasInternetAccess &&
-        shouldCheckForRemote != null &&
-        shouldCheckForRemote) {
-      remoteData = remoteDataArgs != null
-          ? await remoteDataCall.call(remoteDataArgs)
-          : await remoteDataCall.call();
-
-      if (localData is List && remoteData is List) {
-        shouldMerge = !listEquals(remoteData, localData);
-      } else {
-        shouldMerge = localData != remoteData;
-      }
-    }
-
-    return OfflineData<T>(
-      localData: localData,
-      remoteData: remoteData,
-      shouldMerge: shouldMerge,
-    );
-  }
-
   addQueue(OfflineQueueAction action, {int? noteId, String? noteAsJson}) {
     final OfflineQueue queue = OfflineQueue();
 
@@ -108,6 +75,12 @@ class OfflineService {
       ..noteAsJson = noteAsJson;
 
     _offlineQueueStorage.addQueue(queue);
+  }
+
+  Future<List<OfflineQueue>> getAllRawQueue() async {
+    final queues = await _offlineQueueStorage.getAllQueue();
+
+    return queues;
   }
 
   Future<List<Future<void>>> getAllQueue() async {

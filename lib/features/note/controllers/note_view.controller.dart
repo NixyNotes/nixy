@@ -58,24 +58,9 @@ abstract class _NoteViewControllerBase with Store {
 
   @action
   Future<Note> fetchNote(int noteId) async {
-    final data = await _offlineService.fetch<Note>(
-      _noteStorage.getSingleNote,
-      _noteRepositories.fetchNote,
-      localStorageArg: noteId,
-      remoteDataArgs: noteId,
-    );
+    final data = await _noteStorage.getSingleNote(noteId);
 
-    note = data.localData;
-
-    if (data.shouldMerge != null && data.shouldMerge!) {
-      if (data.remoteData != null) {
-        _noteStorage.saveNote(data.remoteData!);
-
-        note = data.remoteData!;
-      }
-    }
-
-    return note;
+    return data;
   }
 
   Future<bool> deleteNote(int noteId) async {
