@@ -8,7 +8,6 @@ import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
-import 'package:nextcloudnotes/core/utils/network_checker.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
@@ -76,7 +75,7 @@ abstract class _NewNoteControllerBase with Store {
   }
 
   Future<void> createNote() async {
-    final internetAccess = await checkForInternetAccess();
+    final internetAccess = _offlineService.hasInternetAccess;
     final unixTimestamp = DateTime.now().millisecondsSinceEpoch;
     if (!internetAccess) {
       if (alreadyCreatedNote) {
@@ -138,7 +137,7 @@ abstract class _NewNoteControllerBase with Store {
         category: note.title,
         content: markdownController.text,
         favorite: note.favorite);
-    final internetAccess = await checkForInternetAccess();
+    final internetAccess = _offlineService.hasInternetAccess;
 
     if (!internetAccess) {
       _notesStorage.saveNote(updateNote);

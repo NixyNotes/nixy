@@ -7,7 +7,6 @@ import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
-import 'package:nextcloudnotes/core/utils/network_checker.dart';
 import 'package:nextcloudnotes/main.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
@@ -80,7 +79,7 @@ abstract class _NoteViewControllerBase with Store {
   }
 
   Future<bool> deleteNote(int noteId) async {
-    final checkInternetAccess = await checkForInternetAccess();
+    final checkInternetAccess = _offlineService.hasInternetAccess;
 
     if (!checkInternetAccess) {
       _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
@@ -105,7 +104,7 @@ abstract class _NoteViewControllerBase with Store {
 
   @action
   Future<void> updateNote(int noteId, Note note) async {
-    final checkInternetAccess = await checkForInternetAccess();
+    final checkInternetAccess = _offlineService.hasInternetAccess;
     final note0 = note.toJson();
     note0["content"] = markdownController.text;
     note = Note.fromJson(note0);

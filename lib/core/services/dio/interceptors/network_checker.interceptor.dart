@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
-import 'package:nextcloudnotes/core/utils/network_checker.dart';
+import 'package:nextcloudnotes/core/services/di/di.dart';
+import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/main.dart';
 
 @lazySingleton
@@ -9,9 +10,9 @@ class NetworkCheckerInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    final networkChecker = await checkForInternetAccess();
+    final offlineService = getIt<OfflineService>();
 
-    if (networkChecker) {
+    if (offlineService.hasInternetAccess) {
       return super.onRequest(options, handler);
     }
 

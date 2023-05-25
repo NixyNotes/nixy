@@ -6,7 +6,6 @@ import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
-import 'package:nextcloudnotes/core/utils/network_checker.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
@@ -86,7 +85,7 @@ abstract class _HomeViewControllerBase with Store {
   }
 
   Future<void> updateNote(Note note) async {
-    final internetAccess = await checkForInternetAccess();
+    final internetAccess = _offlineService.hasInternetAccess;
 
     if (!internetAccess) {
       _offlineService.addQueue(OfflineQueueAction.UPDATE,
@@ -111,7 +110,7 @@ abstract class _HomeViewControllerBase with Store {
   @action
   bunchDeleteNotes() async {
     final List<Future<bool>> futures = [];
-    final internetAccess = await checkForInternetAccess();
+    final internetAccess = _offlineService.hasInternetAccess;
 
     for (var note in selectedNotes) {
       if (!internetAccess) {
