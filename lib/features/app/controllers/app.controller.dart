@@ -23,7 +23,7 @@ abstract class _AppViewControllerBase with Store {
   @action
   Future<void> initState(BuildContext context) async {
     await _authController.initState(context);
-    _offlineService.checkForNetworkConditions();
+    await _offlineService.checkForNetworkConditions();
   }
 
   dispose() {

@@ -43,13 +43,11 @@ class OfflineService {
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
-      print(result);
       if (result == ConnectivityResult.none) {
         hasInternetAccess = false;
       } else {
         hasInternetAccess = true;
       }
-      // Got a new connectivity status!
     });
   }
 
