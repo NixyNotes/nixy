@@ -208,6 +208,7 @@ class _HomeViewState extends State<HomeView> {
                 context.router.navigate(const NewNoteRoute());
                 break;
               case 2:
+                context.router.navigate(const SettingsRoute());
                 break;
             }
           },

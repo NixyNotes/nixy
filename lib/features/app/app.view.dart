@@ -30,7 +30,6 @@ class _AppViewState extends State<AppView> {
 
   @override
   void dispose() {
-    getIt.resetLazySingleton<AppViewController>();
     super.dispose();
   }
 
@@ -41,7 +40,7 @@ class _AppViewState extends State<AppView> {
     }
     return const AppScaffold(
         body: Center(
-      child: CircularProgressIndicator(),
+      child: CircularProgressIndicator.adaptive(),
     ));
   }
 }

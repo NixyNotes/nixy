@@ -5,7 +5,8 @@ enum RouterMeta {
   Home(page: HomeRoute.page, title: "Notes"),
   Login(page: LoginRoute.page, title: "Login to a instance"),
   ConnectToServer(page: ConnectToServerRoute.page, title: "Nextcloud"),
-  NewNote(page: NewNoteRoute.page, title: "New Note");
+  NewNote(page: NewNoteRoute.page, title: "New Note"),
+  Settings(page: SettingsRoute.page, title: "Settings");
 
   final PageInfo<dynamic> page;
   final String title;

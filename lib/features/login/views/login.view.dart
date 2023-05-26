@@ -38,6 +38,7 @@ class LoginView extends StatelessWidget {
               autovalidateMode: AutovalidateMode.always,
               key: controller.formKey,
               child: TextFormField(
+                autocorrect: false,
                 initialValue: null,
                 controller: controller.serverFormController,
                 validator: controller.urlFormValidator,

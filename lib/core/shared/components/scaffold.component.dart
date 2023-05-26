@@ -8,16 +8,21 @@ class AppScaffold extends StatelessWidget {
       this.title,
       this.actions,
       this.showAppBar = true,
-      this.bottomBar});
+      this.bottomBar,
+      this.innerPadding = true});
 
   final Widget body;
   final String? title;
   final List<Widget>? actions;
   final bool? showAppBar;
   final Widget? bottomBar;
+  final bool? innerPadding;
 
   @override
   Widget build(BuildContext context) {
+    final bodyWithPadding = innerPadding != null && innerPadding == false
+        ? body
+        : Padding(padding: const EdgeInsets.all(10), child: body);
     return Scaffold(
       appBar: showAppBar!
           ? AppBar(
@@ -26,7 +31,7 @@ class AppScaffold extends StatelessWidget {
             )
           : null,
       bottomNavigationBar: bottomBar,
-      body: Padding(padding: const EdgeInsets.all(10), child: body),
+      body: bodyWithPadding,
     );
   }
 }
