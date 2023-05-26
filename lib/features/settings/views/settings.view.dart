@@ -1,10 +1,11 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/settings/controllers/settings_view.controller.dart';
-import 'package:nextcloudnotes/features/settings/views/components/settings_icon.component.dart';
+import 'package:settings_ui/settings_ui.dart';
 
 @RoutePage()
 class SettingsView extends StatefulWidget {
@@ -20,8 +21,6 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   void initState() {
     super.initState();
-
-    controller.init(context);
   }
 
   @override
@@ -33,31 +32,43 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      body: Observer(builder: (_) {
-        return ListView.builder(
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            final item = controller.settings[index];
-
-            return ListTile(
-              leading: SettingsIcon(
-                icon: item.icon,
-                bgColor: item.iconBgColor,
+      innerPadding: false,
+      body: SettingsList(
+        sections: [
+          SettingsSection(
+              title: const Text("Current Nextcloud Instance"),
+              tiles: [
+                SettingsTile(
+                    title: Observer(builder: (_) {
+                      return Text(controller.currentAccount?.server ?? "");
+                    }),
+                    leading: const Icon(
+                      EvaIcons.activity,
+                    )),
+                SettingsTile(
+                    title: const Text("Add another Nextcloud instance"),
+                    leading: const Icon(
+                      EvaIcons.personAdd,
+                    )),
+                SettingsTile(
+                    title: const Text("Logout"),
+                    onPressed: (context) => controller.logout(),
+                    leading: const Icon(
+                      EvaIcons.logOut,
+                    )),
+              ]),
+          SettingsSection(
+            title: const Text('Common'),
+            tiles: <SettingsTile>[
+              SettingsTile(
+                leading: const Icon(EvaIcons.trash2),
+                title: const Text('Clear cache'),
+                onPressed: (context) => controller.clearCache(),
               ),
-              title: Text(
-                item.label,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              trailing: item.trailing,
-              onTap: item.onTap,
-            );
-          },
-          itemCount: controller.settings.length,
-        );
-      }),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
