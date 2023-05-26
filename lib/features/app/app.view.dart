@@ -29,7 +29,9 @@ class _AppViewState extends State<AppView> {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
