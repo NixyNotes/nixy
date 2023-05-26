@@ -26,11 +26,25 @@ abstract class _SettingsViewControllerBase with Store {
   @computed
   User? get currentAccount => _authController.currentAccount.value;
 
-  clearCache() async {
+  @computed
+  ObservableList<User> get availableAccounts =>
+      _authController.availableAccounts;
+
+  clearCache({bool? showToast = true}) async {
     _noteStorage.deleteAll();
     _offlineQueueStorage.deleteAll();
 
-    _toastService.showTextToast("Done", type: ToastType.success);
+    if (showToast != null && showToast) {
+      _toastService.showTextToast("Done", type: ToastType.success);
+    }
+  }
+
+  switchAccount(User user) {
+    _authController.login(user);
+    clearCache(showToast: false);
+
+    _toastService.showTextToast("Switched to instance: ${user.server}",
+        type: ToastType.success);
   }
 
   logout() async {
