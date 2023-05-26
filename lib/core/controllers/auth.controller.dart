@@ -37,16 +37,19 @@ abstract class _AuthControllerBase with Store {
     final hasUsers = await _authStorage.hasUsers();
 
     if (hasUsers) {
+      // App initiliazed.
       final users = await _authStorage.getUsers();
 
       loginState.value = LoginState.loggedIn;
-      currentAccount.value = users.first;
+      currentAccount.value = users.firstWhere((element) => element.isCurrent);
 
       users.removeWhere((element) => element.id == currentAccount.value!.id);
       availableAccounts = ObservableList.of(users);
     }
 
     currentAccount.observe((_) async {
+      // Check for current account, if changes remove current account from
+      // availableAccounts.
       final users = await _authStorage.getUsers();
 
       users.removeWhere((element) => element.id == currentAccount.value!.id);
@@ -57,6 +60,7 @@ abstract class _AuthControllerBase with Store {
     loginState.observe((
       p0,
     ) {
+      // Router observer, if authenticated route to home.
       if (p0.newValue == LoginState.loggedIn) {
         context.router.replaceAll([const HomeRoute()]);
       } else {
@@ -69,7 +73,8 @@ abstract class _AuthControllerBase with Store {
 
   @action
   void login(User user) {
-    _authStorage.saveUser(user);
+    final modifiedUser = user..isCurrent = true;
+    _authStorage.saveUser(modifiedUser);
     currentAccount.value = user;
     loginState.value = LoginState.loggedIn;
   }

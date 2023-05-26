@@ -7,13 +7,13 @@ part 'user.scheme.g.dart';
 class User {
   Id id = Isar.autoIncrement; // you can also use id = null to auto increment
 
-  String? username;
+  late String username;
 
-  String? password;
+  late String password;
 
-  String? token;
+  late String token;
 
-  String? server;
+  late String server;
 
-  bool? isCurrent = false;
+  late bool isCurrent = false;
 }
