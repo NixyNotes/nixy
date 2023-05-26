@@ -36,6 +36,10 @@ class AppRouter extends $AppRouter {
                 page: RouterMeta.ConnectToServer.page,
                 title: RouterMeta.ConnectToServer.titleToWidget(),
                 fullscreenDialog: true),
+            AutoRoute(
+                page: RouterMeta.Settings.page,
+                title: RouterMeta.Settings.titleToWidget(),
+                fullscreenDialog: true),
           ],
         )
       ];
