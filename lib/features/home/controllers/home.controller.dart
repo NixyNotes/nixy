@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
@@ -21,11 +22,12 @@ class HomeViewController = _HomeViewControllerBase with _$HomeViewController;
 
 abstract class _HomeViewControllerBase with Store {
   _HomeViewControllerBase(this._noteRepositories, this._toastService,
-      this._noteStorage, this._offlineService);
+      this._noteStorage, this._offlineService, this._authController);
   final NoteRepositories _noteRepositories;
   final ToastService _toastService;
   final NoteStorage _noteStorage;
   final OfflineService _offlineService;
+  final AuthController _authController;
 
   @observable
   ObservableList<Note> notes = ObservableList();
@@ -41,6 +43,10 @@ abstract class _HomeViewControllerBase with Store {
   void init() async {
     sortAutomaticallyDisposer = autorun((_) {
       notes.sort((a, b) => b.favorite ? 1 : 0);
+    });
+
+    _authController.currentAccount.observe((_) async {
+      await fetchNotes();
     });
 
     await fetchNotes();

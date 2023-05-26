@@ -24,7 +24,7 @@ abstract class _AuthControllerBase with Store {
   Observable<LoginState> loginState = Observable(LoginState.none);
 
   @observable
-  ObservableList<List<User>> availableAccounts = ObservableList();
+  ObservableList<User> availableAccounts = ObservableList();
 
   @observable
   Observable<User?> currentAccount = Observable(null);
@@ -41,7 +41,18 @@ abstract class _AuthControllerBase with Store {
 
       loginState.value = LoginState.loggedIn;
       currentAccount.value = users.first;
+
+      users.removeWhere((element) => element.id == currentAccount.value!.id);
+      availableAccounts = ObservableList.of(users);
     }
+
+    currentAccount.observe((_) async {
+      final users = await _authStorage.getUsers();
+
+      users.removeWhere((element) => element.id == currentAccount.value!.id);
+
+      availableAccounts = ObservableList.of(users);
+    });
 
     loginState.observe((
       p0,
@@ -68,8 +79,15 @@ abstract class _AuthControllerBase with Store {
     if (currentAccount.value != null) {
       await _authStorage.deleteAccount(currentAccount.value!.id);
     }
-    loginState.value = LoginState.none;
-    currentAccount.value = null;
+    final users = await _authStorage.getUsers();
+
+    if (users.isNotEmpty) {
+      currentAccount.value = users.last;
+    } else {
+      loginState.value = LoginState.none;
+      currentAccount.value = null;
+      availableAccounts.clear();
+    }
   }
 
   @action

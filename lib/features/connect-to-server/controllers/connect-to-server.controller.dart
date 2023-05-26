@@ -55,7 +55,8 @@ abstract class _ConnectToServerControllerBase with Store {
           }
         });
       });
-    } catch (e) {
+    } on DioError catch (e) {
+      _logService.logger.e(e);
       context.router.back();
 
       _toastService.showTextToast(

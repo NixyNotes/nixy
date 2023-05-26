@@ -22,38 +22,44 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
 
   @override
   Widget build(BuildContext context) {
+    final controller = getIt<SettingsViewController>();
+
+    List<PullDownMenuItem> availableAccountsToWidget() {
+      return controller.availableAccounts
+          .map((element) => PullDownMenuItem(
+              onTap: () {
+                controller.switchAccount(element);
+              },
+              title: element.server ?? "OOPS"))
+          .toList();
+    }
+
     if (Platform.isIOS) {
-      return PullDownButton(
-        itemBuilder: (context) => [
-          PullDownMenuItem(
-            onTap: () {},
-            title: "Another",
-          ),
-          PullDownMenuItem(
-            onTap: () {},
-            title: "Another 2",
-          ),
-        ],
-        buttonBuilder: (context, showMenu) {
-          return SettingsTile.navigation(
-            title: title,
-            leading: leading,
-            onPressed: (context) => showMenu(),
-          );
-        },
-      );
+      return Observer(builder: (_) {
+        return PullDownButton(
+          itemBuilder: (context) => availableAccountsToWidget(),
+          buttonBuilder: (context, showMenu) {
+            return SettingsTile.navigation(
+              title: title,
+              leading: leading,
+              onPressed: (context) => showMenu(),
+              enabled: controller.availableAccounts.isNotEmpty,
+            );
+          },
+        );
+      });
     }
 
     return SettingsTile.navigation(
       title: title,
       leading: leading,
+      enabled: controller.availableAccounts.isNotEmpty,
       onPressed: (context) {
         showPlatformModalSheet(
           context: context,
           builder: (_) {
             return Material(
-                child: ModalSheetMenu(
-                    items: [PullDownMenuItem(onTap: () {}, title: "selam")]));
+                child: ModalSheetMenu(items: availableAccountsToWidget()));
           },
         );
       },
