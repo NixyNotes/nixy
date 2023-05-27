@@ -2,13 +2,14 @@ import 'package:auto_route/auto_route.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:nextcloudnotes/components/modal_sheet_menu.component.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/router/router.gr.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_grid.component.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -66,22 +67,32 @@ class _HomeViewState extends State<HomeView> {
                 clipBehavior: Clip.antiAlias,
                 itemBuilder: (BuildContext context, int index) {
                   final note = controller.notes[index];
+                  final menuItems = [
+                    PullDownMenuItem(
+                      onTap: () => controller.addToSelectedNote(note),
+                      title: "Select",
+                    ),
+                    PullDownMenuItem(
+                      icon: EvaIcons.star,
+                      iconColor: Colors.yellowAccent,
+                      onTap: () => controller.toggleFavorite(note),
+                      title: "Favorite",
+                    ),
+                    PullDownMenuItem(
+                      onTap: () => controller.deleteNote(note),
+                      title: "Delete",
+                      isDestructive: true,
+                    ),
+                  ];
 
                   return PlatformWidget(
-                    material: (context, platform) => GestureDetector(
-                      onLongPressDown: (details) {
-                        showPlatformDialog(
+                    material: (context, platform) => InkWell(
+                      onLongPress: () {
+                        showPlatformModalSheet(
                           context: context,
-                          builder: (context) {
-                            return PlatformAlertDialog(
-                              actions: actions
-                                  .map((e) => PlatformDialogAction(
-                                        onPressed: () =>
-                                            controller.deleteNote(note),
-                                        child: Text(e.label),
-                                      ))
-                                  .toList(),
-                            );
+                          builder: (_) {
+                            return Material(
+                                child: ModalSheetMenu(items: menuItems));
                           },
                         );
                       },
@@ -89,24 +100,7 @@ class _HomeViewState extends State<HomeView> {
                     ),
                     cupertino: (context, platform) {
                       return PullDownButton(
-                          itemBuilder: (context) => [
-                                PullDownMenuItem(
-                                  onTap: () =>
-                                      controller.addToSelectedNote(note),
-                                  title: "Select",
-                                ),
-                                PullDownMenuItem(
-                                  icon: EvaIcons.star,
-                                  iconColor: Colors.yellowAccent,
-                                  onTap: () => controller.toggleFavorite(note),
-                                  title: "Favorite",
-                                ),
-                                PullDownMenuItem(
-                                  onTap: () => controller.deleteNote(note),
-                                  title: "Delete",
-                                  isDestructive: true,
-                                ),
-                              ],
+                          itemBuilder: (context) => menuItems,
                           buttonBuilder: (context, showMenu) => Observer(
                                 builder: (context) {
                                   return _renderNote(note, showMenu);
