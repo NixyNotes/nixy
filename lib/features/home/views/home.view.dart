@@ -96,7 +96,11 @@ class _HomeViewState extends State<HomeView> {
                           },
                         );
                       },
-                      child: _renderNote(note),
+                      child: Observer(
+                        builder: (context) {
+                          return _renderNote(note);
+                        },
+                      ),
                     ),
                     cupertino: (context, platform) {
                       return PullDownButton(
