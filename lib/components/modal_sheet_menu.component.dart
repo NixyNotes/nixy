@@ -9,7 +9,11 @@ class ModalSheetMenu extends StatelessWidget {
   List<ListTile> get itemsToListTile => items
       .map((e) => ListTile(
             leading: e.icon != null ? Icon(e.icon) : null,
-            title: Text(e.title),
+            title: Text(
+              e.title,
+              style:
+                  TextStyle(color: e.isDestructive ? Colors.redAccent : null),
+            ),
             onTap: e.onTap,
           ))
       .toList();
