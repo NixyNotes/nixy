@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
@@ -39,10 +40,21 @@ abstract class _HomeViewControllerBase with Store {
   ObservableList<Note> selectedNotes = ObservableList();
 
   late ReactionDisposer sortAutomaticallyDisposer;
+  late ReactionDisposer showToastWhenSycingDisposer;
+
+  late MotionToast? toast;
 
   void init() async {
     sortAutomaticallyDisposer = autorun((_) {
       notes.sort((a, b) => b.favorite ? 1 : 0);
+    });
+
+    showToastWhenSycingDisposer = autorun((_) {
+      if (syncing) {
+        toast = _toastService.showLoadingToast("Syncing...");
+      } else {
+        toast?.dismiss();
+      }
     });
 
     _authController.currentAccount.observe((_) async {
@@ -199,5 +211,6 @@ abstract class _HomeViewControllerBase with Store {
 
   dispose() {
     sortAutomaticallyDisposer();
+    showToastWhenSycingDisposer();
   }
 }

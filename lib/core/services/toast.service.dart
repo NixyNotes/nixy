@@ -26,18 +26,25 @@ class ToastService {
     toast.show(scaffolMessengerKey.currentContext!);
   }
 
-  MotionToast showLoadingToast() {
+  MotionToast showLoadingToast([String? content]) {
     final toast = MotionToast(
       primaryColor:
           Theme.of(scaffolMessengerKey.currentContext!).colorScheme.primary,
       displaySideBar: false,
       dismissable: false,
-      description: const Center(
-        child: SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator.adaptive(),
-        ),
+      description: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator.adaptive()),
+          if (content != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(content),
+            )
+        ],
       ),
       toastDuration: const Duration(days: 365),
     );
