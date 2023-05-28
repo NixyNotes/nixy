@@ -2,12 +2,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:nextcloudnotes/components/markdown_editor.component.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/new_note/controllers/new_note.controller.dart';
-import 'package:nixi_markdown/toolbar.dart';
 
 @RoutePage()
 class NewNoteView extends StatefulWidget {
@@ -19,38 +17,11 @@ class NewNoteView extends StatefulWidget {
 
 class _NewNoteViewState extends State<NewNoteView> {
   final NewNoteController controller = getIt<NewNoteController>();
-  late final NixiMarkdownToolbarTools markdownTools;
-
-  KeyboardActionsConfig get _config => KeyboardActionsConfig(
-        nextFocus: false,
-        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
-        keyboardBarColor: Theme.of(context).primaryColor,
-        actions: [
-          KeyboardActionsItem(focusNode: controller.focusNode, toolbarButtons: [
-            (s) {
-              return IconButton(
-                  onPressed: markdownTools.bold,
-                  icon: const Icon(Icons.format_bold_outlined));
-            },
-            (s) {
-              return IconButton(
-                  onPressed: markdownTools.italic,
-                  icon: const Icon(Icons.format_italic_outlined));
-            },
-            (s) {
-              return IconButton(
-                  onPressed: markdownTools.strikethrough,
-                  icon: const Icon(Icons.format_strikethrough));
-            },
-          ])
-        ],
-      );
 
   @override
   void initState() {
     super.initState();
     controller.init();
-    markdownTools = NixiMarkdownToolbarTools(controller.markdownController);
   }
 
   @override
@@ -93,16 +64,10 @@ class _NewNoteViewState extends State<NewNoteView> {
           ],
           body: Observer(
             builder: (_) {
-              return KeyboardActions(
-                enable: true,
-                disableScroll: true,
-                isDialog: true,
-                config: _config,
-                child: MarkdownEditor(
-                  focusNode: controller.focusNode,
-                  controller: controller.markdownController,
-                  renderPreview: controller.previewMode,
-                ),
+              return MarkdownEditor(
+                focusNode: controller.focusNode,
+                controller: controller.markdownController,
+                renderPreview: controller.previewMode,
               );
             },
           ),
