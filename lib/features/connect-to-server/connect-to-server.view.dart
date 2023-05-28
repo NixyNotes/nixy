@@ -42,29 +42,3 @@ class _ConnectToServerViewState extends State<ConnectToServerView> {
     );
   }
 }
-
-// @RoutePage()
-// class ConnectToServerView extends StatelessWidget {
-//   const ConnectToServerView({super.key, required this.url, this.onResult});
-
-//   final Function(bool success)? onResult;
-
-//   final String url;
-//   String get modifiedUrl => "$url/index.php/login/flow";
-
-
-
-
-//   @override
-//   Widget build(BuildContext context) {
- 
-
-//     return Scaffold(
-//       appBar: AppBar(),
-//       body: WebViewWidget(
-//         controller: webViewController,
-
-//       ),
-//     );
-//   }
-// }
