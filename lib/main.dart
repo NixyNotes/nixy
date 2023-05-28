@@ -55,7 +55,6 @@ class MyApp extends StatelessWidget {
         dividerTheme: DividerThemeData(color: Colors.grey.shade100),
       ),
       routerConfig: appRouter.config(),
-      scaffoldMessengerKey: scaffolMessengerKey,
     );
   }
 }

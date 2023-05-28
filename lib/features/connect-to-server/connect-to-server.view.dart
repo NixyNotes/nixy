@@ -24,6 +24,12 @@ class _ConnectToServerViewState extends State<ConnectToServerView> {
   }
 
   @override
+  void dispose() {
+    getIt.resetLazySingleton<ConnectToServerController>();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),

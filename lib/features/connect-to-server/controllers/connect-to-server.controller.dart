@@ -17,7 +17,7 @@ import 'package:nextcloudnotes/repositories/login.repository.dart';
 
 part 'connect-to-server.controller.g.dart';
 
-@injectable
+@lazySingleton
 class ConnectToServerController = _ConnectToServerControllerBase
     with _$ConnectToServerController;
 
@@ -41,13 +41,29 @@ abstract class _ConnectToServerControllerBase with Store {
 
       Timer.periodic(const Duration(seconds: 1), (timer) async {
         _fetchAppPassword(serverUrl, token).then((appPasswords) {
-          _postLogin(
-              username: appPasswords.loginName,
-              password: appPasswords.appPassword,
-              serverAddress: serverUrl,
-              context: context);
+          final loadingToast = _toastService.showLoadingToast();
 
-          timer.cancel();
+          _checkCapabilities(serverUrl, appPasswords)
+              .then((noteCapabilityExists) {
+            if (noteCapabilityExists) {
+              _postLogin(
+                  username: appPasswords.loginName,
+                  password: appPasswords.appPassword,
+                  serverAddress: serverUrl,
+                  context: context);
+              loadingToast.dismiss();
+              timer.cancel();
+            } else {
+              context.router.back();
+              loadingToast.dismiss();
+              _toastService.showTextToast(
+                "Nextcloud does not support notes plugin.",
+                type: ToastType.info,
+              );
+
+              timer.cancel();
+            }
+          });
         }).onError((error, stackTrace) {
           if (error is! DioError) {
             _logService.logger.e(error);
@@ -80,6 +96,16 @@ abstract class _ConnectToServerControllerBase with Store {
       ..token = stringToBase64.encode("$username:$password");
 
     _authController.login(userModel);
+  }
+
+  Future<bool> _checkCapabilities(String serverAddress, Login app) async {
+    final stringToBase64 = utf8.fuse(base64);
+    final token = stringToBase64.encode("${app.loginName}:${app.appPassword}");
+
+    final capatabilites =
+        await _loginRepository.checkNoteCapability(serverAddress, token);
+
+    return capatabilites.ocs.data.capabilities.containsKey("notes");
   }
 
   Future<LoginPoll> _fetchLoginPoll(String serverUrl) async {

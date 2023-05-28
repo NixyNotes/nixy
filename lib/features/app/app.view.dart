@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/app/controllers/app.controller.dart';
+import 'package:nextcloudnotes/main.dart';
 
 @RoutePage()
 class AppView extends StatefulWidget {
@@ -36,7 +37,9 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     if (stateInited) {
-      return const AutoRouter();
+      return AutoRouter(
+        key: scaffolMessengerKey,
+      );
     }
     return const AppScaffold(
         body: Center(
