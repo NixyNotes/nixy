@@ -11,6 +11,7 @@ import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
+
 part 'new_note.controller.g.dart';
 
 disposeNewNoteController(NewNoteController instance) {
@@ -30,6 +31,7 @@ abstract class _NewNoteControllerBase with Store {
   final ToastService _toastService;
 
   final FocusNode focusNode = FocusNode();
+  final UndoHistoryController undoHistoryController = UndoHistoryController();
   final TextEditingController markdownController =
       TextEditingController(text: "# New Note");
 

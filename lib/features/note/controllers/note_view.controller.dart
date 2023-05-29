@@ -28,6 +28,7 @@ abstract class _NoteViewControllerBase with Store {
   final NoteStorage _noteStorage;
 
   final FocusNode focusNode = FocusNode();
+  final UndoHistoryController undoHistoryController = UndoHistoryController();
 
   TextEditingController markdownController = TextEditingController();
 

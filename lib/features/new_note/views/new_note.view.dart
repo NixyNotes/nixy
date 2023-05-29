@@ -65,6 +65,7 @@ class _NewNoteViewState extends State<NewNoteView> {
           body: Observer(
             builder: (_) {
               return MarkdownEditor(
+                undoHistoryController: controller.undoHistoryController,
                 focusNode: controller.focusNode,
                 controller: controller.markdownController,
                 renderPreview: controller.previewMode,

@@ -70,6 +70,8 @@ class _NoteViewState extends State<NoteView> {
                     return GestureDetector(
                         onDoubleTap: controller.toggleEditMode,
                         child: MarkdownEditor(
+                          undoHistoryController:
+                              controller.undoHistoryController,
                           focusNode: controller.focusNode,
                           controller: controller.markdownController,
                           renderPreview: !controller.editMode,

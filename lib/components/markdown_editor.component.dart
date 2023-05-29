@@ -8,11 +8,13 @@ class MarkdownEditor extends StatelessWidget {
       {super.key,
       required this.focusNode,
       required this.controller,
-      this.renderPreview});
+      required this.undoHistoryController,
+      this.renderPreview = false});
 
   final FocusNode focusNode;
   final TextEditingController controller;
   final bool? renderPreview;
+  final UndoHistoryController undoHistoryController;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,38 @@ class MarkdownEditor extends StatelessWidget {
           keyboardBarColor: Theme.of(context).primaryColor,
           actions: [
             KeyboardActionsItem(focusNode: focusNode, toolbarButtons: [
+              (s) {
+                return ValueListenableBuilder(
+                  valueListenable: undoHistoryController,
+                  builder: (context, value, child) {
+                    if (value.canRedo && value.canRedo) {
+                      return Row(
+                        children: [
+                          IconButton(
+                              onPressed: undoHistoryController.undo,
+                              icon: const Icon(Icons.undo)),
+                          IconButton(
+                              onPressed: undoHistoryController.redo,
+                              icon: const Icon(Icons.redo))
+                        ],
+                      );
+                    }
+
+                    if (value.canUndo) {
+                      return IconButton(
+                          onPressed: undoHistoryController.undo,
+                          icon: const Icon(Icons.undo));
+                    }
+                    if (value.canRedo) {
+                      return IconButton(
+                          onPressed: undoHistoryController.redo,
+                          icon: const Icon(Icons.redo));
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                );
+              },
               (s) {
                 return IconButton(
                     onPressed: markdownTools.bold,
@@ -50,6 +84,7 @@ class MarkdownEditor extends StatelessWidget {
       isDialog: true,
       config: _config(),
       child: _MarkdownEditor(
+        undoHistoryController: undoHistoryController,
         focusNode: focusNode,
         controller: controller,
         renderPreview: renderPreview,
@@ -62,11 +97,13 @@ class _MarkdownEditor extends StatelessWidget {
   const _MarkdownEditor(
       {required this.focusNode,
       required this.controller,
+      required this.undoHistoryController,
       this.renderPreview = false});
 
   final FocusNode focusNode;
   final TextEditingController controller;
   final bool? renderPreview;
+  final UndoHistoryController undoHistoryController;
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +118,7 @@ class _MarkdownEditor extends StatelessWidget {
 
     return TextField(
       focusNode: focusNode,
+      undoController: undoHistoryController,
       autofocus: true,
       maxLines: null,
       expands: true,
