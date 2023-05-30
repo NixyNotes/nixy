@@ -1,6 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 
 class NoteGrid extends StatelessWidget {
   const NoteGrid(
@@ -21,6 +22,9 @@ class NoteGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dateFormatted =
+        DateFormat("E,HH:m").format(DateTime.fromMillisecondsSinceEpoch(date));
+
     return InkWell(
       onTap: onTap,
       onLongPress: onLongPress,
@@ -57,7 +61,7 @@ class NoteGrid extends StatelessWidget {
               ],
             ),
             Text(
-              "Yesterday, 07:26",
+              dateFormatted,
               style: Theme.of(context)
                   .textTheme
                   .labelSmall
