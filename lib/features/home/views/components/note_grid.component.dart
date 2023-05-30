@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -73,6 +74,8 @@ class NoteGrid extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: MarkdownBody(
                 data: content,
+                imageBuilder: (uri, title, alt) =>
+                    CachedNetworkImage(imageUrl: uri.toString()),
                 styleSheet: MarkdownStyleSheet(
                     textScaleFactor: 0.4,
                     checkbox: const TextStyle(fontSize: 10)),
