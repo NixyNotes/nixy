@@ -9,6 +9,7 @@ import 'package:nextcloudnotes/core/router/router.gr.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
+import 'package:nextcloudnotes/features/home/views/components/category_grid.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_grid.component.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -54,68 +55,104 @@ class _HomeViewState extends State<HomeView> {
     return AppScaffold(
         showAppBar: false,
         bottomBar: _renderBottomBar(context),
-        body: Observer(
-          builder: (context) {
-            return RefreshIndicator.adaptive(
-              onRefresh: () => controller.fetchNotes(),
-              child: GridView.builder(
+        body: Column(
+          children: [
+            Observer(builder: (_) {
+              if (controller.categories.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              return GridView.builder(
+                shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10),
-                itemCount: controller.notes.length,
-                clipBehavior: Clip.antiAlias,
-                itemBuilder: (BuildContext context, int index) {
-                  final note = controller.notes[index];
-                  final menuItems = [
-                    PullDownMenuItem(
-                      onTap: () => controller.addToSelectedNote(note),
-                      title: "Select",
-                    ),
-                    PullDownMenuItem(
-                      icon: EvaIcons.star,
-                      iconColor: Colors.yellowAccent,
-                      onTap: () => controller.toggleFavorite(note),
-                      title: "Favorite",
-                    ),
-                    PullDownMenuItem(
-                      onTap: () => controller.deleteNote(note),
-                      title: "Delete",
-                      isDestructive: true,
-                    ),
-                  ];
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 5,
+                    mainAxisExtent: 50),
+                itemBuilder: (context, index) {
+                  final category = controller.categories[index];
 
-                  return PlatformWidget(
-                    material: (context, platform) => InkWell(
-                      onLongPress: () {
-                        showPlatformModalSheet(
-                          context: context,
-                          builder: (_) {
-                            return Material(
-                                child: ModalSheetMenu(items: menuItems));
+                  if (index >= 3) {
+                    return CategoryGrid(
+                        categoryName: "More categories...", onTap: () {});
+                  }
+
+                  return CategoryGrid(
+                      categoryName: category.label, onTap: category.onTap);
+                },
+                itemCount: controller.categories.length >= 4
+                    ? 4
+                    : controller.categories.length,
+              );
+            }),
+            Expanded(
+              child: Observer(
+                builder: (context) {
+                  return RefreshIndicator.adaptive(
+                    onRefresh: () => controller.fetchNotes(),
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              mainAxisExtent: 250),
+                      itemCount: controller.notes.length,
+                      clipBehavior: Clip.antiAlias,
+                      itemBuilder: (BuildContext context, int index) {
+                        final note = controller.notes[index];
+                        final menuItems = [
+                          PullDownMenuItem(
+                            onTap: () => controller.addToSelectedNote(note),
+                            title: "Select",
+                          ),
+                          PullDownMenuItem(
+                            icon: EvaIcons.star,
+                            iconColor: Colors.yellowAccent,
+                            onTap: () => controller.toggleFavorite(note),
+                            title: "Favorite",
+                          ),
+                          PullDownMenuItem(
+                            onTap: () => controller.deleteNote(note),
+                            title: "Delete",
+                            isDestructive: true,
+                          ),
+                        ];
+
+                        return PlatformWidget(
+                          material: (context, platform) => InkWell(
+                            onLongPress: () {
+                              showPlatformModalSheet(
+                                context: context,
+                                builder: (_) {
+                                  return Material(
+                                      child: ModalSheetMenu(items: menuItems));
+                                },
+                              );
+                            },
+                            child: Observer(
+                              builder: (context) {
+                                return _renderNote(note);
+                              },
+                            ),
+                          ),
+                          cupertino: (context, platform) {
+                            return PullDownButton(
+                                itemBuilder: (context) => menuItems,
+                                buttonBuilder: (context, showMenu) => Observer(
+                                      builder: (context) {
+                                        return _renderNote(note, showMenu);
+                                      },
+                                    ));
                           },
                         );
                       },
-                      child: Observer(
-                        builder: (context) {
-                          return _renderNote(note);
-                        },
-                      ),
                     ),
-                    cupertino: (context, platform) {
-                      return PullDownButton(
-                          itemBuilder: (context) => menuItems,
-                          buttonBuilder: (context, showMenu) => Observer(
-                                builder: (context) {
-                                  return _renderNote(note, showMenu);
-                                },
-                              ));
-                    },
                   );
                 },
               ),
-            );
-          },
+            ),
+          ],
         ));
   }
 

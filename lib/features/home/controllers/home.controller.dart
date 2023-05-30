@@ -9,6 +9,7 @@ import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
+import 'package:nextcloudnotes/models/category.model.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
@@ -39,8 +40,12 @@ abstract class _HomeViewControllerBase with Store {
   @observable
   ObservableList<Note> selectedNotes = ObservableList();
 
+  @observable
+  ObservableList<CategoryModel> categories = ObservableList();
+
   late ReactionDisposer sortAutomaticallyDisposer;
   late ReactionDisposer showToastWhenSycingDisposer;
+  late ReactionDisposer syncCategoriesWithPosts;
 
   late MotionToast? toast;
 
@@ -57,11 +62,29 @@ abstract class _HomeViewControllerBase with Store {
       }
     });
 
+    syncCategoriesWithPosts = autorun((_) {
+      if (notes.isNotEmpty) {
+        fetchCategories();
+      }
+    });
+
     _authController.currentAccount.observe((_) async {
       await fetchNotes();
     });
 
     await fetchNotes();
+  }
+
+  @action
+  void fetchCategories() {
+    for (var note in notes) {
+      if (note.category.isNotEmpty) {
+        final model =
+            CategoryModel(label: note.category, onTap: () => print("selam"));
+
+        categories.add(model);
+      }
+    }
   }
 
   Future<List<Note>> _fetchRemoteNotes() async {
@@ -212,5 +235,6 @@ abstract class _HomeViewControllerBase with Store {
   dispose() {
     sortAutomaticallyDisposer();
     showToastWhenSycingDisposer();
+    syncCategoriesWithPosts();
   }
 }
