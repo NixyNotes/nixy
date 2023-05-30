@@ -53,6 +53,11 @@ class _HomeViewState extends State<HomeView> {
     super.dispose();
   }
 
+  navigateToPosts(String label) {
+    isViewingCategoryPosts.value = true;
+    context.router.push(HomeRoute(byCategoryName: label));
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -89,7 +94,10 @@ class _HomeViewState extends State<HomeView> {
                   }
 
                   return CategoryGrid(
-                      categoryName: category.label, onTap: () {});
+                      categoryName: category.label,
+                      onTap: () {
+                        navigateToPosts(category.label);
+                      });
                 },
                 itemCount: controller.categories.length >= 4
                     ? 4

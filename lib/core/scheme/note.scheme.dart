@@ -15,6 +15,7 @@ class LocalNote {
   late bool readonly;
   late int modified;
   late String title;
+  @Index()
   late String category;
   late String content;
   late bool favorite;

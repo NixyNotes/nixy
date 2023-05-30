@@ -49,4 +49,14 @@ class NoteStorage {
       await isarInstance.localNotes.clear();
     });
   }
+
+  Future<List<Note>> getAllNotesByCategory(String categoryName) async {
+    final notes = await isarInstance.localNotes
+        .where()
+        .categoryEqualTo(categoryName)
+        .findAll();
+    final modifiedList = notes.map((e) => Note.fromJson(e.toMap())).toList();
+
+    return modifiedList;
+  }
 }

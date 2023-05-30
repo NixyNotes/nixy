@@ -72,50 +72,50 @@ abstract class _HomeViewControllerBase with Store {
     });
 
     _authController.currentAccount.observe((_) async {
-      await fetchNotes();
+      await fetchNotes(byCategoryName);
     });
 
-    if (byCategoryName != null) {
-      return await fetchCategoryPosts(byCategoryName);
-    }
-
-    await fetchNotes();
+    await fetchNotes(byCategoryName);
   }
 
   @action
   void fetchCategories() {
     for (var note in notes) {
       if (note.category.isNotEmpty) {
-        final model =
-            CategoryModel(label: note.category, onTap: () => print("selam"));
+        final model = CategoryModel(label: note.category);
 
         categories.add(model);
       }
     }
   }
 
-  @action
-  Future<void> fetchCategoryPosts(String categoryName) async {
-    final response = await _noteRepositories.fetchNotesByCategory(categoryName);
+  Future<List<Note>> _fetchRemoteNotes([String? byCategoryName]) async {
+    List<Note> remoteNotes;
 
-    notes = ObservableList.of(response);
-  }
-
-  Future<List<Note>> _fetchRemoteNotes() async {
-    final remoteNotes = await _noteRepositories.fetchNotes();
+    if (byCategoryName != null) {
+      remoteNotes =
+          await _noteRepositories.fetchNotesByCategory(byCategoryName);
+    } else {
+      remoteNotes = await _noteRepositories.fetchNotes();
+    }
 
     return remoteNotes;
   }
 
-  Future<List<Note>> _fetchLocalNotes() async {
-    final localNotes = await _noteStorage.getAllNotes();
+  Future<List<Note>> _fetchLocalNotes([String? byCategoryName]) async {
+    List<Note> localNotes = [];
+    if (byCategoryName != null) {
+      localNotes = await _noteStorage.getAllNotesByCategory(byCategoryName);
+    } else {
+      localNotes = await _noteStorage.getAllNotes();
+    }
 
     return localNotes;
   }
 
   @action
-  Future<void> fetchNotes() async {
-    final localNotes = await _fetchLocalNotes();
+  Future<void> fetchNotes([String? byCategoryName]) async {
+    final localNotes = await _fetchLocalNotes(byCategoryName);
 
     if (localNotes.isNotEmpty) {
       notes = ObservableList.of(localNotes);
@@ -123,7 +123,7 @@ abstract class _HomeViewControllerBase with Store {
       if (_offlineService.hasInternetAccess) {
         syncing = true;
         await _offlineService.runQueue();
-        final remoteNotes = await _fetchRemoteNotes();
+        final remoteNotes = await _fetchRemoteNotes(byCategoryName);
         notes = ObservableList.of(remoteNotes);
         syncing = false;
 
@@ -132,7 +132,7 @@ abstract class _HomeViewControllerBase with Store {
       }
     } else {
       if (_offlineService.hasInternetAccess) {
-        final remoteNotes = await _fetchRemoteNotes();
+        final remoteNotes = await _fetchRemoteNotes(byCategoryName);
 
         notes = ObservableList.of(remoteNotes);
         await _noteStorage.saveAllNotes(remoteNotes);
