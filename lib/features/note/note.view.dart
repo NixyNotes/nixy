@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nextcloudnotes/components/future_builder.component.dart';
 import 'package:nextcloudnotes/components/markdown_editor.component.dart';
+import 'package:nextcloudnotes/core/extensions/markdown_clear.extension.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/note/controllers/note_view.controller.dart';
@@ -42,7 +43,7 @@ class _NoteViewState extends State<NoteView> {
         controller.markdownController.text = data?.content ?? "se";
 
         return AppScaffold(
-            title: data?.title,
+            title: data?.title.removeMarkdown(),
             actions: [
               IconButton(
                   onPressed: () {

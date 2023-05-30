@@ -62,7 +62,7 @@ abstract class _AuthControllerBase with Store {
     ) {
       // Router observer, if authenticated route to home.
       if (p0.newValue == LoginState.loggedIn) {
-        context.router.replaceAll([const HomeRoute()]);
+        context.router.replaceAll([HomeRoute()]);
       } else {
         context.router.replaceAll([LoginRoute()]);
       }

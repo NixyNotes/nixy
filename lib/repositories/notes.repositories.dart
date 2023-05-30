@@ -21,6 +21,15 @@ class NoteRepositories {
     return noteFromJson(response.data);
   }
 
+  Future<List<Note>> fetchNotesByCategory(String categoryName) async {
+    final response = await _dio.get("$_apiUrl?category=$categoryName");
+
+    List<Note> noteFromJson(List<dynamic> e) =>
+        List<Note>.from(e.map((e) => Note.fromJson(e)));
+
+    return noteFromJson(response.data);
+  }
+
   Future<Note> fetchNote(int noteId) async {
     final response = await _dio.get("$_apiUrl/$noteId");
 

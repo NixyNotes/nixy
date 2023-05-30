@@ -15,6 +15,8 @@ import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
 part 'home.controller.g.dart';
 
+ValueNotifier<bool> isViewingCategoryPosts = ValueNotifier(false);
+
 disposeHomeController(HomeViewController instance) {
   instance.dispose();
 }
@@ -49,7 +51,7 @@ abstract class _HomeViewControllerBase with Store {
 
   late MotionToast? toast;
 
-  void init() async {
+  void init([String? byCategoryName]) async {
     sortAutomaticallyDisposer = autorun((_) {
       notes.sort((a, b) => b.favorite ? 1 : 0);
     });
@@ -64,6 +66,7 @@ abstract class _HomeViewControllerBase with Store {
 
     syncCategoriesWithPosts = autorun((_) {
       if (notes.isNotEmpty) {
+        categories.clear();
         fetchCategories();
       }
     });
@@ -71,6 +74,10 @@ abstract class _HomeViewControllerBase with Store {
     _authController.currentAccount.observe((_) async {
       await fetchNotes();
     });
+
+    if (byCategoryName != null) {
+      return await fetchCategoryPosts(byCategoryName);
+    }
 
     await fetchNotes();
   }
@@ -85,6 +92,13 @@ abstract class _HomeViewControllerBase with Store {
         categories.add(model);
       }
     }
+  }
+
+  @action
+  Future<void> fetchCategoryPosts(String categoryName) async {
+    final response = await _noteRepositories.fetchNotesByCategory(categoryName);
+
+    notes = ObservableList.of(response);
   }
 
   Future<List<Note>> _fetchRemoteNotes() async {
@@ -236,5 +250,6 @@ abstract class _HomeViewControllerBase with Store {
     sortAutomaticallyDisposer();
     showToastWhenSycingDisposer();
     syncCategoriesWithPosts();
+    isViewingCategoryPosts.value = false;
   }
 }

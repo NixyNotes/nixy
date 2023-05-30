@@ -2,6 +2,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
+import 'package:nextcloudnotes/core/extensions/markdown_clear.extension.dart';
 
 class NoteGrid extends StatelessWidget {
   const NoteGrid(
@@ -57,7 +58,7 @@ class NoteGrid extends StatelessWidget {
                     color: Colors.orangeAccent,
                     size: 12,
                   ),
-                Text(title),
+                Text(title.removeMarkdown()),
               ],
             ),
             Text(

@@ -13,7 +13,7 @@ class AuthGuard extends AutoRouteGuard {
     } else {
       router.push(LoginRoute(
         onResult: (_) {
-          router.replaceAll([const HomeRoute()]);
+          router.replaceAll([HomeRoute()]);
         },
       ));
     }

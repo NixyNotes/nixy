@@ -14,16 +14,11 @@ import 'package:nextcloudnotes/features/home/views/components/note_grid.componen
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
-class HomeAction {
-  HomeAction({required this.label, this.isDestructive = false});
-
-  final String label;
-  final bool isDestructive;
-}
-
 @RoutePage()
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  HomeView({super.key, this.byCategoryName});
+
+  String? byCategoryName;
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -32,32 +27,44 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final controller = getIt<HomeViewController>();
   final authStorage = getIt<AuthController>();
-
-  List<HomeAction> get actions => [
-        HomeAction(label: "Select"),
-        HomeAction(label: "Delete", isDestructive: true),
-      ];
+  get listener => () {
+        if (!isViewingCategoryPosts.value && widget.byCategoryName == null) {
+          controller.init();
+        }
+      };
 
   @override
   void initState() {
     super.initState();
-    controller.init();
+
+    if (!isViewingCategoryPosts.value) {
+      controller.init();
+    } else {
+      controller.init(widget.byCategoryName);
+    }
+
+    isViewingCategoryPosts.addListener(listener);
   }
 
   @override
   void dispose() {
     getIt.resetLazySingleton<HomeViewController>();
+    isViewingCategoryPosts.removeListener(listener);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-        showAppBar: false,
+        showAppBar: widget.byCategoryName != null ? true : false,
         bottomBar: _renderBottomBar(context),
         body: Column(
           children: [
             Observer(builder: (_) {
+              if (widget.byCategoryName != null) {
+                return const SizedBox.shrink();
+              }
+
               if (controller.categories.isEmpty) {
                 return const SizedBox.shrink();
               }
@@ -74,11 +81,15 @@ class _HomeViewState extends State<HomeView> {
 
                   if (index >= 3) {
                     return CategoryGrid(
-                        categoryName: "More categories...", onTap: () {});
+                        categoryName: "More categories...",
+                        onTap: () {
+                          context.router.navigate(CategoriesRoute(
+                              categories: controller.categories));
+                        });
                   }
 
                   return CategoryGrid(
-                      categoryName: category.label, onTap: category.onTap);
+                      categoryName: category.label, onTap: () {});
                 },
                 itemCount: controller.categories.length >= 4
                     ? 4
