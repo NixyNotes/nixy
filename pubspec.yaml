@@ -36,7 +36,8 @@ dependencies:
   settings_ui: ^2.0.2
   motion_toast: ^2.6.8
   cached_network_image: ^3.2.3
-
+  flutter_animate: ^4.1.1+1
+  
 dev_dependencies:
   auto_route_generator: ^7.0.0
   injectable_generator: ^2.1.5

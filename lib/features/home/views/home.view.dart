@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:nextcloudnotes/components/modal_sheet_menu.component.dart';
@@ -178,16 +179,18 @@ class _HomeViewState extends State<HomeView> {
   Stack _renderNote(Note note, [Function()? showMenu]) {
     return Stack(
       children: [
-        NoteGrid(
-          title: note.title,
-          content: note.content,
-          date: note.modified,
-          isFavorite: note.favorite,
-          onTap: () => controller.selectedNotes.isEmpty
-              ? context.router.navigate(NoteRoute(noteId: note.id))
-              : controller.addToSelectedNote(note),
-          onLongPress: showMenu,
-        ),
+        Animate(
+          child: NoteGrid(
+            title: note.title,
+            content: note.content,
+            date: note.modified,
+            isFavorite: note.favorite,
+            onTap: () => controller.selectedNotes.isEmpty
+                ? context.router.navigate(NoteRoute(noteId: note.id))
+                : controller.addToSelectedNote(note),
+            onLongPress: showMenu,
+          ),
+        ).fade().slideX(),
         if (controller.selectedNotes
             .where((element) => element.id == note.id)
             .isNotEmpty)
