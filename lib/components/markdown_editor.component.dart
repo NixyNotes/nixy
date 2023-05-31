@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:nextcloudnotes/models/keyboard_actions.model.dart';
 import 'package:nixi_markdown/nixi_markdown.dart';
 
 /// The MarkdownEditor class is a widget that allows users to edit and preview markdown text with
@@ -48,6 +49,38 @@ class MarkdownEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final markdownTools = NixiMarkdownToolbarTools(controller);
+    final List<KeyboardActionItem> keyboardActions = [
+      KeyboardActionItem(
+        icon: Icon(Icons.format_size),
+        onTap: markdownTools.h1,
+      ),
+      KeyboardActionItem(
+        icon: Icon(Icons.format_list_bulleted_add),
+        onTap: markdownTools.checkBoxList,
+      ),
+      KeyboardActionItem(
+        icon: Icon(Icons.format_list_bulleted),
+        onTap: markdownTools.list,
+      ),
+      KeyboardActionItem(
+        icon: Icon(Icons.format_bold_outlined),
+        onTap: markdownTools.bold,
+      ),
+      KeyboardActionItem(
+        icon: Icon(Icons.format_strikethrough),
+        onTap: markdownTools.strikethrough,
+      ),
+      KeyboardActionItem(
+        icon: Icon(Icons.format_italic),
+        onTap: markdownTools.italic,
+      ),
+    ];
+
+    List<Widget Function(FocusNode)> keyboardActionItemToButtons() {
+      return keyboardActions.map((e) {
+        return (_) => IconButton(onPressed: e.onTap, icon: e.icon);
+      }).toList();
+    }
 
     KeyboardActionsConfig config() => KeyboardActionsConfig(
           nextFocus: false,
@@ -92,24 +125,7 @@ class MarkdownEditor extends StatelessWidget {
                     },
                   );
                 },
-                (s) {
-                  return IconButton(
-                    onPressed: markdownTools.bold,
-                    icon: const Icon(Icons.format_bold_outlined),
-                  );
-                },
-                (s) {
-                  return IconButton(
-                    onPressed: markdownTools.italic,
-                    icon: const Icon(Icons.format_italic_outlined),
-                  );
-                },
-                (s) {
-                  return IconButton(
-                    onPressed: markdownTools.strikethrough,
-                    icon: const Icon(Icons.format_strikethrough),
-                  );
-                },
+                ...keyboardActionItemToButtons()
               ],
             )
           ],
