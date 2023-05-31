@@ -1,16 +1,13 @@
-# nextcloudnotes
+# Nixi
 
-A new Flutter project.
+Nixi is a markdown-based note-taking app that uses nextcloud as backend. It allows you to create and edit notes in markdown format, sync them with your nextcloud account, and access them offline. You can also switch between multiple nextcloud accounts and enjoy a beautiful and responsive user interface built with flutter.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Create and edit notes in markdown format with a rich text editor
+- Access your notes offline and sync them when online
+- Switch between multiple nextcloud accounts
+- Organize your notes by folders and tags
+- Search your notes by title, content or tag
+- Export your notes as HTML or PDF files ([soon #20](https://github.com/MuhammedKpln/nixi/issues/20))
+- Built with flutter for cross-platform compatibility
