@@ -47,3 +47,4 @@ app.*.map.json
 *.gr.dart
 *.freezed.dart
 di.config.dart
+.vscode
