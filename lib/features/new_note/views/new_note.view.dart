@@ -8,7 +8,9 @@ import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/new_note/controllers/new_note.controller.dart';
 
 @RoutePage()
+// ignore: public_member_api_docs
 class NewNoteView extends StatefulWidget {
+// ignore: public_member_api_docs
   const NewNoteView({super.key});
 
   @override
@@ -37,13 +39,18 @@ class _NewNoteViewState extends State<NewNoteView> {
         return AppScaffold(
           title: controller.title,
           actions: [
-            Observer(builder: (_) {
-              return IconButton(
+            Observer(
+              builder: (_) {
+                return IconButton(
                   onPressed: controller.togglePreviewMode,
-                  icon: Icon(controller.previewMode
-                      ? EvaIcons.eyeOffOutline
-                      : EvaIcons.eyeOutline));
-            }),
+                  icon: Icon(
+                    controller.previewMode
+                        ? EvaIcons.eyeOffOutline
+                        : EvaIcons.eyeOutline,
+                  ),
+                );
+              },
+            ),
             Observer(
               builder: (context) {
                 // If title is not null, means user has put some text
@@ -53,8 +60,9 @@ class _NewNoteViewState extends State<NewNoteView> {
                     return const CircularProgressIndicator.adaptive();
                   } else {
                     return TextButton(
-                        onPressed: controller.createNote,
-                        child: const Text("Done"));
+                      onPressed: controller.createNote,
+                      child: const Text('Done'),
+                    );
                   }
                 }
 

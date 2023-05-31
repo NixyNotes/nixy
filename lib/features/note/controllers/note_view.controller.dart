@@ -13,16 +13,28 @@ import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
 part 'note_view.controller.g.dart';
 
-disposeNoteViewController(NoteViewController instance) {
+/// The function disposes a NoteViewController instance.
+///
+/// Args:
+///   instance (NoteViewController): The parameter "instance" is an object of the class
+/// NoteViewController that needs to be disposed of. The disposeNoteViewController function is
+/// responsible for calling the dispose method of the instance object to release any resources that it
+/// may be holding.
+void disposeNoteViewController(NoteViewController instance) {
   instance.dispose();
 }
 
 @LazySingleton(dispose: disposeNoteViewController)
+
+/// Note view controller
 class NoteViewController = _NoteViewControllerBase with _$NoteViewController;
 
 abstract class _NoteViewControllerBase with Store {
   _NoteViewControllerBase(
-      this._noteRepositories, this._offlineService, this._noteStorage);
+    this._noteRepositories,
+    this._offlineService,
+    this._noteStorage,
+  );
   final NoteRepositories _noteRepositories;
   final OfflineService _offlineService;
   final NoteStorage _noteStorage;
@@ -39,12 +51,12 @@ abstract class _NoteViewControllerBase with Store {
   bool editMode = false;
 
   @computed
-  String get prettyDate => DateFormat("yyyy-MM-dd HH:mm")
-      .format(DateTime.utc(1970, 1, 1).add(Duration(seconds: note.modified)));
+  String get prettyDate => DateFormat('yyyy-MM-dd HH:mm')
+      .format(DateTime.utc(1970).add(Duration(seconds: note.modified)));
 
   late Note note;
 
-  init(int noteId) {
+  void init(int noteId) {
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isTextFieldFocused = true;
@@ -52,7 +64,7 @@ abstract class _NoteViewControllerBase with Store {
     });
   }
 
-  dispose() {
+  void dispose() {
     focusNode.dispose();
     markdownController.dispose();
   }
@@ -78,7 +90,7 @@ abstract class _NoteViewControllerBase with Store {
 
     if (deleted) {
       scaffolMessengerKey.currentState
-          ?.showSnackBar(const SnackBar(content: Text("ok")));
+          ?.showSnackBar(const SnackBar(content: Text('ok')));
 
       _noteStorage.deleteNote(note);
 
@@ -92,12 +104,15 @@ abstract class _NoteViewControllerBase with Store {
   Future<void> updateNote(int noteId, Note note) async {
     final checkInternetAccess = _offlineService.hasInternetAccess;
     final note0 = note.toJson();
-    note0["content"] = markdownController.text;
+    note0['content'] = markdownController.text;
     note = Note.fromJson(note0);
 
     if (!checkInternetAccess) {
-      _offlineService.addQueue(OfflineQueueAction.UPDATE,
-          noteId: note.id, noteAsJson: jsonEncode(note));
+      _offlineService.addQueue(
+        OfflineQueueAction.UPDATE,
+        noteId: note.id,
+        noteAsJson: jsonEncode(note),
+      );
       _noteStorage.saveNote(note);
 
       return;
@@ -107,14 +122,14 @@ abstract class _NoteViewControllerBase with Store {
     _noteStorage.saveNote(note);
   }
 
-  onTapDone(int noteId, Note note) {
+  void onTapDone(int noteId, Note note) {
     focusNode.unfocus();
     toggleEditMode();
     isTextFieldFocused = false;
     updateNote(noteId, note).then((value) => fetchNote(noteId));
   }
 
-  toggleEditMode() {
+  void toggleEditMode() {
     editMode = !editMode;
   }
 }

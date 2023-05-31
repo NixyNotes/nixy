@@ -3,6 +3,6 @@
 /// Args:
 ///   text (String): The input text that may contain markdown headers (lines starting with one or more #
 /// symbols).
-clearMarkdownHeders(String text) {
-  return text.replaceAll(RegExp("(?<!w)#(?!#s)", multiLine: true), "");
+String clearMarkdownHeders(String text) {
+  return text.replaceAll(RegExp('(?<!w)#(?!#s)', multiLine: true), '');
 }

@@ -18,12 +18,18 @@ import 'package:nextcloudnotes/repositories/login.repository.dart';
 part 'connect-to-server.controller.g.dart';
 
 @lazySingleton
+
+/// Connect to server controller
 class ConnectToServerController = _ConnectToServerControllerBase
     with _$ConnectToServerController;
 
 abstract class _ConnectToServerControllerBase with Store {
-  _ConnectToServerControllerBase(this._authController, this._loginRepository,
-      this._toastService, this._logService);
+  _ConnectToServerControllerBase(
+    this._authController,
+    this._loginRepository,
+    this._toastService,
+    this._logService,
+  );
   final AuthController _authController;
   final LoginRepository _loginRepository;
   final ToastService _toastService;
@@ -37,28 +43,30 @@ abstract class _ConnectToServerControllerBase with Store {
 
       final loginUrl = loginPoll.login;
       final token = loginPoll.poll.token;
-      webViewController.loadUrl(urlRequest: URLRequest(url: WebUri(loginUrl)));
+      await webViewController.loadUrl(
+        urlRequest: URLRequest(url: WebUri(loginUrl)),
+      );
 
       Timer.periodic(const Duration(seconds: 1), (timer) async {
-        _fetchAppPassword(serverUrl, token).then((appPasswords) {
+        await _fetchAppPassword(serverUrl, token).then((appPasswords) {
           final loadingToast = _toastService.showLoadingToast();
 
           _checkCapabilities(serverUrl, appPasswords)
               .then((noteCapabilityExists) {
             if (noteCapabilityExists) {
               _postLogin(
-                  username: appPasswords.loginName,
-                  password: appPasswords.appPassword,
-                  serverAddress: serverUrl,
-                  context: context);
+                username: appPasswords.loginName,
+                password: appPasswords.appPassword,
+                serverAddress: serverUrl,
+                context: context,
+              );
               loadingToast.dismiss();
               timer.cancel();
             } else {
               context.router.back();
               loadingToast.dismiss();
               _toastService.showTextToast(
-                "Nextcloud does not support notes plugin.",
-                type: ToastType.info,
+                'Nextcloud does not support notes plugin.',
               );
 
               timer.cancel();
@@ -76,36 +84,37 @@ abstract class _ConnectToServerControllerBase with Store {
       context.router.back();
 
       _toastService.showTextToast(
-        "Cannot reach Nextcloud instance.",
+        'Cannot reach Nextcloud instance.',
         type: ToastType.error,
       );
     }
   }
 
-  void _postLogin(
-      {required String username,
-      required String password,
-      required String serverAddress,
-      required BuildContext context}) async {
+  Future<void> _postLogin({
+    required String username,
+    required String password,
+    required String serverAddress,
+    required BuildContext context,
+  }) async {
     final stringToBase64 = utf8.fuse(base64);
 
     final userModel = User()
       ..password = password
       ..username = username
       ..server = serverAddress
-      ..token = stringToBase64.encode("$username:$password");
+      ..token = stringToBase64.encode('$username:$password');
 
     _authController.login(userModel);
   }
 
   Future<bool> _checkCapabilities(String serverAddress, Login app) async {
     final stringToBase64 = utf8.fuse(base64);
-    final token = stringToBase64.encode("${app.loginName}:${app.appPassword}");
+    final token = stringToBase64.encode('${app.loginName}:${app.appPassword}');
 
     final capatabilites =
         await _loginRepository.checkNoteCapability(serverAddress, token);
 
-    return capatabilites.ocs.data.capabilities.containsKey("notes");
+    return capatabilites.ocs.data.capabilities.containsKey('notes');
   }
 
   Future<LoginPoll> _fetchLoginPoll(String serverUrl) async {

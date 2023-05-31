@@ -9,8 +9,16 @@ import 'package:nextcloudnotes/core/storage/auth.storage.dart';
 part 'auth.controller.g.dart';
 
 @lazySingleton
+
+/// Authentication controller for app
 class AuthController = _AuthControllerBase with _$AuthController;
 
+/// `enum LoginState { loggedIn, none }` is defining an enumeration type with two possible values:
+/// `loggedIn` and `none`. This enum is used in the `_AuthControllerBase` class to keep track of the
+/// current login state of the user. The `loginState` observable is of type `Observable<LoginState>` and
+/// can be observed and modified using MobX. The `isLoggedIn` computed property returns `true` if the
+/// `loginState` is `loggedIn`.
+// ignore: public_member_api_docs
 enum LoginState { loggedIn, none }
 
 abstract class _AuthControllerBase with Store {
@@ -96,7 +104,8 @@ abstract class _AuthControllerBase with Store {
   }
 
   @action
-  setLoginState(LoginState lState) {
+  // ignore: use_setters_to_change_properties
+  void setLoginState(LoginState lState) {
     loginState.value = lState;
   }
 }
