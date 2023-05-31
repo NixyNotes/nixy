@@ -59,7 +59,12 @@ class NoteGrid extends StatelessWidget {
                     color: Colors.orangeAccent,
                     size: 12,
                   ),
-                Text(title.removeMarkdown()),
+                Expanded(
+                  child: Text(
+                    title.removeMarkdown(),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
             Text(
