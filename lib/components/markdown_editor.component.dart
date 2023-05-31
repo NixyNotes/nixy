@@ -146,6 +146,7 @@ class _MarkdownEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     if (renderPreview != null && renderPreview!) {
       return Markdown(
+        selectable: true,
         data: controller.text,
         imageBuilder: (uri, title, alt) =>
             CachedNetworkImage(imageUrl: uri.toString()),
