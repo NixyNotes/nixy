@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs
 
+import 'package:flash/flash.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
     final appRouter = AppRouter();
 
     return MaterialApp.router(
-      title: 'Flutter Demo',
+      title: 'Nixi',
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         dividerTheme: DividerThemeData(color: Colors.grey.shade100),
         scaffoldBackgroundColor: Colors.grey.shade800,
-      ),
+      ).copyWith(extensions: [FlashToastTheme(), FlashBarTheme()]),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.orangeAccent,
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.blueGrey.shade50,
         dividerTheme: DividerThemeData(color: Colors.grey.shade100),
-      ),
+      ).copyWith(extensions: [FlashToastTheme(), FlashBarTheme()]),
       routerConfig: appRouter.config(),
     );
   }

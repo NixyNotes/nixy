@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
-import 'package:motion_toast/motion_toast.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
@@ -59,7 +59,7 @@ abstract class _HomeViewControllerBase with Store {
   late ReactionDisposer showToastWhenSycingDisposer;
   late ReactionDisposer syncCategoriesWithPosts;
 
-  late MotionToast? toast;
+  late Completer<void>? toast;
 
   Future<void> init([String? byCategoryName]) async {
     sortAutomaticallyDisposer = autorun((_) {
@@ -70,7 +70,7 @@ abstract class _HomeViewControllerBase with Store {
       if (syncing) {
         toast = _toastService.showLoadingToast('Syncing...');
       } else {
-        toast?.dismiss();
+        toast?.complete();
       }
     });
 

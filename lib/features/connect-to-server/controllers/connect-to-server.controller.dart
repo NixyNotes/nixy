@@ -60,11 +60,11 @@ abstract class _ConnectToServerControllerBase with Store {
                 serverAddress: serverUrl,
                 context: context,
               );
-              loadingToast.dismiss();
+              loadingToast.complete();
               timer.cancel();
             } else {
               context.router.back();
-              loadingToast.dismiss();
+              loadingToast.complete();
               _toastService.showTextToast(
                 'Nextcloud does not support notes plugin.',
               );
