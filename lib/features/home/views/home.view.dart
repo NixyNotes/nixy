@@ -11,6 +11,7 @@ import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
 import 'package:nextcloudnotes/features/home/views/components/category_grid.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_grid.component.dart';
+import 'package:nextcloudnotes/features/home/views/components/search_deletage.component.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -64,6 +65,13 @@ class _HomeViewState extends State<HomeView> {
   void navigateToPosts(String label) {
     isViewingCategoryPosts.value = true;
     context.router.push(HomeRoute(byCategoryName: label));
+  }
+
+  void showSearchDialog() {
+    showSearch(
+        useRootNavigator: true,
+        context: context,
+        delegate: NixiSearchDelegate());
   }
 
   @override
@@ -263,28 +271,7 @@ class _HomeViewState extends State<HomeView> {
           onTap: (value) {
             switch (value) {
               case 0:
-                showDialog<void>(
-                  context: context,
-                  builder: (context) {
-                    return Dialog(
-                      child: SearchAnchor.bar(
-                        searchController: controller.searchController,
-                        suggestionsBuilder: (context, searchController) {
-                          return [
-                            Observer(
-                              builder: (_) {
-                                return ListView(
-                                  children: controller.searchNotes,
-                                  shrinkWrap: true,
-                                );
-                              },
-                            )
-                          ];
-                        },
-                      ),
-                    );
-                  },
-                );
+                showSearchDialog();
                 break;
               case 1:
                 context.router.navigate(const NewNoteRoute());

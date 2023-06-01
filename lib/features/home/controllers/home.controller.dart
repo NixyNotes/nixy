@@ -28,9 +28,8 @@ void disposeHomeController(HomeViewController instance) {
   instance.dispose();
 }
 
-@LazySingleton(dispose: disposeHomeController)
-
 /// HomeViewController
+@LazySingleton(dispose: disposeHomeController)
 class HomeViewController = _HomeViewControllerBase with _$HomeViewController;
 
 abstract class _HomeViewControllerBase with Store {
@@ -68,10 +67,10 @@ abstract class _HomeViewControllerBase with Store {
         .map((element) => ListTile(
               title: Text(element.title),
               onTap: () {
+                Navigator.of(scaffolMessengerKey.currentContext!).pop();
+
                 scaffolMessengerKey.currentContext?.router
                     .navigate(NoteRoute(noteId: element.id));
-
-                searchController.closeView(element.title);
               },
             ))
         .toList();
@@ -82,8 +81,6 @@ abstract class _HomeViewControllerBase with Store {
   late ReactionDisposer sortAutomaticallyDisposer;
   late ReactionDisposer showToastWhenSycingDisposer;
   late ReactionDisposer syncCategoriesWithPosts;
-  final SearchController searchController = SearchController();
-
   late Completer<void>? _toast;
 
   Future<void> init([String? byCategoryName]) async {
@@ -105,10 +102,6 @@ abstract class _HomeViewControllerBase with Store {
         categories.clear();
         fetchCategories();
       }
-    });
-
-    searchController.addListener(() async {
-      await search(searchController.text);
     });
 
     _authController.currentAccount.observe((_) async {
@@ -308,7 +301,6 @@ abstract class _HomeViewControllerBase with Store {
     sortAutomaticallyDisposer();
     showToastWhenSycingDisposer();
     syncCategoriesWithPosts();
-    searchController.dispose();
     isViewingCategoryPosts.dispose();
   }
 }
