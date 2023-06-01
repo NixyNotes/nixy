@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
+import 'package:nextcloudnotes/core/utils/platform.dart';
 import 'package:nextcloudnotes/features/connect-to-server/controllers/connect-to-server.controller.dart';
 
 @RoutePage()
@@ -42,14 +43,19 @@ class _ConnectToServerViewState extends State<ConnectToServerView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = isDesktopPlatform();
     return Scaffold(
       appBar: AppBar(),
-      body: InAppWebView(
-        initialSettings: settings,
-        onWebViewCreated: (webController) {
-          controller.webViewController = webController;
-        },
-      ),
+      body: isDesktop
+          ? Center(
+              child: Text("Please contiune from browser.."),
+            )
+          : InAppWebView(
+              initialSettings: settings,
+              onWebViewCreated: (webController) {
+                controller.webViewController = webController;
+              },
+            ),
     );
   }
 }

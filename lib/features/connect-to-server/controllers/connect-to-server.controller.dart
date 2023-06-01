@@ -11,9 +11,11 @@ import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/log.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
+import 'package:nextcloudnotes/core/utils/platform.dart';
 import 'package:nextcloudnotes/models/login.model.dart';
 import 'package:nextcloudnotes/models/login_poll.model.dart';
 import 'package:nextcloudnotes/repositories/login.repository.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'connect-to-server.controller.g.dart';
 
@@ -43,9 +45,19 @@ abstract class _ConnectToServerControllerBase with Store {
 
       final loginUrl = loginPoll.login;
       final token = loginPoll.poll.token;
-      await webViewController.loadUrl(
-        urlRequest: URLRequest(url: WebUri(loginUrl)),
-      );
+
+      if (isDesktopPlatform()) {
+        final url = Uri.parse(loginUrl);
+        final canLaunch = await canLaunchUrl(url);
+
+        if (canLaunch) {
+          await launchUrl(url);
+        }
+      } else {
+        await webViewController.loadUrl(
+          urlRequest: URLRequest(url: WebUri(loginUrl)),
+        );
+      }
 
       Timer.periodic(const Duration(seconds: 1), (timer) async {
         await _fetchAppPassword(serverUrl, token).then((appPasswords) {
