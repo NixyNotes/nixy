@@ -692,10 +692,10 @@ packages:
     dependency: "direct main"
     description:
       name: nixi_markdown
-      sha256: b37a394f55e0a6c3cc1bfb00e921faf1e907947cf7ca5bfd9f9c1cdf6c2d380f
+      sha256: a0c24f5ee21829a477dc9d88f367d6e4e731753a98577f68e78675f69e83fdd4
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0"
+    version: "0.1.1"
   nm:
     dependency: transitive
     description:

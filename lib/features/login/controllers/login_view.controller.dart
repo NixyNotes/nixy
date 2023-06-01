@@ -6,9 +6,8 @@ import 'package:nextcloudnotes/core/router/router.gr.dart';
 
 part 'login_view.controller.g.dart';
 
-@injectable
-
-/// Login view controller
+/// Login view controller'
+@lazySingleton
 class LoginViewController = _LoginViewControllerBase with _$LoginViewController;
 
 abstract class _LoginViewControllerBase with Store {

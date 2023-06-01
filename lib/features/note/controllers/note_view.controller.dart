@@ -67,6 +67,7 @@ abstract class _NoteViewControllerBase with Store {
   void dispose() {
     focusNode.dispose();
     markdownController.dispose();
+    undoHistoryController.dispose();
   }
 
   @action

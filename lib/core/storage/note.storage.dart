@@ -104,4 +104,31 @@ class NoteStorage {
 
     return modifiedList;
   }
+
+  /// The function searches for notes in Isar database based on a given text input and returns a list of
+  /// matching notes.
+  ///
+  /// Args:
+  ///   text (String): The text that the user wants to search for in the notes.
+  ///
+  /// Returns:
+  ///   The `search` method is returning a `Future` that resolves to a `List` of `Note` objects.
+  Future<List<Note>> search(String text) async {
+    final words = Isar.splitWords(text);
+
+    final notes = await isarInstance.localNotes
+        .where()
+        .contentWordsAsListEqualTo(words)
+        .or()
+        .contentWordsElementStartsWith(text)
+        .or()
+        .titleWordsElementStartsWith(text)
+        .or()
+        .categoryWordsElementStartsWith(text)
+        .findAll();
+
+    final modifiedList = notes.map((e) => Note.fromJson(e.toMap())).toList();
+
+    return modifiedList;
+  }
 }

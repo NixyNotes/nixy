@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
+import 'package:nextcloudnotes/core/router/router.gr.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
+import 'package:nextcloudnotes/main.dart';
 import 'package:nextcloudnotes/models/category.model.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
@@ -24,9 +28,8 @@ void disposeHomeController(HomeViewController instance) {
   instance.dispose();
 }
 
-@LazySingleton(dispose: disposeHomeController)
-
 /// HomeViewController
+@LazySingleton(dispose: disposeHomeController)
 class HomeViewController = _HomeViewControllerBase with _$HomeViewController;
 
 abstract class _HomeViewControllerBase with Store {
@@ -55,22 +58,42 @@ abstract class _HomeViewControllerBase with Store {
   @observable
   ObservableList<CategoryModel> categories = ObservableList();
 
+  @observable
+  ObservableList<Note> _searchNotes = ObservableList();
+
+  @computed
+  ObservableList<ListTile> get searchNotes {
+    final notess = _searchNotes
+        .map((element) => ListTile(
+              title: Text(element.title),
+              onTap: () {
+                Navigator.of(scaffolMessengerKey.currentContext!).pop();
+
+                scaffolMessengerKey.currentContext?.router
+                    .navigate(NoteRoute(noteId: element.id));
+              },
+            ))
+        .toList();
+
+    return ObservableList.of(notess);
+  }
+
   late ReactionDisposer sortAutomaticallyDisposer;
   late ReactionDisposer showToastWhenSycingDisposer;
   late ReactionDisposer syncCategoriesWithPosts;
-
-  late Completer<void>? toast;
+  late Completer<void>? _toast;
 
   Future<void> init([String? byCategoryName]) async {
+    isViewingCategoryPosts = ValueNotifier(false);
     sortAutomaticallyDisposer = autorun((_) {
       notes.sort((a, b) => b.favorite ? 1 : 0);
     });
 
     showToastWhenSycingDisposer = autorun((_) {
       if (syncing) {
-        toast = _toastService.showLoadingToast('Syncing...');
+        _toast = _toastService.showLoadingToast('Syncing...');
       } else {
-        toast?.complete();
+        _toast?.complete();
       }
     });
 
@@ -267,10 +290,17 @@ abstract class _HomeViewControllerBase with Store {
     selectedNotes.add(note);
   }
 
+  @action
+  Future<void> search(String text) async {
+    final notes = await _noteStorage.search(text);
+
+    _searchNotes = ObservableList.of(notes);
+  }
+
   void dispose() {
     sortAutomaticallyDisposer();
     showToastWhenSycingDisposer();
     syncCategoriesWithPosts();
-    isViewingCategoryPosts.value = false;
+    isViewingCategoryPosts.dispose();
   }
 }
