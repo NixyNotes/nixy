@@ -104,4 +104,21 @@ class NoteStorage {
 
     return modifiedList;
   }
+
+  Future<List<Note>> search(String text) async {
+    final words = Isar.splitWords(text);
+
+    final notes = await isarInstance.localNotes
+        .where()
+        .titleWordsElementStartsWith(text)
+        .or()
+        .contentWordsEqualTo(text.split(" "))
+        .or()
+        .categoryWordsElementStartsWith(text)
+        .findAll();
+
+    final modifiedList = notes.map((e) => Note.fromJson(e.toMap())).toList();
+
+    return modifiedList;
+  }
 }

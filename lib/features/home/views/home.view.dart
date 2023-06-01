@@ -263,6 +263,28 @@ class _HomeViewState extends State<HomeView> {
           onTap: (value) {
             switch (value) {
               case 0:
+                showDialog<void>(
+                  context: context,
+                  builder: (context) {
+                    return Dialog(
+                      child: SearchAnchor.bar(
+                        searchController: controller.searchController,
+                        suggestionsBuilder: (context, searchController) {
+                          return [
+                            Observer(
+                              builder: (_) {
+                                return ListView(
+                                  children: controller.searchNotes,
+                                  shrinkWrap: true,
+                                );
+                              },
+                            )
+                          ];
+                        },
+                      ),
+                    );
+                  },
+                );
                 break;
               case 1:
                 context.router.navigate(const NewNoteRoute());
