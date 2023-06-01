@@ -7,13 +7,15 @@ import 'package:nextcloudnotes/core/router/router.gr.dart';
 part 'login_view.controller.g.dart';
 
 @injectable
+
+/// Login view controller
 class LoginViewController = _LoginViewControllerBase with _$LoginViewController;
 
 abstract class _LoginViewControllerBase with Store {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController serverFormController = TextEditingController();
 
-  onPressLogin(BuildContext context) {
+  void onPressLogin(BuildContext context) {
     if (formKey.currentState!.validate()) {
       context.router
           .navigate(ConnectToServerRoute(url: serverFormController.text));
@@ -22,8 +24,8 @@ abstract class _LoginViewControllerBase with Store {
 
   String? urlFormValidator(String? value) {
     if (value != null) {
-      if (!value.startsWith("http")) {
-        return "Url please";
+      if (!value.startsWith('http')) {
+        return 'Url please';
       }
 
       return null;

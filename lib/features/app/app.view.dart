@@ -6,7 +6,9 @@ import 'package:nextcloudnotes/features/app/controllers/app.controller.dart';
 import 'package:nextcloudnotes/main.dart';
 
 @RoutePage()
+// ignore: public_member_api_docs
 class AppView extends StatefulWidget {
+  // ignore: public_member_api_docs
   const AppView({super.key});
 
   @override
@@ -42,8 +44,9 @@ class _AppViewState extends State<AppView> {
       );
     }
     return const AppScaffold(
-        body: Center(
-      child: CircularProgressIndicator.adaptive(),
-    ));
+      body: Center(
+        child: CircularProgressIndicator.adaptive(),
+      ),
+    );
   }
 }

@@ -11,9 +11,17 @@ import 'package:nextcloudnotes/features/note/controllers/note_view.controller.da
 import 'package:nextcloudnotes/models/note.model.dart';
 
 @RoutePage()
-class NoteView extends StatefulWidget {
-  const NoteView({super.key, required this.noteId});
 
+/// The `NoteView` class is a stateful widget that displays a note and allows the user to edit and
+/// delete it.
+class NoteView extends StatefulWidget {
+  /// The `NoteView` class is a stateful widget that displays a note and allows the user to edit and
+  /// delete it.
+  const NoteView({required this.noteId, super.key});
+
+  /// `final int noteId;` is declaring a final variable `noteId` of type `int` in the `NoteView` class.
+  /// This variable is used to store the ID of the note that is being viewed. It is passed as a parameter
+  /// to the `NoteView` widget when it is created.
   final int noteId;
 
   @override
@@ -40,47 +48,52 @@ class _NoteViewState extends State<NoteView> {
     return AppFutureBuilder<Note>(
       future: controller.fetchNote(widget.noteId),
       child: (data) {
-        controller.markdownController.text = data?.content ?? "se";
+        controller.markdownController.text = data?.content ?? 'se';
 
         return AppScaffold(
-            title: data?.title.removeMarkdown(),
-            actions: [
-              IconButton(
-                  onPressed: () {
-                    controller
-                        .deleteNote(data?.id ?? 0)
-                        .then((value) => context.router.back());
-                  },
-                  icon: const Icon(EvaIcons.trash2Outline)),
-              Observer(
-                builder: (context) {
-                  if (controller.isTextFieldFocused) {
-                    return ElevatedButton(
-                        onPressed: () => controller.onTapDone(data!.id, data),
-                        child: const Text("Done"));
-                  }
+          title: data?.title.removeMarkdown(),
+          actions: [
+            IconButton(
+              onPressed: () {
+                controller
+                    .deleteNote(data?.id ?? 0)
+                    .then((value) => context.router.back());
+              },
+              icon: const Icon(EvaIcons.trash2Outline),
+            ),
+            Observer(
+              builder: (context) {
+                if (controller.isTextFieldFocused) {
+                  return ElevatedButton(
+                    onPressed: () => controller.onTapDone(data!.id, data),
+                    child: const Text('Done'),
+                  );
+                }
 
-                  return const SizedBox.shrink();
-                },
+                return const SizedBox.shrink();
+              },
+            )
+          ],
+          body: Column(
+            children: [
+              Expanded(
+                child: Observer(
+                  builder: (_) {
+                    return GestureDetector(
+                      onDoubleTap: controller.toggleEditMode,
+                      child: MarkdownEditor(
+                        undoHistoryController: controller.undoHistoryController,
+                        focusNode: controller.focusNode,
+                        controller: controller.markdownController,
+                        renderPreview: !controller.editMode,
+                      ),
+                    );
+                  },
+                ),
               )
             ],
-            body: Column(
-              children: [
-                Expanded(
-                  child: Observer(builder: (_) {
-                    return GestureDetector(
-                        onDoubleTap: controller.toggleEditMode,
-                        child: MarkdownEditor(
-                          undoHistoryController:
-                              controller.undoHistoryController,
-                          focusNode: controller.focusNode,
-                          controller: controller.markdownController,
-                          renderPreview: !controller.editMode,
-                        ));
-                  }),
-                )
-              ],
-            ));
+          ),
+        );
       },
     );
   }

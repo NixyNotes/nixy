@@ -6,14 +6,15 @@ import 'package:intl/intl.dart';
 import 'package:nextcloudnotes/core/extensions/markdown_clear.extension.dart';
 
 class NoteGrid extends StatelessWidget {
-  const NoteGrid(
-      {super.key,
-      required this.title,
-      required this.date,
-      required this.content,
-      required this.onTap,
-      this.onLongPress,
-      this.isFavorite = false});
+  const NoteGrid({
+    required this.title,
+    required this.date,
+    required this.content,
+    required this.onTap,
+    super.key,
+    this.onLongPress,
+    this.isFavorite = false,
+  });
 
   final String title;
   final int date;
@@ -25,7 +26,7 @@ class NoteGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormatted =
-        DateFormat("E,HH:m").format(DateTime.fromMillisecondsSinceEpoch(date));
+        DateFormat('E,HH:m').format(DateTime.fromMillisecondsSinceEpoch(date));
 
     return InkWell(
       onTap: onTap,
@@ -36,16 +37,16 @@ class NoteGrid extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         height: 300,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: const [
-              BoxShadow(
-                offset: Offset(5, 5),
-                spreadRadius: -14,
-                blurRadius: 18,
-                color: Color.fromRGBO(0, 0, 0, 1),
-              )
-            ],
-            color: Theme.of(context).colorScheme.surface),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: const [
+            BoxShadow(
+              offset: Offset(5, 5),
+              spreadRadius: -14,
+              blurRadius: 18,
+            )
+          ],
+          color: Theme.of(context).colorScheme.surface,
+        ),
         child: Column(
           children: [
             Row(
@@ -82,8 +83,9 @@ class NoteGrid extends StatelessWidget {
                 imageBuilder: (uri, title, alt) =>
                     CachedNetworkImage(imageUrl: uri.toString()),
                 styleSheet: MarkdownStyleSheet(
-                    textScaleFactor: 0.4,
-                    checkbox: const TextStyle(fontSize: 10)),
+                  textScaleFactor: 0.4,
+                  checkbox: const TextStyle(fontSize: 10),
+                ),
               ),
             )
           ],

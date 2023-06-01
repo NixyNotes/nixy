@@ -7,11 +7,20 @@ import 'package:nextcloudnotes/core/services/offline.service.dart';
 
 part 'app.controller.g.dart';
 
-disposeAppViewController(AppViewController instance) {
+/// The function disposes an instance of an AppViewController.
+///
+/// Args:
+///   instance (AppViewController): The parameter "instance" is an object of the class
+/// "AppViewController". The method "disposeAppViewController" takes this object as input and calls its
+/// "dispose" method to release any resources or perform any necessary cleanup before the object is
+/// destroyed.
+void disposeAppViewController(AppViewController instance) {
   instance.dispose();
 }
 
 @LazySingleton(dispose: disposeAppViewController)
+
+/// App view controller
 class AppViewController = _AppViewControllerBase with _$AppViewController;
 
 abstract class _AppViewControllerBase with Store {
@@ -26,7 +35,7 @@ abstract class _AppViewControllerBase with Store {
     await _offlineService.checkForNetworkConditions();
   }
 
-  dispose() {
+  void dispose() {
     getIt.resetLazySingleton<OfflineService>();
   }
 }

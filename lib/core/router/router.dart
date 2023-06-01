@@ -4,6 +4,8 @@ import 'package:nextcloudnotes/core/router/router.gr.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'View,Route')
+
+/// App router
 class AppRouter extends $AppRouter {
   @override
   List<AutoRoute> get routes => [
@@ -33,13 +35,15 @@ class AppRouter extends $AppRouter {
               title: RouterMeta.Login.titleToWidget(),
             ),
             AutoRoute(
-                page: RouterMeta.ConnectToServer.page,
-                title: RouterMeta.ConnectToServer.titleToWidget(),
-                fullscreenDialog: true),
+              page: RouterMeta.ConnectToServer.page,
+              title: RouterMeta.ConnectToServer.titleToWidget(),
+              fullscreenDialog: true,
+            ),
             AutoRoute(
-                page: RouterMeta.Settings.page,
-                title: RouterMeta.Settings.titleToWidget(),
-                fullscreenDialog: true),
+              page: RouterMeta.Settings.page,
+              title: RouterMeta.Settings.titleToWidget(),
+              fullscreenDialog: true,
+            ),
             AutoRoute(
               page: RouterMeta.Categories.page,
               title: RouterMeta.Categories.titleToWidget(),

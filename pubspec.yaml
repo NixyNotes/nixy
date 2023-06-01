@@ -34,7 +34,7 @@ dependencies:
   keyboard_actions: ^4.2.0
   connectivity_plus: ^4.0.1
   settings_ui: ^2.0.2
-  motion_toast: ^2.6.8
+  flash: ^3.0.5+1
   cached_network_image: ^3.2.3
   flutter_animate: ^4.1.1+1
   
@@ -50,6 +50,7 @@ dev_dependencies:
   isar_generator: ^3.1.0+1
   freezed: ^2.3.4
   json_serializable: ^6.7.0
+  very_good_analysis: ^5.0.0+1
 
 flutter:
   uses-material-design: true

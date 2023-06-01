@@ -305,6 +305,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  flash:
+    dependency: "direct main"
+    description:
+      name: flash
+      sha256: "0ec6c32deb839a8ead1ba17a3bb055996f00ea6631384f4705ac6a08dec8b16c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.5+1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -680,14 +688,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  motion_toast:
-    dependency: "direct main"
-    description:
-      name: motion_toast
-      sha256: f33fad8264d6d5359e41f2027d2d833614401c3983102e8f0aa13ccbbdcdeecd
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.6.8"
   nixi_markdown:
     dependency: "direct main"
     description:
@@ -1029,6 +1029,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  very_good_analysis:
+    dependency: "direct dev"
+    description:
+      name: very_good_analysis
+      sha256: "5e4ea72d2a9188630f0dd8f120a541de730090ef8863243fedca8267a84508b8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0+1"
   watcher:
     dependency: transitive
     description:

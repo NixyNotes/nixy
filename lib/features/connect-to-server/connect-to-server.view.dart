@@ -5,9 +5,20 @@ import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/features/connect-to-server/controllers/connect-to-server.controller.dart';
 
 @RoutePage()
+// ignore: public_member_api_docs
 class ConnectToServerView extends StatefulWidget {
-  const ConnectToServerView({super.key, required this.url, this.onResult});
-  final Function(bool success)? onResult;
+// ignore: public_member_api_docs
+  const ConnectToServerView({required this.url, super.key, this.onResult});
+
+  /// `final void Function(bool success)? onResult;` is a nullable callback function that takes a boolean
+  /// parameter `success`. It is used to pass the result of the connection attempt back to the parent
+  /// widget that created the `ConnectToServerView`. If the connection attempt is successful, `success`
+  /// will be `true`, otherwise it will be `false`.
+  final void Function({bool success})? onResult;
+
+  /// `final String url;` is declaring a final variable `url` of type `String` in the
+  /// `ConnectToServerView` class. It is used to store the URL that the user wants to connect to. The
+  /// `final` keyword indicates that the value of `url` cannot be changed once it is set.
   final String url;
   @override
   State<ConnectToServerView> createState() => _ConnectToServerViewState();

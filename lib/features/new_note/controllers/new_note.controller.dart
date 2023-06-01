@@ -14,7 +14,14 @@ import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
 part 'new_note.controller.g.dart';
 
-disposeNewNoteController(NewNoteController instance) {
+/// The function disposes a NewNoteController instance.
+///
+/// Args:
+///   instance (NewNoteController): The parameter "instance" is an object of the class
+/// "NewNoteController". The function "disposeNewNoteController" takes this object as input and calls
+/// the "dispose" method on it. This function is likely used to clean up resources or perform other
+/// actions when the "NewNoteController" object
+void disposeNewNoteController(NewNoteController instance) {
   instance.dispose();
 }
 
@@ -22,8 +29,13 @@ disposeNewNoteController(NewNoteController instance) {
 class NewNoteController = _NewNoteControllerBase with _$NewNoteController;
 
 abstract class _NewNoteControllerBase with Store {
-  _NewNoteControllerBase(this._noteRepositories, this._notesStorage,
-      this._offlineService, this._homeViewController, this._toastService);
+  _NewNoteControllerBase(
+    this._noteRepositories,
+    this._notesStorage,
+    this._offlineService,
+    this._homeViewController,
+    this._toastService,
+  );
   final NoteRepositories _noteRepositories;
   final NoteStorage _notesStorage;
   final OfflineService _offlineService;
@@ -33,7 +45,7 @@ abstract class _NewNoteControllerBase with Store {
   final FocusNode focusNode = FocusNode();
   final UndoHistoryController undoHistoryController = UndoHistoryController();
   final TextEditingController markdownController =
-      TextEditingController(text: "# New Note");
+      TextEditingController(text: '# New Note');
 
   @observable
   bool previewMode = false;
@@ -56,11 +68,11 @@ abstract class _NewNoteControllerBase with Store {
   @action
   void init() {
     markdownController.addListener(() {
-      final lines = markdownController.text.split("\n");
+      final lines = markdownController.text.split('\n');
       final firstLine = lines.first;
 
       if (firstLine.runes.isNotEmpty) {
-        title = firstLine.replaceAll("#", "").trimLeft();
+        title = firstLine.replaceAll('#', '').trimLeft();
       } else {
         title = null;
       }
@@ -80,14 +92,15 @@ abstract class _NewNoteControllerBase with Store {
     final internetAccess = _offlineService.hasInternetAccess;
     final unixTimestamp = DateTime.now().millisecondsSinceEpoch;
     final model = Note(
-        id: Random().nextInt(9999),
-        etag: "etag",
-        readonly: false,
-        modified: unixTimestamp,
-        title: title!,
-        category: "",
-        content: markdownController.text,
-        favorite: false);
+      id: Random().nextInt(9999),
+      etag: 'etag',
+      readonly: false,
+      modified: unixTimestamp,
+      title: title!,
+      category: '',
+      content: markdownController.text,
+      favorite: false,
+    );
 
     if (!internetAccess) {
       if (alreadyCreatedNote) {
@@ -96,13 +109,15 @@ abstract class _NewNoteControllerBase with Store {
 
       _notesStorage.saveNote(model);
 
-      _offlineService.addQueue(OfflineQueueAction.ADD,
-          noteAsJson: jsonEncode(model));
+      _offlineService.addQueue(
+        OfflineQueueAction.ADD,
+        noteAsJson: jsonEncode(model),
+      );
 
       alreadyCreatedNote = true;
       note = model;
 
-      _toastService.showTextToast("Created $title", type: ToastType.success);
+      _toastService.showTextToast('Created $title', type: ToastType.success);
 
       return;
     }
@@ -119,7 +134,7 @@ abstract class _NewNoteControllerBase with Store {
       modified: DateTime.now().millisecondsSinceEpoch,
       title: title!,
       content: markdownController.text,
-      category: "",
+      category: '',
     );
 
     final response = await _noteRepositories.createNewNote(newNote);
@@ -128,20 +143,21 @@ abstract class _NewNoteControllerBase with Store {
       isLoading = false;
       alreadyCreatedNote = true;
       note = response;
-      _toastService.showTextToast("Created $title", type: ToastType.success);
+      _toastService.showTextToast('Created $title', type: ToastType.success);
     }
   }
 
   Future<void> _updateNote() async {
     final updateNote = Note(
-        id: note.id,
-        etag: note.etag,
-        readonly: note.readonly,
-        modified: DateTime.now().millisecondsSinceEpoch,
-        title: title!,
-        category: note.title,
-        content: markdownController.text,
-        favorite: note.favorite);
+      id: note.id,
+      etag: note.etag,
+      readonly: note.readonly,
+      modified: DateTime.now().millisecondsSinceEpoch,
+      title: title!,
+      category: note.title,
+      content: markdownController.text,
+      favorite: note.favorite,
+    );
     final internetAccess = _offlineService.hasInternetAccess;
 
     _notesStorage.saveNote(updateNote);
@@ -156,14 +172,14 @@ abstract class _NewNoteControllerBase with Store {
     isLoading = false;
   }
 
-  void dispose() async {
+  Future<void> dispose() async {
     await _homeViewController.fetchNotes();
     focusNode.dispose();
     markdownController.dispose();
   }
 
   @action
-  togglePreviewMode() {
+  void togglePreviewMode() {
     previewMode = !previewMode;
   }
 }

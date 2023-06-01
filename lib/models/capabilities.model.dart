@@ -1,6 +1,4 @@
-// To parse this JSON data, do
-//
-//     final capabilities = capabilitiesFromJson(jsonString);
+// ignore_for_file: public_member_api_docs
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -29,7 +27,7 @@ class Ocs with _$Ocs {
 @freezed
 class Data with _$Data {
   const factory Data({
-    required Map<String, Map> capabilities,
+    required Map<String, Map<String, dynamic>> capabilities,
   }) = _Data;
 
   factory Data.fromJson(Map<String, dynamic> json) => _$DataFromJson(json);
