@@ -107,15 +107,16 @@ class NoteStorage {
 
   Future<List<Note>> search(String text) async {
     final words = Isar.splitWords(text);
+    print(words);
 
     final notes = await isarInstance.localNotes
         .where()
-        .titleWordsElementStartsWith(text)
+        .contentWordsAsListEqualTo(words)
         .or()
-        .contentWordsEqualTo(text.split(" "))
-        .or()
-        .categoryWordsElementStartsWith(text)
+        .contentWordsElementStartsWith(text)
         .findAll();
+
+    print(notes);
 
     final modifiedList = notes.map((e) => Note.fromJson(e.toMap())).toList();
 

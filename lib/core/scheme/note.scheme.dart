@@ -47,9 +47,13 @@ class LocalNote {
   late String content;
   late bool favorite;
 
-  @Index(caseSensitive: false)
+  @Index(type: IndexType.value, caseSensitive: false)
   List<String> get contentWords =>
-      content.replaceAll(RegExp("/\n/g", multiLine: true), " ").split(' ');
+      content.replaceAll(RegExp("\n"), " ").split(" ");
+
+  @Index()
+  List<String> get contentWordsAsList =>
+      content.replaceAll(RegExp("\n"), " ").split(" ");
 
   @Index(type: IndexType.value, caseSensitive: false)
   List<String> get titleWords => title.split(' ');

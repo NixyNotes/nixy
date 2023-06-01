@@ -87,6 +87,7 @@ abstract class _HomeViewControllerBase with Store {
   late Completer<void>? _toast;
 
   Future<void> init([String? byCategoryName]) async {
+    isViewingCategoryPosts = ValueNotifier(false);
     sortAutomaticallyDisposer = autorun((_) {
       notes.sort((a, b) => b.favorite ? 1 : 0);
     });
@@ -307,6 +308,7 @@ abstract class _HomeViewControllerBase with Store {
     sortAutomaticallyDisposer();
     showToastWhenSycingDisposer();
     syncCategoriesWithPosts();
-    isViewingCategoryPosts.value = false;
+    searchController.dispose();
+    isViewingCategoryPosts.dispose();
   }
 }
