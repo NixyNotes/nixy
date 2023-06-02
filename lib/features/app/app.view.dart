@@ -1,8 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
-import 'package:nextcloudnotes/features/app/controllers/app.controller.dart';
+import 'package:nextcloudnotes/features/app/controllers/app_view.controller.dart';
 import 'package:nextcloudnotes/main.dart';
 
 @RoutePage()
@@ -17,13 +18,14 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   final AppViewController _appViewController = getIt<AppViewController>();
+  final AppController _appController = getIt<AppController>();
 
   bool stateInited = false;
 
   @override
   void initState() {
     super.initState();
-
+    _appController.init();
     _appViewController.initState(context).then((value) {
       setState(() {
         stateInited = true;

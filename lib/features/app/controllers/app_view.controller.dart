@@ -5,7 +5,7 @@ import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 
-part 'app.controller.g.dart';
+part 'app_view.controller.g.dart';
 
 /// The function disposes an instance of an AppViewController.
 ///

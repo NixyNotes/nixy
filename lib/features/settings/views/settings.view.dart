@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:nextcloudnotes/components/autosave_time_dialog.component.dart';
 import 'package:nextcloudnotes/core/router/router.gr.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
@@ -27,12 +28,24 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   void initState() {
     super.initState();
+    controller.init();
   }
 
   @override
   void dispose() {
     getIt.resetLazySingleton<SettingsViewController>();
     super.dispose();
+  }
+
+  Future<void> showAutoSaveDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (_) => AutoSaveTimePickerDialog(
+        minutesTextController: controller.autoSaveMinutesController,
+        secondsTextController: controller.autoSaveSecondsController,
+        onTapDone: controller.saveAutoSaveDetails,
+      ),
+    );
   }
 
   @override
@@ -73,6 +86,18 @@ class _SettingsViewState extends State<SettingsView> {
           SettingsSection(
             title: const Text('Common'),
             tiles: <SettingsTile>[
+              SettingsTile.navigation(
+                title: const Text('Auto save delay'),
+                value: Observer(
+                  builder: (_) {
+                    return Text(controller.currentAutoSaveDelayValueAsString);
+                  },
+                ),
+                onPressed: (_) => showAutoSaveDialog(),
+                leading: const Icon(
+                  EvaIcons.clockOutline,
+                ),
+              ),
               SettingsTile(
                 leading: const Icon(EvaIcons.trash2),
                 title: const Text('Clear cache'),

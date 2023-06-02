@@ -4,6 +4,7 @@ import 'package:flash/flash.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:nextcloudnotes/core/router/router.dart';
 import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
@@ -35,13 +36,17 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp.router(
       title: 'Nixi',
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('en')],
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.dark,
           seedColor: Colors.orangeAccent,
-          primary: Colors.orangeAccent,
-          primaryContainer: Colors.grey.shade800,
         ),
         useMaterial3: true,
         dividerTheme: DividerThemeData(color: Colors.grey.shade100),
@@ -51,7 +56,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.orangeAccent,
           primary: Colors.orangeAccent,
-          primaryContainer: Colors.grey.shade500,
         ),
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.blueGrey.shade50,

@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
@@ -34,10 +36,12 @@ abstract class _NoteViewControllerBase with Store {
     this._noteRepositories,
     this._offlineService,
     this._noteStorage,
+    this._appController,
   );
   final NoteRepositories _noteRepositories;
   final OfflineService _offlineService;
   final NoteStorage _noteStorage;
+  final AppController _appController;
 
   final FocusNode focusNode = FocusNode();
   final UndoHistoryController undoHistoryController = UndoHistoryController();
@@ -50,6 +54,12 @@ abstract class _NoteViewControllerBase with Store {
   @observable
   bool editMode = false;
 
+  @observable
+  bool autoSave = false;
+
+  late ReactionDisposer autoSaveDisposer;
+  late Timer? autoSaveTimer;
+
   @computed
   String get prettyDate => DateFormat('yyyy-MM-dd HH:mm')
       .format(DateTime.utc(1970).add(Duration(seconds: note.modified)));
@@ -57,9 +67,25 @@ abstract class _NoteViewControllerBase with Store {
   late Note note;
 
   void init(int noteId) {
+    autoSaveDisposer = autorun((_) {
+      if (isTextFieldFocused) {
+        // If text field has focus, auto save every 5 seconds.
+        autoSaveTimer =
+            Timer.periodic(_appController.autoSaveTimer.value, (timer) async {
+          await updateNote();
+        });
+      } else {
+        if (autoSaveTimer != null) {
+          autoSaveTimer?.cancel();
+        }
+      }
+    });
+
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isTextFieldFocused = true;
+      } else {
+        isTextFieldFocused = false;
       }
     });
   }
@@ -68,6 +94,7 @@ abstract class _NoteViewControllerBase with Store {
     focusNode.dispose();
     markdownController.dispose();
     undoHistoryController.dispose();
+    autoSaveDisposer();
   }
 
   @action
@@ -104,7 +131,7 @@ abstract class _NoteViewControllerBase with Store {
   }
 
   @action
-  Future<void> updateNote(int noteId, Note newNote) async {
+  Future<void> updateNote() async {
     final checkInternetAccess = _offlineService.hasInternetAccess;
     final note0 = note.toJson();
     note0['content'] = markdownController.text;
@@ -121,17 +148,17 @@ abstract class _NoteViewControllerBase with Store {
       return;
     }
 
-    await _noteRepositories.updateNote(noteId, note);
+    await _noteRepositories.updateNote(note.id, note);
     _noteStorage.saveNote(note);
   }
 
   void onTapDone(int noteId, Note note) {
     focusNode.unfocus();
     toggleEditMode();
-    isTextFieldFocused = false;
-    updateNote(noteId, note).then((value) => fetchNote(noteId));
+    updateNote().then((value) => fetchNote(noteId));
   }
 
+  @action
   void toggleEditMode() {
     editMode = !editMode;
   }
