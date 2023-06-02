@@ -26,7 +26,7 @@ class MarkdownEd extends MarkdownElementBuilder {
       controller
         ..editMode = !controller.editMode
         ..editMode = !controller.editMode
-        ..updateNote(controller.note.id, controller.note);
+        ..updateNote();
     }
 
     return InkWell(
