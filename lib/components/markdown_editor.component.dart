@@ -202,6 +202,11 @@ class _MarkdownEditor extends StatelessWidget {
         styleSheet: MarkdownStyleSheet(
           checkbox: const TextStyle(color: Colors.orangeAccent),
         ),
+        blockSyntaxes: [...md.ExtensionSet.gitHubWeb.blockSyntaxes],
+        extensionSet: md.ExtensionSet(
+          md.ExtensionSet.gitHubFlavored.blockSyntaxes,
+          [md.EmojiSyntax(), ...md.ExtensionSet.gitHubWeb.inlineSyntaxes],
+        ),
       );
     }
 
