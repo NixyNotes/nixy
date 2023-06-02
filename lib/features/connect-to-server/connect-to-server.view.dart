@@ -47,8 +47,8 @@ class _ConnectToServerViewState extends State<ConnectToServerView> {
     return Scaffold(
       appBar: AppBar(),
       body: isDesktop
-          ? Center(
-              child: Text("Please contiune from browser.."),
+          ? const Center(
+              child: Text('Please contiune from browser..'),
             )
           : InAppWebView(
               initialSettings: settings,

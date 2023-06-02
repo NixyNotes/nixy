@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         dividerTheme: DividerThemeData(color: Colors.grey.shade100),
         scaffoldBackgroundColor: Colors.grey.shade800,
-      ).copyWith(extensions: [FlashToastTheme(), FlashBarTheme()]),
+      ).copyWith(extensions: [const FlashToastTheme(), const FlashBarTheme()]),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.orangeAccent,
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.blueGrey.shade50,
         dividerTheme: DividerThemeData(color: Colors.grey.shade100),
-      ).copyWith(extensions: [FlashToastTheme(), FlashBarTheme()]),
+      ).copyWith(extensions: [const FlashToastTheme(), const FlashBarTheme()]),
       routerConfig: appRouter.config(),
     );
   }

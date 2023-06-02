@@ -26,6 +26,7 @@ void disposeNewNoteController(NewNoteController instance) {
 }
 
 @LazySingleton(dispose: disposeNewNoteController)
+// ignore: public_member_api_docs
 class NewNoteController = _NewNoteControllerBase with _$NewNoteController;
 
 abstract class _NewNoteControllerBase with Store {

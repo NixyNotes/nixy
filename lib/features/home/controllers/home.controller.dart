@@ -64,15 +64,17 @@ abstract class _HomeViewControllerBase with Store {
   @computed
   ObservableList<ListTile> get searchNotes {
     final notess = _searchNotes
-        .map((element) => ListTile(
-              title: Text(element.title),
-              onTap: () {
-                Navigator.of(scaffolMessengerKey.currentContext!).pop();
+        .map(
+          (element) => ListTile(
+            title: Text(element.title),
+            onTap: () {
+              Navigator.of(scaffolMessengerKey.currentContext!).pop();
 
-                scaffolMessengerKey.currentContext?.router
-                    .navigate(NoteRoute(noteId: element.id));
-              },
-            ))
+              scaffolMessengerKey.currentContext?.router
+                  .navigate(NoteRoute(noteId: element.id));
+            },
+          ),
+        )
         .toList();
 
     return ObservableList.of(notess);

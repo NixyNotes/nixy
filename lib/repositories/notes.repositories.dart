@@ -10,6 +10,8 @@ import 'package:nextcloudnotes/models/note.model.dart';
 /// The NoteRepositories class contains methods for fetching, deleting, updating, and creating notes
 /// using an API endpoint.
 class NoteRepositories {
+  /// The NoteRepositories class contains methods for fetching, deleting, updating, and creating notes
+  /// using an API endpoint.
   NoteRepositories(this._dio);
   final DioService _dio;
 

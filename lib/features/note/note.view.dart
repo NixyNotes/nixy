@@ -65,11 +65,12 @@ class _NoteViewState extends State<NoteView> {
               builder: (context) {
                 if (!controller.editMode) {
                   return IconButton(
-                      onPressed: controller.toggleEditMode,
-                      icon: Icon(EvaIcons.edit2Outline));
+                    onPressed: controller.toggleEditMode,
+                    icon: const Icon(EvaIcons.edit2Outline),
+                  );
                 }
 
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               },
             ),
             Observer(

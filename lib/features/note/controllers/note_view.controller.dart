@@ -104,7 +104,7 @@ abstract class _NoteViewControllerBase with Store {
   }
 
   @action
-  Future<void> updateNote(int noteId, Note note) async {
+  Future<void> updateNote(int noteId, Note newNote) async {
     final checkInternetAccess = _offlineService.hasInternetAccess;
     final note0 = note.toJson();
     note0['content'] = markdownController.text;

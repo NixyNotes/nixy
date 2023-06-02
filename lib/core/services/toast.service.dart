@@ -10,6 +10,7 @@ import 'package:nextcloudnotes/main.dart';
 /// `enum ToastType { success, error, info }` is defining an enumeration type called `ToastType` with
 /// three possible values: `success`, `error`, and `info`. This enum is used to specify the type of
 /// toast message to be displayed by the `ToastService` class.
+// ignore: public_member_api_docs
 enum ToastType { success, error, info }
 
 /// The ToastService class provides methods for displaying different types of toast messages with

@@ -70,15 +70,16 @@ class _HomeViewState extends State<HomeView> {
 
   void showSearchDialog() {
     showSearch(
-        useRootNavigator: true,
-        context: context,
-        delegate: NixiSearchDelegate());
+      useRootNavigator: true,
+      context: context,
+      delegate: NixiSearchDelegate(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      showAppBar: widget.byCategoryName != null ? true : false,
+      showAppBar: widget.byCategoryName != null,
       bottomBar: _renderBottomBar(context),
       body: Column(
         children: [
@@ -275,7 +276,6 @@ class _HomeViewState extends State<HomeView> {
             switch (value) {
               case 0:
                 showSearchDialog();
-                break;
               case 1:
                 context.router.navigate(const NewNoteRoute());
               case 2:
