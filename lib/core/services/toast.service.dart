@@ -4,6 +4,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flash/flash_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import 'package:nextcloudnotes/components/custom_loading_toast.component.dart';
 import 'package:nextcloudnotes/main.dart';
 
 /// `enum ToastType { success, error, info }` is defining an enumeration type called `ToastType` with
@@ -36,7 +37,6 @@ class ToastService {
       case ToastType.info:
         scaffolMessengerKey.currentContext
             ?.showInfoBar<bool>(content: Text(content), icon: Icon(icon));
-        break;
     }
   }
 
@@ -53,8 +53,16 @@ class ToastService {
   Completer<void> showLoadingToast([String? content]) {
     final completer = Completer<void>();
 
-    scaffolMessengerKey.currentContext
-        ?.showBlockDialog(dismissCompleter: completer);
+    scaffolMessengerKey.currentContext?.showFlash(
+      dismissCompleter: completer,
+      persistent: true,
+      builder: (context, controller) {
+        return CustomLoadingToast(
+          content: content,
+          flashController: controller,
+        );
+      },
+    );
 
     return completer;
   }
