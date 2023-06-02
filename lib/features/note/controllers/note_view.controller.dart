@@ -74,6 +74,8 @@ abstract class _NoteViewControllerBase with Store {
   Future<Note> fetchNote(int noteId) async {
     final data = await _noteStorage.getSingleNote(noteId);
 
+    note = data;
+
     return data;
   }
 

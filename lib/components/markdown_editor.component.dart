@@ -2,8 +2,39 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:markdown/markdown.dart' as md;
+import 'package:nextcloudnotes/core/services/di/di.dart';
+import 'package:nextcloudnotes/features/note/controllers/note_view.controller.dart';
 import 'package:nextcloudnotes/models/keyboard_actions.model.dart';
 import 'package:nixi_markdown/nixi_markdown.dart';
+
+/// A workaround for making checkbox clickable
+class MarkdownEd extends MarkdownElementBuilder {
+  @override
+  Widget? visitText(md.Text text, TextStyle? preferredStyle) {
+    final controller = getIt<NoteViewController>();
+
+    void onClick() {
+      if (controller.markdownController.text.contains('- [ ] ${text.text}')) {
+        controller.markdownController.text = controller.markdownController.text
+            .replaceFirst('- [ ] ${text.text}', '- [x] ${text.text}');
+      } else {
+        controller.markdownController.text = controller.markdownController.text
+            .replaceFirst('- [x] ${text.text}', '- [ ] ${text.text}');
+      }
+
+      controller
+        ..editMode = !controller.editMode
+        ..editMode = !controller.editMode
+        ..updateNote(controller.note.id, controller.note);
+    }
+
+    return InkWell(
+      onTap: onClick,
+      child: Text(text.text),
+    );
+  }
+}
 
 /// The MarkdownEditor class is a widget that allows users to edit and preview markdown text with
 /// undo/redo functionality and a toolbar for formatting options.
@@ -49,29 +80,29 @@ class MarkdownEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final markdownTools = NixiMarkdownToolbarTools(controller);
-    final List<KeyboardActionItem> keyboardActions = [
+    final keyboardActions = <KeyboardActionItem>[
       KeyboardActionItem(
-        icon: Icon(Icons.format_size),
+        icon: const Icon(Icons.format_size),
         onTap: markdownTools.h1,
       ),
       KeyboardActionItem(
-        icon: Icon(Icons.format_list_bulleted_add),
+        icon: const Icon(Icons.format_list_bulleted_add),
         onTap: markdownTools.checkBoxList,
       ),
       KeyboardActionItem(
-        icon: Icon(Icons.format_list_bulleted),
+        icon: const Icon(Icons.format_list_bulleted),
         onTap: markdownTools.list,
       ),
       KeyboardActionItem(
-        icon: Icon(Icons.format_bold_outlined),
+        icon: const Icon(Icons.format_bold_outlined),
         onTap: markdownTools.bold,
       ),
       KeyboardActionItem(
-        icon: Icon(Icons.format_strikethrough),
+        icon: const Icon(Icons.format_strikethrough),
         onTap: markdownTools.strikethrough,
       ),
       KeyboardActionItem(
-        icon: Icon(Icons.format_italic),
+        icon: const Icon(Icons.format_italic),
         onTap: markdownTools.italic,
       ),
     ];
@@ -132,6 +163,7 @@ class MarkdownEditor extends StatelessWidget {
         );
 
     return KeyboardActions(
+      enable: renderPreview != null && !renderPreview!,
       disableScroll: true,
       isDialog: true,
       config: config(),
@@ -164,6 +196,7 @@ class _MarkdownEditor extends StatelessWidget {
       return Markdown(
         selectable: true,
         data: controller.text,
+        builders: {'li': MarkdownEd()},
         imageBuilder: (uri, title, alt) =>
             CachedNetworkImage(imageUrl: uri.toString()),
         styleSheet: MarkdownStyleSheet(

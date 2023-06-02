@@ -63,6 +63,17 @@ class _NoteViewState extends State<NoteView> {
             ),
             Observer(
               builder: (context) {
+                if (!controller.editMode) {
+                  return IconButton(
+                      onPressed: controller.toggleEditMode,
+                      icon: Icon(EvaIcons.edit2Outline));
+                }
+
+                return SizedBox.shrink();
+              },
+            ),
+            Observer(
+              builder: (context) {
                 if (controller.isTextFieldFocused) {
                   return ElevatedButton(
                     onPressed: () => controller.onTapDone(data!.id, data),
@@ -79,14 +90,11 @@ class _NoteViewState extends State<NoteView> {
               Expanded(
                 child: Observer(
                   builder: (_) {
-                    return GestureDetector(
-                      onDoubleTap: controller.toggleEditMode,
-                      child: MarkdownEditor(
-                        undoHistoryController: controller.undoHistoryController,
-                        focusNode: controller.focusNode,
-                        controller: controller.markdownController,
-                        renderPreview: !controller.editMode,
-                      ),
+                    return MarkdownEditor(
+                      undoHistoryController: controller.undoHistoryController,
+                      focusNode: controller.focusNode,
+                      controller: controller.markdownController,
+                      renderPreview: !controller.editMode,
                     );
                   },
                 ),
