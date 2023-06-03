@@ -1,4 +1,4 @@
-package com.example.nextcloudnotes
+package com.muhammedkpln.nixy
 
 import io.flutter.embedding.android.FlutterActivity
 
