@@ -206,12 +206,16 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Stack _renderNote(Note note, [void Function()? showMenu]) {
+    var content = note.content;
+    if (note.content.length >= 280) {
+      content = note.content.substring(0, 280);
+    }
     return Stack(
       children: [
         Animate(
           child: NoteGrid(
             title: note.title,
-            content: note.content,
+            content: content,
             date: note.modified,
             isFavorite: note.favorite,
             onTap: () => controller.selectedNotes.isEmpty
