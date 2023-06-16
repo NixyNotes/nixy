@@ -23,7 +23,12 @@ class LoginRepository {
   ///   A `Future` object that will eventually resolve to a `LoginPoll` object. The `LoginPoll` object is
   /// created by parsing the JSON response data obtained from a POST request to the specified server URL.
   Future<LoginPoll> fetchLoginPoll(String serverUrl) async {
-    final response = await _dio.post('$serverUrl/index.php/login/v2');
+    final response = await _dio.post(
+      '$serverUrl/index.php/login/v2',
+      options: Options(
+        headers: {'User-Agent': 'Nixy/1.0'},
+      ),
+    );
 
     return LoginPoll.fromJson(response.data as Map<String, dynamic>);
   }
