@@ -152,10 +152,10 @@ abstract class _NoteViewControllerBase with Store {
     _noteStorage.saveNote(note);
   }
 
-  void onTapDone(int noteId, Note note) {
+  void onTapDone() {
     focusNode.unfocus();
     toggleEditMode();
-    updateNote().then((value) => fetchNote(noteId));
+    updateNote().then((value) => fetchNote(note.id));
   }
 
   @action

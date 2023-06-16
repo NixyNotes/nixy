@@ -75,9 +75,9 @@ class _NoteViewState extends State<NoteView> {
             ),
             Observer(
               builder: (context) {
-                if (controller.isTextFieldFocused) {
+                if (controller.editMode) {
                   return ElevatedButton(
-                    onPressed: () => controller.onTapDone(data!.id, data),
+                    onPressed: controller.onTapDone,
                     child: const Text('Done'),
                   );
                 }
