@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:nextcloudnotes/components/modal_sheet_menu.component.dart';
+import 'package:nextcloudnotes/core/config.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/router/router.gr.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
@@ -12,7 +13,9 @@ import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
 import 'package:nextcloudnotes/features/home/views/components/category_grid.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_grid.component.dart';
+import 'package:nextcloudnotes/features/home/views/components/note_list.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/search_deletage.component.dart';
+import 'package:nextcloudnotes/models/list_view.model.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -131,73 +134,36 @@ class _HomeViewState extends State<HomeView> {
             },
           ),
           Expanded(
-            child: Observer(
-              builder: (context) {
-                return RefreshIndicator.adaptive(
-                  onRefresh: controller.fetchNotes,
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      mainAxisExtent: 250,
-                    ),
-                    itemCount: controller.notes.length,
-                    clipBehavior: Clip.antiAlias,
-                    itemBuilder: (BuildContext context, int index) {
-                      final note = controller.notes[index];
-                      final menuItems = [
-                        PullDownMenuItem(
-                          onTap: () => controller.addToSelectedNote(note),
-                          title: 'Select',
+            child: RefreshIndicator.adaptive(
+              onRefresh: controller.fetchNotes,
+              child: Observer(
+                builder: (context) {
+                  switch (controller.homeNotesView.value) {
+                    case HomeListView.grid:
+                      return GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          mainAxisExtent: 250,
                         ),
-                        PullDownMenuItem(
-                          icon: EvaIcons.star,
-                          iconColor: Colors.yellowAccent,
-                          onTap: () => controller.toggleFavorite(note),
-                          title: 'Favorite',
-                        ),
-                        PullDownMenuItem(
-                          onTap: () => controller.deleteNote(note),
-                          title: 'Delete',
-                          isDestructive: true,
-                        ),
-                      ];
-
-                      return PlatformWidget(
-                        material: (context, platform) => InkWell(
-                          onLongPress: () {
-                            showPlatformModalSheet<void>(
-                              context: context,
-                              builder: (_) {
-                                return Material(
-                                  child: ModalSheetMenu(items: menuItems),
-                                );
-                              },
-                            );
-                          },
-                          child: Observer(
-                            builder: (context) {
-                              return _renderNote(note);
-                            },
-                          ),
-                        ),
-                        cupertino: (context, platform) {
-                          return PullDownButton(
-                            itemBuilder: (context) => menuItems,
-                            buttonBuilder: (context, showMenu) => Observer(
-                              builder: (context) {
-                                return _renderNote(note, showMenu);
-                              },
-                            ),
-                          );
+                        itemCount: controller.notes.length,
+                        clipBehavior: Clip.antiAlias,
+                        itemBuilder: (BuildContext context, int index) {
+                          return _itemBuilder(index);
                         },
                       );
-                    },
-                  ),
-                );
-              },
+                    case HomeListView.list:
+                      return ListView.builder(
+                        itemCount: controller.notes.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return _itemBuilder(index);
+                        },
+                      );
+                  }
+                },
+              ),
             ),
           ),
         ],
@@ -205,15 +171,65 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Stack _renderNote(Note note, [void Function()? showMenu]) {
+  PlatformWidget _itemBuilder(int index) {
+    final note = controller.notes[index];
+    final menuItems = [
+      PullDownMenuItem(
+        onTap: () => controller.addToSelectedNote(note),
+        title: 'Select',
+      ),
+      PullDownMenuItem(
+        icon: EvaIcons.star,
+        iconColor: Colors.yellowAccent,
+        onTap: () => controller.toggleFavorite(note),
+        title: 'Favorite',
+      ),
+      PullDownMenuItem(
+        onTap: () => controller.deleteNote(note),
+        title: 'Delete',
+        isDestructive: true,
+      ),
+    ];
+
+    return PlatformWidget(
+      material: (context, platform) => InkWell(
+        onLongPress: () {
+          showPlatformModalSheet<void>(
+            context: context,
+            builder: (_) {
+              return Material(
+                child: ModalSheetMenu(items: menuItems),
+              );
+            },
+          );
+        },
+        child: Observer(
+          builder: (context) {
+            return _renderNote(note);
+          },
+        ),
+      ),
+      cupertino: (context, platform) {
+        return PullDownButton(
+          itemBuilder: (context) => menuItems,
+          buttonBuilder: (context, showMenu) => Observer(
+            builder: (context) {
+              return _renderNote(note, showMenu);
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _renderNote(Note note, [void Function()? showMenu]) {
     var content = note.content;
-    if (note.content.length >= 280) {
-      content = note.content.substring(0, 280);
+    if (note.content.length >= NOTE_CONTENT_MAX_CHARACTERS) {
+      content = note.content.substring(0, NOTE_CONTENT_MAX_CHARACTERS);
     }
-    return Stack(
-      children: [
-        Animate(
-          child: NoteGrid(
+
+    final noteView = controller.homeNotesView.value == HomeListView.grid
+        ? NoteGrid(
             title: note.title,
             content: content,
             date: note.modified,
@@ -222,7 +238,22 @@ class _HomeViewState extends State<HomeView> {
                 ? context.router.navigate(NoteRoute(noteId: note.id))
                 : controller.addToSelectedNote(note),
             onLongPress: showMenu,
-          ),
+          )
+        : NoteList(
+            title: note.title,
+            date: note.modified,
+            category: note.category,
+            isFavorite: note.favorite,
+            onTap: () => controller.selectedNotes.isEmpty
+                ? context.router.navigate(NoteRoute(noteId: note.id))
+                : controller.addToSelectedNote(note),
+            onLongPress: showMenu,
+          );
+
+    return Stack(
+      children: [
+        Animate(
+          child: noteView,
         ).fade().slideX(),
         if (controller.selectedNotes
             .where((element) => element.id == note.id)

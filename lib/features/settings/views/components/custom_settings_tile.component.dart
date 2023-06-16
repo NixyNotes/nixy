@@ -17,6 +17,8 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
   const CustomPopupMenuSettingsTile({
     required this.title,
     required this.leading,
+    required this.items,
+    this.isEnabled = true,
     super.key,
   });
 
@@ -29,34 +31,32 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
   /// tile.
   final Widget leading;
 
+  /// The `final List<PullDownMenuItem> items;` is declaring a final variable `items` of type
+  /// `List<PullDownMenuItem>`. This variable is not used in the code snippet provided and may have been
+  /// intended for future use or as a placeholder.
+  final List<PullDownMenuItem> items;
+
+  /// The `final bool? isEnabled;` is declaring a nullable final variable `isEnabled` of type `bool`. It
+  /// is used in the `CustomPopupMenuSettingsTile` widget to determine if the tile is enabled or disabled.
+  /// If `isEnabled` is `true` (or not provided), the tile is enabled and can be interacted with. If
+  /// `isEnabled` is `false`, the tile is disabled and cannot be interacted with.
+  final bool? isEnabled;
+
   @override
   Widget build(BuildContext context) {
     final controller = getIt<SettingsViewController>();
-
-    List<PullDownMenuItem> availableAccountsToWidget() {
-      return controller.availableAccounts
-          .map(
-            (element) => PullDownMenuItem(
-              onTap: () {
-                controller.switchAccount(element);
-              },
-              title: element.server,
-            ),
-          )
-          .toList();
-    }
 
     if (Platform.isIOS) {
       return Observer(
         builder: (_) {
           return PullDownButton(
-            itemBuilder: (context) => availableAccountsToWidget(),
+            itemBuilder: (context) => items,
             buttonBuilder: (context, showMenu) {
               return SettingsTile.navigation(
                 title: title,
                 leading: leading,
                 onPressed: (context) => showMenu(),
-                enabled: controller.availableAccounts.isNotEmpty,
+                enabled: isEnabled ?? true,
               );
             },
           );
@@ -67,13 +67,13 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
     return SettingsTile.navigation(
       title: title,
       leading: leading,
-      enabled: controller.availableAccounts.isNotEmpty,
+      enabled: isEnabled ?? true,
       onPressed: (context) {
         showPlatformModalSheet<void>(
           context: context,
           builder: (_) {
             return Material(
-              child: ModalSheetMenu(items: availableAccountsToWidget()),
+              child: ModalSheetMenu(items: items),
             );
           },
         );

@@ -7,6 +7,7 @@ import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/core/storage/offline_queue.storage.dart';
+import 'package:nextcloudnotes/models/list_view.model.dart';
 
 part 'settings_view.controller.g.dart';
 
@@ -96,13 +97,18 @@ abstract class _SettingsViewControllerBase with Store {
     await _authController.logout();
   }
 
-  void saveAutoSaveDetails() {
+  Future<void> saveAutoSaveDetails() async {
     final duration = Duration(
       minutes: int.tryParse(autoSaveMinutesController.text) ?? 0,
       seconds: int.tryParse(autoSaveSecondsController.text) ?? 10,
     );
 
-    _appController.setAutoSaveTimer(duration);
+    await _appController.setAutoSaveTimer(duration);
+  }
+
+  Future<void> saveHomeNotesView(HomeListView view) async {
+    await _appController.setHomeNotesView(view);
+    _toastService.showTextToast('Switched to ${view.title}');
   }
 
   void dispose() {

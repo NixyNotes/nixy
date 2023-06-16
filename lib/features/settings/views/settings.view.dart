@@ -8,6 +8,8 @@ import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/settings/controllers/settings_view.controller.dart';
 import 'package:nextcloudnotes/features/settings/views/components/custom_settings_tile.component.dart';
+import 'package:nextcloudnotes/models/list_view.model.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 /// This is a settings view class that displays various settings options and allows the user to navigate
@@ -24,6 +26,28 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   final controller = getIt<SettingsViewController>();
+
+  List<PullDownMenuItem> get availableAccounts {
+    return controller.availableAccounts
+        .map(
+          (element) => PullDownMenuItem(
+            onTap: () => controller.switchAccount(element),
+            title: element.server,
+          ),
+        )
+        .toList();
+  }
+
+  List<PullDownMenuItem> get homeListViews {
+    return HomeListView.values
+        .map(
+          (element) => PullDownMenuItem(
+            onTap: () => controller.saveHomeNotesView(element),
+            title: element.title,
+          ),
+        )
+        .toList();
+  }
 
   @override
   void initState() {
@@ -66,6 +90,8 @@ class _SettingsViewState extends State<SettingsView> {
                 leading: const Icon(
                   EvaIcons.activity,
                 ),
+                isEnabled: controller.availableAccounts.isNotEmpty,
+                items: availableAccounts,
               ),
               SettingsTile.navigation(
                 title: const Text('Add another Nextcloud instance'),
@@ -103,6 +129,16 @@ class _SettingsViewState extends State<SettingsView> {
                 title: const Text('Clear cache'),
                 onPressed: (context) => controller.clearCache(),
               ),
+            ],
+          ),
+          SettingsSection(
+            title: const Text('Theming'),
+            tiles: [
+              CustomPopupMenuSettingsTile(
+                title: const Text('Home notes view'),
+                leading: const Icon(EvaIcons.browserOutline),
+                items: homeListViews,
+              )
             ],
           ),
         ],

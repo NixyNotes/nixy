@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/router/router.gr.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
@@ -14,6 +15,7 @@ import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/main.dart';
 import 'package:nextcloudnotes/models/category.model.dart';
+import 'package:nextcloudnotes/models/list_view.model.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
@@ -39,12 +41,17 @@ abstract class _HomeViewControllerBase with Store {
     this._noteStorage,
     this._offlineService,
     this._authController,
+    this._appController,
   );
   final NoteRepositories _noteRepositories;
   final ToastService _toastService;
   final NoteStorage _noteStorage;
   final OfflineService _offlineService;
   final AuthController _authController;
+  final AppController _appController;
+
+  @computed
+  Observable<HomeListView> get homeNotesView => _appController.homeNotesView;
 
   @observable
   ObservableList<Note> notes = ObservableList();

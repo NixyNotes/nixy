@@ -15,32 +15,39 @@ class ModalSheetMenu extends StatelessWidget {
   /// creating an instance of the `ModalSheetMenu` widget.
   final List<PullDownMenuItem> items;
 
-  /// The `itemsToListTile` getter is a computed property that converts the list of `PullDownMenuItem`
-  /// objects (`items`) into a list of `ListTile` widgets. It does this by using the `map()` method to
-  /// iterate over each `PullDownMenuItem` object in the `items` list and create a corresponding
-  /// `ListTile` widget with the same title, icon, and `onTap` function. The `toList()` method is then
-  /// called on the resulting `Iterable` to convert it back into a list of `ListTile` widgets. The
-  /// `isDestructive` property of each `PullDownMenuItem` is used to set the text color of the `ListTile`
-  /// to red if it is `true`.
-  List<ListTile> get itemsToListTile => items
-      .map(
-        (e) => ListTile(
-          leading: e.icon != null ? Icon(e.icon) : null,
-          title: Text(
-            e.title,
-            style: TextStyle(color: e.isDestructive ? Colors.redAccent : null),
-          ),
-          onTap: e.onTap,
-        ),
-      )
-      .toList();
-
   @override
   Widget build(BuildContext context) {
+    /// The `itemsToListTile` getter is a computed property that converts the list of `PullDownMenuItem`
+    /// objects (`items`) into a list of `ListTile` widgets. It does this by using the `map()` method to
+    /// iterate over each `PullDownMenuItem` object in the `items` list and create a corresponding
+    /// `ListTile` widget with the same title, icon, and `onTap` function. The `toList()` method is then
+    /// called on the resulting `Iterable` to convert it back into a list of `ListTile` widgets. The
+    /// `isDestructive` property of each `PullDownMenuItem` is used to set the text color of the `ListTile`
+    /// to red if it is `true`.
+    List<ListTile> itemsToListTile() {
+      return items
+          .map(
+            (e) => ListTile(
+              leading: e.icon != null ? Icon(e.icon) : null,
+              title: Text(
+                e.title,
+                style:
+                    TextStyle(color: e.isDestructive ? Colors.redAccent : null),
+              ),
+              onTap: () {
+                e.onTap?.call();
+
+                Navigator.of(context).pop();
+              },
+            ),
+          )
+          .toList();
+    }
+
     return SafeArea(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: itemsToListTile,
+        children: itemsToListTile(),
       ),
     );
   }
