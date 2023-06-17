@@ -134,7 +134,12 @@ abstract class _NoteViewControllerBase with Store {
   Future<void> updateNote() async {
     final checkInternetAccess = _offlineService.hasInternetAccess;
     final note0 = note.toJson();
+    final lines = markdownController.text.split('\n');
+    final firstLine = lines.first;
+    final title = firstLine.replaceAll('#', '').trimLeft();
+
     note0['content'] = markdownController.text;
+    note0['title'] = title;
     note = Note.fromJson(note0);
 
     if (!checkInternetAccess) {
