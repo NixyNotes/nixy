@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/router/router.dart';
 import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
@@ -23,17 +24,28 @@ void main() async {
   }
   await initDb([UserSchema, LocalNoteSchema, OfflineQueueSchema]);
 
-  runApp(const MyApp());
+  runApp(const NixyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NixyApp extends StatefulWidget {
+  const NixyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<NixyApp> createState() => _NixyAppState();
+}
+
+class _NixyAppState extends State<NixyApp> {
+  final appRouter = getIt<AppRouter>();
+  final AppController _appController = getIt<AppController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _appController.init();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final appRouter = AppRouter();
-
     return MaterialApp.router(
       title: 'Nixi',
       localizationsDelegates: const [
@@ -61,7 +73,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.blueGrey.shade50,
         dividerTheme: DividerThemeData(color: Colors.grey.shade100),
       ).copyWith(extensions: [const FlashToastTheme(), const FlashBarTheme()]),
-      routerConfig: appRouter.config(),
+      routerConfig: appRouter.router,
     );
   }
 }

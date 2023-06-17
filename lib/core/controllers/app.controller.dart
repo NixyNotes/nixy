@@ -1,7 +1,10 @@
 // ignore_for_file: use_setters_to_change_properties
 
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
+import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/storage/app.storage.dart';
 import 'package:nextcloudnotes/models/list_view.model.dart';
 
@@ -12,10 +15,13 @@ part 'app.controller.g.dart';
 /// Application settings that user can change inside the application
 class AppController = _AppControllerBase with _$AppController;
 
-abstract class _AppControllerBase with Store {
-  _AppControllerBase(this._appStorage);
+abstract class _AppControllerBase extends ChangeNotifier with Store {
+  _AppControllerBase(
+      this._appStorage, this._authController, this._offlineService);
 
   final AppStorage _appStorage;
+  final AuthController _authController;
+  final OfflineService _offlineService;
 
   @observable
   Observable<Duration> autoSaveTimer = Observable(const Duration(seconds: 10));
@@ -23,8 +29,15 @@ abstract class _AppControllerBase with Store {
   @observable
   Observable<HomeListView> homeNotesView = Observable(HomeListView.list);
 
+  bool isInitialized = false;
+
   Future<void> init() async {
+    await _authController.initState();
+    await _offlineService.checkForNetworkConditions();
     await _loadAutoSaveSettings();
+
+    isInitialized = true;
+    notifyListeners();
   }
 
   @action

@@ -1,13 +1,14 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nextcloudnotes/components/modal_sheet_menu.component.dart';
 import 'package:nextcloudnotes/core/config.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
-import 'package:nextcloudnotes/core/router/router.gr.dart';
+import 'package:nextcloudnotes/core/router/parameters/home.parameters.dart';
+import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
@@ -15,11 +16,10 @@ import 'package:nextcloudnotes/features/home/views/components/category_grid.comp
 import 'package:nextcloudnotes/features/home/views/components/note_grid.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_list.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/search_deletage.component.dart';
+import 'package:nextcloudnotes/main.dart';
 import 'package:nextcloudnotes/models/list_view.model.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-
-@RoutePage()
 
 /// Home view
 class HomeView extends StatefulWidget {
@@ -68,7 +68,15 @@ class _HomeViewState extends State<HomeView> {
 
   void navigateToPosts(String label) {
     isViewingCategoryPosts.value = true;
-    context.router.push(HomeRoute(byCategoryName: label));
+
+    final parameters = HomeParameters(
+      categoryName: label,
+    );
+
+    context.pushNamed(
+      RouterMeta.Home.name,
+      queryParameters: parameters.toMap(),
+    );
   }
 
   void showSearchDialog() {
@@ -82,6 +90,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      key: scaffolMessengerKey,
       showAppBar: widget.byCategoryName != null,
       bottomBar: _renderBottomBar(context),
       body: Column(
@@ -111,10 +120,9 @@ class _HomeViewState extends State<HomeView> {
                     return CategoryGrid(
                       categoryName: 'More categories...',
                       onTap: () {
-                        context.router.navigate(
-                          CategoriesRoute(
-                            categories: controller.categories,
-                          ),
+                        context.pushNamed(
+                          RouterMeta.Categories.name,
+                          extra: controller.categories,
                         );
                       },
                     );
@@ -235,7 +243,10 @@ class _HomeViewState extends State<HomeView> {
             date: note.modified,
             isFavorite: note.favorite,
             onTap: () => controller.selectedNotes.isEmpty
-                ? context.router.navigate(NoteRoute(noteId: note.id))
+                ? context.pushNamed(
+                    RouterMeta.SingleNote.name,
+                    pathParameters: {'id': note.id.toString()},
+                  )
                 : controller.addToSelectedNote(note),
             onLongPress: showMenu,
           )
@@ -245,7 +256,10 @@ class _HomeViewState extends State<HomeView> {
             category: note.category,
             isFavorite: note.favorite,
             onTap: () => controller.selectedNotes.isEmpty
-                ? context.router.navigate(NoteRoute(noteId: note.id))
+                ? context.pushNamed(
+                    RouterMeta.SingleNote.name,
+                    pathParameters: {'id': note.id.toString()},
+                  )
                 : controller.addToSelectedNote(note),
             onLongPress: showMenu,
           );
@@ -312,9 +326,9 @@ class _HomeViewState extends State<HomeView> {
               case 0:
                 showSearchDialog();
               case 1:
-                context.router.navigate(const NewNoteRoute());
+                context.pushNamed(RouterMeta.NewNote.name);
               case 2:
-                context.router.navigate(const SettingsRoute());
+                context.pushNamed(RouterMeta.Settings.name);
             }
           },
           items: [

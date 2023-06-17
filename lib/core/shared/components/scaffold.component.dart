@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 
 /// The `AppScaffold` class is a customizable scaffold widget that can display an app bar, bottom
@@ -58,7 +57,7 @@ class AppScaffold extends StatelessWidget {
     return Scaffold(
       appBar: showAppBar!
           ? AppBar(
-              title: Text(title ?? context.routeData.title(context)),
+              title: Text(title ?? ''),
               actions: actions,
             )
           : null,

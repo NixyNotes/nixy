@@ -1,44 +1,45 @@
 // ignore_for_file: public_member_api_docs, constant_identifier_names
 
-import 'package:auto_route/auto_route.dart';
-import 'package:nextcloudnotes/core/router/router.gr.dart';
-
-/// The `enum RouterMeta` is defining a set of named constants, each of which has a `page` and a `title`
-/// property. These constants represent different pages in the app and are used to generate routes using
-/// the `auto_route` package. The `titleToWidget()` method returns a function that takes a `context` and
-/// `data` parameter and returns the `title` property of the corresponding `RouterMeta` constant. This
-/// is used to dynamically set the title of the app bar for each page.
+/// This is an enumeration in Dart called `RouterMeta`. It defines a set of named constants, each of
+/// which has a `path` and a `name` property. The constants represent different routes in a web
+/// application, such as the home page, login page, settings page, etc. The `const` keyword is used to
+/// make the enumeration values immutable. The `required` keyword is used to indicate that the `path`
+/// and `name` properties are mandatory and must be provided when creating a new instance of the
+/// enumeration. The `final` keyword is used to make the `name` and `path` properties read-only.
 enum RouterMeta {
-  Home(page: HomeRoute.page, title: 'Notes'),
-  Login(page: LoginRoute.page, title: 'Login to a instance'),
-  ConnectToServer(page: ConnectToServerRoute.page, title: 'Nextcloud'),
-  NewNote(page: NewNoteRoute.page, title: 'New Note'),
-  Settings(page: SettingsRoute.page, title: 'Settings'),
-  Categories(page: CategoriesRoute.page, title: 'Categories');
+  Home(path: '/home', title: 'Notes', name: 'home'),
+  Login(path: '/login', title: 'Login to a instance', name: 'login'),
+  ConnectToServer(
+    path: '/connect/:url',
+    title: 'Nextcloud',
+    name: 'connect-to-server',
+  ),
+  NewNote(path: '/new-note', title: 'New Note', name: 'new-note'),
+  Settings(path: '/settings', title: 'Settings', name: 'settings'),
+  Categories(path: '/categories', title: 'Categories', name: 'categories'),
+  SingleNote(path: '/note/:id', title: 'Note', name: 'single-note');
 
-  const RouterMeta({required this.page, required this.title});
+  const RouterMeta({
+    required this.path,
+    required this.name,
+    required this.title,
+  });
 
-  /// `final PageInfo<dynamic> page;` is declaring a final variable `page` of type `PageInfo<dynamic>`.
-  /// `PageInfo` is a class provided by the `auto_route` package that represents a page in the app and
-  /// contains information such as the path, name, and widget associated with the page. The `<dynamic>`
-  /// type parameter indicates that the `PageInfo` can be associated with any type of widget. In the
-  /// `RouterMeta` enum, each constant is associated with a specific `PageInfo` object that represents a
-  /// page in the app.
-  final PageInfo<dynamic> page;
+  /// `final String name;` is declaring a read-only property called `name` of type `String` for each value
+  /// in the `RouterMeta` enumeration. This property holds the name of the route, which can be used for
+  /// display purposes or for identifying the route in code. Since it is declared as `final`, its value
+  /// cannot be changed once it is set during the creation of the enumeration value.
+  final String name;
 
-  /// The `final String title;` is declaring a final variable `title` of type `String` in the `RouterMeta`
-  /// enum. It represents the title of a specific page in the app. Each constant in the `RouterMeta` enum
-  /// is associated with a specific `title` that is used to dynamically set the title of the app bar for
-  /// that page.
+  /// `final String path;` is declaring a read-only property called `path` of type `String` for each value
+  /// in the `RouterMeta` enumeration. This property holds the path of the route, which is the URL that
+  /// corresponds to the route. Since it is declared as `final`, its value cannot be changed once it is
+  /// set during the creation of the enumeration value.
+  final String path;
+
+  /// The `final String title;` line is defining a property called `title` for the `RouterMeta`
+  /// enumeration, but it is not being initialized with a value. This means that any value of `RouterMeta`
+  /// will have a `title` property that is `null` by default. It is possible that this property was
+  /// intended to be used for something else, but it is not currently being used in the code.
   final String title;
-
-  /// This function returns a string function that takes in context and data parameters and returns the
-  /// title as a widget.
-  ///
-  /// Returns:
-  ///   A function that takes in a context and data parameter and returns the value of the "title"
-  /// variable.
-  String Function(dynamic context, dynamic data) titleToWidget() {
-    return (context, data) => title;
-  }
 }

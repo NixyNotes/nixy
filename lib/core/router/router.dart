@@ -1,54 +1,132 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:nextcloudnotes/core/router/guards/auth.guard.dart';
-import 'package:nextcloudnotes/core/router/router.gr.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:injectable/injectable.dart';
+import 'package:nextcloudnotes/core/controllers/app.controller.dart';
+import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
+import 'package:nextcloudnotes/features/categories/views/categories.view.dart';
+import 'package:nextcloudnotes/features/connect-to-server/connect-to-server.view.dart';
+import 'package:nextcloudnotes/features/home/views/home.view.dart';
+import 'package:nextcloudnotes/features/login/views/login.view.dart';
+import 'package:nextcloudnotes/features/new_note/views/new_note.view.dart';
+import 'package:nextcloudnotes/features/note/note.view.dart';
+import 'package:nextcloudnotes/features/settings/views/settings.view.dart';
+import 'package:nextcloudnotes/models/category.model.dart';
 
-@AutoRouterConfig(replaceInRouteName: 'View,Route')
+@injectable
+class AppRouter {
+  AppRouter(this._authController, this._appController, this._authProvider);
 
-/// App router
-class AppRouter extends $AppRouter {
-  @override
-  List<AutoRoute> get routes => [
-        AutoRoute(
-          page: AppRoute.page,
-          initial: true,
-          children: [
-            AutoRoute(
-              page: RouterMeta.Home.page,
-              title: RouterMeta.Home.titleToWidget(),
-              guards: [AuthGuard()],
-              initial: true,
+  final AuthController _authController;
+  final AppController _appController;
+  final testAuthProvider _authProvider;
+
+  GoRouter get router => GoRouter(
+        initialLocation: RouterMeta.Login.path,
+        refreshListenable: _authProvider,
+        debugLogDiagnostics: true,
+        routes: [
+          GoRoute(
+            name: RouterMeta.Home.name,
+            path: RouterMeta.Home.path,
+            pageBuilder: (context, state) {
+              final categoryName = state.queryParameters['categoryName'];
+
+              return MaterialPage<HomeView>(
+                child: HomeView(
+                  byCategoryName: categoryName,
+                ),
+                key: state.pageKey,
+              );
+            },
+          ),
+          GoRoute(
+            name: RouterMeta.Login.name,
+            path: RouterMeta.Login.path,
+            pageBuilder: (context, state) => MaterialPage<LoginView>(
+              child: const LoginView(),
+              key: state.pageKey,
             ),
-            AutoRoute(
-              page: NoteRoute.page,
-              guards: [AuthGuard()],
+          ),
+          GoRoute(
+            name: RouterMeta.ConnectToServer.name,
+            path: RouterMeta.ConnectToServer.path,
+            pageBuilder: (context, state) => MaterialPage<ConnectToServerView>(
+              child: ConnectToServerView(
+                url: state.pathParameters['url']!,
+              ),
+              key: state.pageKey,
               fullscreenDialog: true,
             ),
-            AutoRoute(
-              page: RouterMeta.NewNote.page,
-              title: RouterMeta.NewNote.titleToWidget(),
-              guards: [AuthGuard()],
+          ),
+          GoRoute(
+            name: RouterMeta.Settings.name,
+            path: RouterMeta.Settings.path,
+            pageBuilder: (context, state) => MaterialPage<SettingsView>(
+              child: const SettingsView(),
+              key: state.pageKey,
               fullscreenDialog: true,
             ),
-            AutoRoute(
-              page: RouterMeta.Login.page,
-              title: RouterMeta.Login.titleToWidget(),
-            ),
-            AutoRoute(
-              page: RouterMeta.ConnectToServer.page,
-              title: RouterMeta.ConnectToServer.titleToWidget(),
+          ),
+          GoRoute(
+            name: RouterMeta.SingleNote.name,
+            path: RouterMeta.SingleNote.path,
+            pageBuilder: (context, state) => MaterialPage<NoteView>(
+              child: NoteView(noteId: int.parse(state.pathParameters['id']!)),
+              key: state.pageKey,
               fullscreenDialog: true,
             ),
-            AutoRoute(
-              page: RouterMeta.Settings.page,
-              title: RouterMeta.Settings.titleToWidget(),
+          ),
+          GoRoute(
+            name: RouterMeta.Categories.name,
+            path: RouterMeta.Categories.path,
+            pageBuilder: (context, state) {
+              final categories = state.extra as List<CategoryModel>;
+
+              return MaterialPage<CategoriesView>(
+                child: CategoriesView(
+                  categories: categories,
+                ),
+                key: state.pageKey,
+                fullscreenDialog: true,
+              );
+            },
+          ),
+          GoRoute(
+            name: RouterMeta.NewNote.name,
+            path: RouterMeta.NewNote.path,
+            pageBuilder: (context, state) => MaterialPage<NewNoteView>(
+              child: const NewNoteView(),
+              key: state.pageKey,
               fullscreenDialog: true,
             ),
-            AutoRoute(
-              page: RouterMeta.Categories.page,
-              title: RouterMeta.Categories.titleToWidget(),
-            ),
-          ],
-        )
-      ];
+          ),
+        ],
+        redirect: (context, state) {
+          final isLoggedIn = _authController.isLoggedIn;
+          final loginLocation = state.namedLocation(RouterMeta.Login.name);
+
+          final homeLocation = state.namedLocation(RouterMeta.Home.name);
+
+          final isInLoginPage = state.location == loginLocation;
+
+          if (!isLoggedIn) {
+            if (isInLoginPage) {
+              return null;
+            }
+
+            if (state.location.startsWith('/connect')) {
+              return null;
+            }
+
+            return loginLocation;
+          }
+
+          if (isLoggedIn && isInLoginPage) {
+            return homeLocation;
+          }
+
+          return null;
+        },
+      );
 }

@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
-import 'package:nextcloudnotes/core/router/router.gr.dart';
+import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
@@ -77,8 +77,10 @@ abstract class _HomeViewControllerBase with Store {
             onTap: () {
               Navigator.of(scaffolMessengerKey.currentContext!).pop();
 
-              scaffolMessengerKey.currentContext?.router
-                  .navigate(NoteRoute(noteId: element.id));
+              scaffolMessengerKey.currentContext?.pushNamed(
+                RouterMeta.SingleNote.name,
+                pathParameters: {'id': element.id.toString()},
+              );
             },
           ),
         )

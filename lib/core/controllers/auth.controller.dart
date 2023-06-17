@@ -1,12 +1,26 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
-import 'package:nextcloudnotes/core/router/router.gr.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
+import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/storage/auth.storage.dart';
 
 part 'auth.controller.g.dart';
+
+@lazySingleton
+class testAuthProvider extends ChangeNotifier {
+  bool isAuthenticated = false;
+
+  void login() {
+    isAuthenticated = true;
+    notifyListeners();
+  }
+
+  void logout() {
+    isAuthenticated = false;
+    notifyListeners();
+  }
+}
 
 @lazySingleton
 
@@ -21,7 +35,7 @@ class AuthController = _AuthControllerBase with _$AuthController;
 // ignore: public_member_api_docs
 enum LoginState { loggedIn, none }
 
-abstract class _AuthControllerBase with Store {
+abstract class _AuthControllerBase extends ChangeNotifier with Store {
   _AuthControllerBase(this._authStorage);
 
   final AuthStorage _authStorage;
@@ -41,7 +55,7 @@ abstract class _AuthControllerBase with Store {
   bool get isLoggedIn => loginState.value == LoginState.loggedIn;
 
   @action
-  Future<void> initState(BuildContext context) async {
+  Future<void> initState() async {
     final hasUsers = await _authStorage.hasUsers();
 
     if (hasUsers) {
@@ -53,6 +67,8 @@ abstract class _AuthControllerBase with Store {
 
       users.removeWhere((element) => element.id == currentAccount.value!.id);
       availableAccounts = ObservableList.of(users);
+
+      getIt<testAuthProvider>().login();
     }
 
     currentAccount.observe((_) async {
@@ -64,19 +80,6 @@ abstract class _AuthControllerBase with Store {
 
       availableAccounts = ObservableList.of(users);
     });
-
-    loginState.observe((
-      p0,
-    ) {
-      // Router observer, if authenticated route to home.
-      if (p0.newValue == LoginState.loggedIn) {
-        context.router.replaceAll([HomeRoute()]);
-      } else {
-        context.router.replaceAll([LoginRoute()]);
-      }
-
-      return;
-    });
   }
 
   @action
@@ -85,6 +88,7 @@ abstract class _AuthControllerBase with Store {
     _authStorage.saveUser(modifiedUser);
     currentAccount.value = user;
     loginState.value = LoginState.loggedIn;
+    getIt<testAuthProvider>().login();
   }
 
   @action
@@ -101,6 +105,7 @@ abstract class _AuthControllerBase with Store {
       currentAccount.value = null;
       availableAccounts.clear();
     }
+    getIt<testAuthProvider>().logout();
   }
 
   @action

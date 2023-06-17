@@ -1,9 +1,9 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nextcloudnotes/components/autosave_time_dialog.component.dart';
-import 'package:nextcloudnotes/core/router/router.gr.dart';
+import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/settings/controllers/settings_view.controller.dart';
@@ -14,7 +14,6 @@ import 'package:settings_ui/settings_ui.dart';
 
 /// This is a settings view class that displays various settings options and allows the user to navigate
 /// to other views.
-@RoutePage()
 class SettingsView extends StatefulWidget {
   /// This is a settings view class that displays various settings options and allows the user to navigate
   /// to other views.
@@ -98,7 +97,8 @@ class _SettingsViewState extends State<SettingsView> {
                 leading: const Icon(
                   EvaIcons.personAdd,
                 ),
-                onPressed: (context) => context.router.navigate(LoginRoute()),
+                onPressed: (context) =>
+                    context.pushNamed(RouterMeta.Login.name),
               ),
               SettingsTile(
                 title: const Text('Logout'),

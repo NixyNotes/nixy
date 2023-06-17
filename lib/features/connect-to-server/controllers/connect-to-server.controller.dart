@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
@@ -75,7 +75,8 @@ abstract class _ConnectToServerControllerBase with Store {
               loadingToast.complete();
               timer.cancel();
             } else {
-              context.router.back();
+              context.pop();
+
               loadingToast.complete();
               _toastService.showTextToast(
                 'Nextcloud does not support notes plugin.',
@@ -93,7 +94,7 @@ abstract class _ConnectToServerControllerBase with Store {
       });
     } on DioError catch (e) {
       _logService.logger.e(e);
-      context.router.back();
+      context.pop();
 
       _toastService.showTextToast(
         'Cannot reach Nextcloud instance.',

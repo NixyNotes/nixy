@@ -1,8 +1,8 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
-import 'package:nextcloudnotes/core/router/router.gr.dart';
+import 'package:nextcloudnotes/core/router/router_meta.dart';
 
 part 'login_view.controller.g.dart';
 
@@ -16,8 +16,10 @@ abstract class _LoginViewControllerBase with Store {
 
   void onPressLogin(BuildContext context) {
     if (formKey.currentState!.validate()) {
-      context.router
-          .navigate(ConnectToServerRoute(url: serverFormController.text));
+      context.pushNamed(
+        RouterMeta.ConnectToServer.name,
+        pathParameters: {'url': serverFormController.text},
+      );
     }
   }
 
