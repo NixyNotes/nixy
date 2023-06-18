@@ -30,7 +30,7 @@ void main() async {
       runApp(const NixyApp());
     },
     (error, stack) {
-      Logger().e(error, stack);
+      Logger().e('ERROR', error, stack);
     },
   );
 }
