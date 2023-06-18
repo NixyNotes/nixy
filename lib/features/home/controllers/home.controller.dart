@@ -116,7 +116,9 @@ abstract class _HomeViewControllerBase with Store {
     });
 
     _authController.currentAccount.observe((_) async {
-      await fetchNotes(byCategoryName);
+      if (_authController.currentAccount.value != null) {
+        await fetchNotes(byCategoryName);
+      }
     });
 
     await fetchNotes(byCategoryName);
