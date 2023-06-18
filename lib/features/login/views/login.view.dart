@@ -13,6 +13,7 @@ class LoginView extends StatelessWidget {
     final controller = getIt<LoginViewController>();
 
     return AppScaffold(
+      showAppBar: false,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,

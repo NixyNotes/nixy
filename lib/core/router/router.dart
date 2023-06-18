@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
+import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/features/categories/views/categories.view.dart';
 import 'package:nextcloudnotes/features/connect-to-server/connect-to-server.view.dart';
 import 'package:nextcloudnotes/features/home/views/home.view.dart';
+import 'package:nextcloudnotes/features/introduction_screen/views/introduction_screen.view.dart';
 import 'package:nextcloudnotes/features/login/views/login.view.dart';
 import 'package:nextcloudnotes/features/new_note/views/new_note.view.dart';
 import 'package:nextcloudnotes/features/note/note.view.dart';
@@ -20,15 +22,21 @@ final navigatorKey = GlobalKey<NavigatorState>();
 /// Router for application
 class AppRouter {
   /// Router for application
-  AppRouter(this._authController);
+  AppRouter(this._authController, this._appController);
 
   final AuthController _authController;
+  final AppController _appController;
+
+  /// Defining a constant variable `secondaryRouteLocation` with the value of the path of the login route,
+  /// which can be used as a fallback location in case the redirect logic in the `router` fails to
+  /// determine the appropriate route to redirect to.
+  final String secondaryRouteLocation = RouterMeta.Login.path;
 
   /// Router
   GoRouter get router => GoRouter(
         navigatorKey: navigatorKey,
-        initialLocation: RouterMeta.Login.path,
-        refreshListenable: _authController,
+        initialLocation: RouterMeta.IntroductionScreen.path,
+        refreshListenable: Listenable.merge([_authController, _appController]),
         debugLogDiagnostics: true,
         errorPageBuilder: (context, state) =>
             MaterialPage(child: Text(state.error.toString())),
@@ -96,7 +104,7 @@ class AppRouter {
             name: RouterMeta.Categories.name,
             path: RouterMeta.Categories.path,
             pageBuilder: (context, state) {
-              final categories = state.extra as List<CategoryModel>;
+              final categories = state.extra! as List<CategoryModel>;
 
               return MaterialPage<CategoriesView>(
                 child: CategoriesView(
@@ -116,14 +124,32 @@ class AppRouter {
               fullscreenDialog: true,
             ),
           ),
+          GoRoute(
+            name: RouterMeta.IntroductionScreen.name,
+            path: RouterMeta.IntroductionScreen.path,
+            pageBuilder: (context, state) =>
+                MaterialPage<IntroductionScreenView>(
+              child: const IntroductionScreenView(),
+              key: state.pageKey,
+            ),
+          ),
         ],
-        redirect: (context, state) {
+        redirect: (context, state) async {
           final isLoggedIn = _authController.isLoggedIn;
-          final loginLocation = state.namedLocation(RouterMeta.Login.name);
+          final showIntroductionScreen =
+              _appController.showIntroductionScreen.value;
 
+          final loginLocation = state.namedLocation(RouterMeta.Login.name);
           final homeLocation = state.namedLocation(RouterMeta.Home.name);
+          final introductionLocation =
+              state.namedLocation(RouterMeta.IntroductionScreen.name);
 
           final isInLoginPage = state.location == loginLocation;
+          final isInIntroductionPage = state.location == introductionLocation;
+
+          if (showIntroductionScreen != null && showIntroductionScreen) {
+            return null;
+          }
 
           if (!isLoggedIn) {
             if (isInLoginPage) {
@@ -137,7 +163,7 @@ class AppRouter {
             return loginLocation;
           }
 
-          if (isLoggedIn && isInLoginPage) {
+          if (isLoggedIn && (isInLoginPage || isInIntroductionPage)) {
             return homeLocation;
           }
 

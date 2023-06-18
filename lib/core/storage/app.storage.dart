@@ -37,6 +37,18 @@ class AppStorage {
     return HomeListView.values.byName(listView ?? DEFAULT_HOME_VIEW.name);
   }
 
+  /// This code defines a getter method `showIntroductionScreen` that retrieves the saved boolean value
+  /// for the "show introduction screen" preference from the app's shared preferences using the
+  /// `SharedPreferences` package. If the preference is found in the shared preferences, it is returned as
+  /// a `Future<bool>`. If the preference is not found, the method returns `null`.
+
+  Future<bool?> get showIntroductionScreen async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getBool(AppStorageKeys.showIntroductionScreen.name);
+
+    return value;
+  }
+
   /// This function saves the auto-save timer duration in minutes and seconds to the device's shared
   /// preferences.
   ///
@@ -64,6 +76,20 @@ class AppStorage {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setString(AppStorageKeys.listView.name, view.name);
+  }
+
+  /// This function saves a boolean value to the shared preferences to indicate whether to show the
+  /// introduction screen or not.
+  ///
+  /// Args:
+  ///   value (bool): A boolean value indicating whether to show the introduction screen or not. If
+  /// `true`, the introduction screen will be shown, otherwise it will be skipped. The function saves this
+  /// value to the device's shared preferences using the `SharedPreferences` package.
+
+  Future<void> saveShowIntroductionScreen({required bool value}) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool(AppStorageKeys.showIntroductionScreen.name, value);
   }
 
   /// The function clears all data stored in the shared preferences.

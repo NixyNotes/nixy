@@ -2,6 +2,8 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// The NoteList class is a stateless widget that displays a note with a title, date, content, and
+/// optional favorite icon, and allows for tapping and long pressing.
 class NoteList extends StatelessWidget {
   /// The NoteList class is a stateless widget that displays a note with a title, date, content, and
   /// optional favorite icon, and allows for tapping and long pressing.

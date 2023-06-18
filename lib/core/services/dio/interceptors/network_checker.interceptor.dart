@@ -8,6 +8,7 @@ import 'package:nextcloudnotes/core/services/toast.service.dart';
 /// a snackbar message if there is no internet access.
 @lazySingleton
 class NetworkCheckerInterceptor extends Interceptor {
+  ///
   NetworkCheckerInterceptor(this._toastService);
   final ToastService _toastService;
 

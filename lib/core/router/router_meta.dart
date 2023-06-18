@@ -22,6 +22,11 @@ enum RouterMeta {
     path: '/add-new-account',
     title: 'Add new account',
     name: 'add-new-account',
+  ),
+  IntroductionScreen(
+    path: '/introduction-screen',
+    title: 'Nixy',
+    name: 'introduction-screen',
   );
 
   const RouterMeta({

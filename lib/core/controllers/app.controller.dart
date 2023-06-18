@@ -32,6 +32,9 @@ abstract class _AppControllerBase extends ChangeNotifier with Store {
   @observable
   Observable<HomeListView> homeNotesView = Observable(HomeListView.list);
 
+  @observable
+  Observable<bool?> showIntroductionScreen = Observable(true);
+
   bool isInitialized = false;
 
   Future<void> init() async {
@@ -57,11 +60,22 @@ abstract class _AppControllerBase extends ChangeNotifier with Store {
   }
 
   @action
+  Future<void> setShowIntroductionScreen({required bool value}) async {
+    showIntroductionScreen.value = value;
+    await _appStorage.saveShowIntroductionScreen(value: value);
+
+    notifyListeners();
+  }
+
+  @action
   Future<void> _loadAutoSaveSettings() async {
     final autoSaveDelay = await _appStorage.autoSaveDelay;
     final homeListView = await _appStorage.homeListView;
+    final showIntroductionScreenValue =
+        await _appStorage.showIntroductionScreen;
 
     homeNotesView.value = homeListView;
+    showIntroductionScreen.value = showIntroductionScreenValue;
 
     if (autoSaveDelay != null) {
       autoSaveTimer.value = autoSaveDelay;
