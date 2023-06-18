@@ -8,12 +8,12 @@ import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
+import 'package:nextcloudnotes/core/router/router.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
-import 'package:nextcloudnotes/main.dart';
 import 'package:nextcloudnotes/models/category.model.dart';
 import 'package:nextcloudnotes/models/list_view.model.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
@@ -75,9 +75,9 @@ abstract class _HomeViewControllerBase with Store {
           (element) => ListTile(
             title: Text(element.title),
             onTap: () {
-              Navigator.of(scaffolMessengerKey.currentContext!).pop();
+              GoRouter.of(navigatorKey.currentContext!).pop();
 
-              scaffolMessengerKey.currentContext?.pushNamed(
+              GoRouter.of(navigatorKey.currentContext!).pushNamed(
                 RouterMeta.SingleNote.name,
                 pathParameters: {'id': element.id.toString()},
               );

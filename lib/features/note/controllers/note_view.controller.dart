@@ -8,8 +8,8 @@ import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
+import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
-import 'package:nextcloudnotes/main.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
@@ -37,11 +37,13 @@ abstract class _NoteViewControllerBase with Store {
     this._offlineService,
     this._noteStorage,
     this._appController,
+    this._toastService,
   );
   final NoteRepositories _noteRepositories;
   final OfflineService _offlineService;
   final NoteStorage _noteStorage;
   final AppController _appController;
+  final ToastService _toastService;
 
   final FocusNode focusNode = FocusNode();
   final UndoHistoryController undoHistoryController = UndoHistoryController();
@@ -119,8 +121,10 @@ abstract class _NoteViewControllerBase with Store {
     final deleted = await _noteRepositories.deleteNote(noteId);
 
     if (deleted) {
-      scaffolMessengerKey.currentState
-          ?.showSnackBar(const SnackBar(content: Text('ok')));
+      _toastService.showTextToast(
+        '${note.title} has been moved to trash.',
+        type: ToastType.success,
+      );
 
       _noteStorage.deleteNote(note);
 

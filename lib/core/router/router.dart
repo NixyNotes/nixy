@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
-import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/features/categories/views/categories.view.dart';
@@ -13,18 +12,26 @@ import 'package:nextcloudnotes/features/note/note.view.dart';
 import 'package:nextcloudnotes/features/settings/views/settings.view.dart';
 import 'package:nextcloudnotes/models/category.model.dart';
 
+/// Navigator key
+final navigatorKey = GlobalKey<NavigatorState>();
+
 @injectable
+
+/// Router for application
 class AppRouter {
-  AppRouter(this._authController, this._appController, this._authProvider);
+  /// Router for application
+  AppRouter(this._authController);
 
   final AuthController _authController;
-  final AppController _appController;
-  final testAuthProvider _authProvider;
 
+  /// Router
   GoRouter get router => GoRouter(
+        navigatorKey: navigatorKey,
         initialLocation: RouterMeta.Login.path,
-        refreshListenable: _authProvider,
+        refreshListenable: _authController,
         debugLogDiagnostics: true,
+        errorPageBuilder: (context, state) =>
+            MaterialPage(child: Text(state.error.toString())),
         routes: [
           GoRoute(
             name: RouterMeta.Home.name,

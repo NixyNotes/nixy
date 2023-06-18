@@ -16,7 +16,6 @@ import 'package:nextcloudnotes/features/home/views/components/category_grid.comp
 import 'package:nextcloudnotes/features/home/views/components/note_grid.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_list.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/search_deletage.component.dart';
-import 'package:nextcloudnotes/main.dart';
 import 'package:nextcloudnotes/models/list_view.model.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -90,7 +89,6 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      key: scaffolMessengerKey,
       showAppBar: widget.byCategoryName != null,
       bottomBar: _renderBottomBar(context),
       body: Column(

@@ -5,7 +5,7 @@ import 'package:flash/flash_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/components/custom_loading_toast.component.dart';
-import 'package:nextcloudnotes/main.dart';
+import 'package:nextcloudnotes/core/router/router.dart';
 
 /// `enum ToastType { success, error, info }` is defining an enumeration type called `ToastType` with
 /// three possible values: `success`, `error`, and `info`. This enum is used to specify the type of
@@ -30,13 +30,13 @@ class ToastService {
 
     switch (type) {
       case ToastType.error:
-        scaffolMessengerKey.currentContext
+        navigatorKey.currentContext
             ?.showErrorBar<bool>(content: Text(content), icon: Icon(icon));
       case ToastType.success:
-        scaffolMessengerKey.currentContext
+        navigatorKey.currentContext
             ?.showSuccessBar<bool>(content: Text(content), icon: Icon(icon));
       case ToastType.info:
-        scaffolMessengerKey.currentContext
+        navigatorKey.currentContext
             ?.showInfoBar<bool>(content: Text(content), icon: Icon(icon));
     }
   }
@@ -54,9 +54,10 @@ class ToastService {
   Completer<void> showLoadingToast([String? content]) {
     final completer = Completer<void>();
 
-    scaffolMessengerKey.currentContext?.showFlash(
+    navigatorKey.currentContext?.showFlash(
       dismissCompleter: completer,
       persistent: true,
+      duration: const Duration(seconds: 15),
       builder: (context, controller) {
         return CustomLoadingToast(
           content: content,

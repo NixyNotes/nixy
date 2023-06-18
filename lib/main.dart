@@ -1,10 +1,13 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:async';
+
 import 'package:flash/flash.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:logger/logger.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/router/router.dart';
 import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
@@ -12,8 +15,6 @@ import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
-
-final scaffolMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   configureDependencies();
@@ -24,7 +25,14 @@ void main() async {
   }
   await initDb([UserSchema, LocalNoteSchema, OfflineQueueSchema]);
 
-  runApp(const NixyApp());
+  runZonedGuarded(
+    () {
+      runApp(const NixyApp());
+    },
+    (error, stack) {
+      Logger().e(error, stack);
+    },
+  );
 }
 
 class NixyApp extends StatefulWidget {
@@ -47,7 +55,7 @@ class _NixyAppState extends State<NixyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Nixi',
+      title: 'Nixy',
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

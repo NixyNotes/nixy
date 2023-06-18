@@ -1,14 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
-import 'package:nextcloudnotes/main.dart';
+import 'package:nextcloudnotes/core/services/toast.service.dart';
 
 /// The `NetworkCheckerInterceptor` class is a Dart class that intercepts network requests and displays
 /// a snackbar message if there is no internet access.
 @lazySingleton
 class NetworkCheckerInterceptor extends Interceptor {
+  NetworkCheckerInterceptor(this._toastService);
+  final ToastService _toastService;
+
   @override
   Future<void> onRequest(
     RequestOptions options,
@@ -20,8 +22,7 @@ class NetworkCheckerInterceptor extends Interceptor {
       return super.onRequest(options, handler);
     }
 
-    scaffolMessengerKey.currentState
-        ?.showSnackBar(const SnackBar(content: Text('No internet access!')));
+    _toastService.showTextToast('No internet access!', type: ToastType.error);
 
     return;
   }

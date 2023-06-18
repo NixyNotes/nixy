@@ -2,25 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
-import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/storage/auth.storage.dart';
 
 part 'auth.controller.g.dart';
-
-@lazySingleton
-class testAuthProvider extends ChangeNotifier {
-  bool isAuthenticated = false;
-
-  void login() {
-    isAuthenticated = true;
-    notifyListeners();
-  }
-
-  void logout() {
-    isAuthenticated = false;
-    notifyListeners();
-  }
-}
 
 @lazySingleton
 
@@ -67,8 +51,7 @@ abstract class _AuthControllerBase extends ChangeNotifier with Store {
 
       users.removeWhere((element) => element.id == currentAccount.value!.id);
       availableAccounts = ObservableList.of(users);
-
-      getIt<testAuthProvider>().login();
+      notifyListeners();
     }
 
     currentAccount.observe((_) async {
@@ -88,7 +71,7 @@ abstract class _AuthControllerBase extends ChangeNotifier with Store {
     _authStorage.saveUser(modifiedUser);
     currentAccount.value = user;
     loginState.value = LoginState.loggedIn;
-    getIt<testAuthProvider>().login();
+    notifyListeners();
   }
 
   @action
@@ -105,7 +88,7 @@ abstract class _AuthControllerBase extends ChangeNotifier with Store {
       currentAccount.value = null;
       availableAccounts.clear();
     }
-    getIt<testAuthProvider>().logout();
+    notifyListeners();
   }
 
   @action
