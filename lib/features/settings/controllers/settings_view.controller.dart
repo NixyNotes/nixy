@@ -53,6 +53,9 @@ abstract class _SettingsViewControllerBase with Store {
   User? get currentAccount => _authController.currentAccount.value;
 
   @computed
+  HomeListView get currentHomeListView => _appController.homeNotesView.value;
+
+  @computed
   ObservableList<User> get availableAccounts =>
       _authController.availableAccounts;
 

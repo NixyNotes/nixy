@@ -4,9 +4,9 @@
 /// `list`. This enumeration can be used to represent different views for a home screen, such as a grid
 /// view or a list view.
 enum HomeListView {
-  grid('Grid with preview'),
-  list('List with basic information');
+  grid(title: 'Grid with preview'),
+  list(title: 'List with basic information');
 
   final String title;
-  const HomeListView(this.title);
+  const HomeListView({required this.title});
 }

@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:nextcloudnotes/components/modal_sheet_menu.component.dart';
-import 'package:nextcloudnotes/core/services/di/di.dart';
-import 'package:nextcloudnotes/features/settings/controllers/settings_view.controller.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -19,6 +17,7 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
     required this.leading,
     required this.items,
     this.isEnabled = true,
+    this.value,
     super.key,
   });
 
@@ -42,10 +41,12 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
   /// `isEnabled` is `false`, the tile is disabled and cannot be interacted with.
   final bool? isEnabled;
 
+  /// The `final String? value;` is declaring a nullable final variable `value` of type `String`. It is
+  /// not used in the code snippet provided and may have been intended for future use or as a placeholder.
+  final Widget? value;
+
   @override
   Widget build(BuildContext context) {
-    final controller = getIt<SettingsViewController>();
-
     if (Platform.isIOS) {
       return Observer(
         builder: (_) {
@@ -68,6 +69,7 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
       title: title,
       leading: leading,
       enabled: isEnabled ?? true,
+      value: value,
       onPressed: (context) {
         showPlatformModalSheet<void>(
           context: context,

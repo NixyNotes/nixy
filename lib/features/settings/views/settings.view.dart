@@ -138,6 +138,11 @@ class _SettingsViewState extends State<SettingsView> {
                 title: const Text('Home notes view'),
                 leading: const Icon(EvaIcons.browserOutline),
                 items: homeListViews,
+                value: Observer(
+                  builder: (_) {
+                    return Text(controller.currentHomeListView.title);
+                  },
+                ),
               )
             ],
           ),
