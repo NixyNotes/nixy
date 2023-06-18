@@ -17,7 +17,10 @@ class AppController = _AppControllerBase with _$AppController;
 
 abstract class _AppControllerBase extends ChangeNotifier with Store {
   _AppControllerBase(
-      this._appStorage, this._authController, this._offlineService);
+    this._appStorage,
+    this._authController,
+    this._offlineService,
+  );
 
   final AppStorage _appStorage;
   final AuthController _authController;
