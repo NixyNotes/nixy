@@ -19,7 +19,8 @@ class ConnectToServerView extends StatefulWidget {
 
 class _ConnectToServerViewState extends State<ConnectToServerView> {
   final controller = getIt<ConnectToServerController>();
-  InAppWebViewSettings settings = InAppWebViewSettings(userAgent: 'Nixy/1.0');
+  InAppWebViewSettings settings =
+      InAppWebViewSettings(userAgent: 'Nixy/1.0', cacheEnabled: false);
 
   @override
   void initState() {
