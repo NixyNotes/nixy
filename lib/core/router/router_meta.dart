@@ -17,7 +17,12 @@ enum RouterMeta {
   NewNote(path: '/new-note', title: 'New Note', name: 'new-note'),
   Settings(path: '/settings', title: 'Settings', name: 'settings'),
   Categories(path: '/categories', title: 'Categories', name: 'categories'),
-  SingleNote(path: '/note/:id', title: 'Note', name: 'single-note');
+  SingleNote(path: '/note/:id', title: 'Note', name: 'single-note'),
+  AddNewAccount(
+    path: '/add-new-account',
+    title: 'Add new account',
+    name: 'add-new-account',
+  );
 
   const RouterMeta({
     required this.path,

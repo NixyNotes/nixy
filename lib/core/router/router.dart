@@ -56,6 +56,14 @@ class AppRouter {
             ),
           ),
           GoRoute(
+            name: RouterMeta.AddNewAccount.name,
+            path: RouterMeta.AddNewAccount.path,
+            pageBuilder: (context, state) => MaterialPage<LoginView>(
+              child: const LoginView(),
+              key: state.pageKey,
+            ),
+          ),
+          GoRoute(
             name: RouterMeta.ConnectToServer.name,
             path: RouterMeta.ConnectToServer.path,
             pageBuilder: (context, state) => MaterialPage<ConnectToServerView>(

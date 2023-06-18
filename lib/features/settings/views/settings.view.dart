@@ -98,7 +98,7 @@ class _SettingsViewState extends State<SettingsView> {
                   EvaIcons.personAdd,
                 ),
                 onPressed: (context) =>
-                    context.pushNamed(RouterMeta.Login.name),
+                    context.pushNamed(RouterMeta.AddNewAccount.name),
               ),
               SettingsTile(
                 title: const Text('Logout'),
