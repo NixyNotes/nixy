@@ -36,6 +36,9 @@ class DioService {
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         contentType: 'application/json',
+        validateStatus: (status) {
+          return status! >= 200 && status < 300 || status == 304;
+        },
       );
 
   /// This function sends a GET request to a specified path and returns the response if the status code is
@@ -47,10 +50,14 @@ class DioService {
   ///
   /// Returns:
   ///   A `Future` object that resolves to a `Response<dynamic>` object.
-  Future<Response<dynamic>> get(String path) async {
-    final request = await _dio.get(path);
+  Future<Response<dynamic>> get(
+    String path, [
+    Map<String, dynamic>? headers,
+  ]) async {
+    final request = await _dio.get(path, options: Options(headers: headers));
 
-    if (request.statusCode == HttpStatus.ok) {
+    if (request.statusCode == HttpStatus.ok ||
+        request.statusCode == HttpStatus.notModified) {
       return request;
     }
 

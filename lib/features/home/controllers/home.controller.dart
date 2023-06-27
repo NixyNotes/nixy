@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
@@ -17,13 +16,10 @@ import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/models/category.model.dart';
 import 'package:nextcloudnotes/models/list_view.model.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
+import 'package:nextcloudnotes/models/notes_response.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
 part 'home.controller.g.dart';
-
-/// If `isViewingCategory` is true, means that user is looking for category
-/// posts.
-ValueNotifier<bool> isViewingCategoryPosts = ValueNotifier(false);
 
 /// Dispose `HomeViewController` instance
 void disposeHomeController(HomeViewController instance) {
@@ -95,7 +91,6 @@ abstract class _HomeViewControllerBase with Store {
   late Completer<void>? _toast;
 
   Future<void> init([String? byCategoryName]) async {
-    isViewingCategoryPosts = ValueNotifier(false);
     sortAutomaticallyDisposer = autorun((_) {
       notes.sort((a, b) => b.favorite ? 1 : 0);
     });
@@ -135,17 +130,24 @@ abstract class _HomeViewControllerBase with Store {
     }
   }
 
-  Future<List<Note>> _fetchRemoteNotes([String? byCategoryName]) async {
-    List<Note> remoteNotes;
+  Future<List<Note>?> _fetchRemoteNotes([String? byCategoryName]) async {
+    FetchAllNotesResponse remoteNotes;
+    final notesLocalEtag = await _noteStorage.fetchEtag();
 
     if (byCategoryName != null) {
       remoteNotes =
           await _noteRepositories.fetchNotesByCategory(byCategoryName);
     } else {
-      remoteNotes = await _noteRepositories.fetchNotes();
+      remoteNotes = await _noteRepositories.fetchNotes(notesLocalEtag);
     }
 
-    return remoteNotes;
+    final responseEtag = remoteNotes.etag;
+
+    if (notesLocalEtag != responseEtag) {
+      await _noteStorage.saveEtag(responseEtag);
+    }
+
+    return remoteNotes.notes;
   }
 
   Future<List<Note>> _fetchLocalNotes([String? byCategoryName]) async {
@@ -170,32 +172,22 @@ abstract class _HomeViewControllerBase with Store {
         syncing = true;
         await _offlineService.runQueue();
         final remoteNotes = await _fetchRemoteNotes(byCategoryName);
-        notes = ObservableList.of(remoteNotes);
-        syncing = false;
 
-        _noteStorage.saveAllNotes(remoteNotes);
-        await _syncLocalWithRemote(localNotes, remoteNotes);
+        if (remoteNotes != null) {
+          notes = ObservableList.of(remoteNotes);
+
+          _noteStorage.saveAllNotes(remoteNotes);
+        }
+        syncing = false;
       }
     } else {
       if (_offlineService.hasInternetAccess) {
         final remoteNotes = await _fetchRemoteNotes(byCategoryName);
-
-        notes = ObservableList.of(remoteNotes);
-        _noteStorage.saveAllNotes(remoteNotes);
+        if (remoteNotes != null) {
+          notes = ObservableList.of(remoteNotes);
+          _noteStorage.saveAllNotes(remoteNotes);
+        }
       }
-    }
-  }
-
-  Future<void> _syncLocalWithRemote(
-    List<Note> localNotes,
-    List<Note> remoteNotes,
-  ) async {
-    final isNoteEquals = listEquals(remoteNotes, localNotes);
-
-    if (!isNoteEquals) {
-      _noteStorage
-        ..deleteAll()
-        ..saveAllNotes(remoteNotes);
     }
   }
 
@@ -314,6 +306,5 @@ abstract class _HomeViewControllerBase with Store {
     sortAutomaticallyDisposer();
     showToastWhenSycingDisposer();
     syncCategoriesWithPosts();
-    isViewingCategoryPosts.dispose();
   }
 }

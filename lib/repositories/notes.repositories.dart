@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/services/dio/init_dio.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
+import 'package:nextcloudnotes/models/notes_response.model.dart';
 
 @lazySingleton
 
@@ -17,41 +18,74 @@ class NoteRepositories {
 
   String get _apiUrl => '/index.php/apps/notes/api/v1/notes';
 
-  /// This function fetches a list of notes from an API and converts the response data into a list of Note
-  /// objects.
-  ///
-  /// Returns:
-  ///   The `fetchNotes()` function is returning a `Future` that resolves to a `List` of `Note` objects.
-  /// The `Note` objects are created by parsing the JSON data returned from the API using the
-  /// `Note.fromJson()` method.
-  Future<List<Note>> fetchNotes() async {
-    final response = await _dio.get(_apiUrl);
-
-    List<Note> noteFromJson(List<dynamic> e) => List<Note>.from(
-          e.map((ee) => Note.fromJson(ee as Map<String, dynamic>)),
-        );
-
-    return noteFromJson(response.data as List);
-  }
-
-  /// This function fetches a list of notes filtered by a specific category name.
+  /// This function fetches notes from an API endpoint and returns them along with an etag value for
+  /// caching purposes.
   ///
   /// Args:
-  ///   categoryName (String): The category name is a string parameter that is used to filter notes by
-  /// their category. The function fetches a list of notes from an API endpoint based on the provided
-  /// category name.
+  ///   etag (String): The etag parameter is an optional string that represents the entity tag of the
+  /// resource being requested. It is used to check if the resource has been modified since the last time
+  /// it was accessed. If the resource has not been modified, the server returns a 304 Not Modified
+  /// status code and the client can
   ///
   /// Returns:
-  ///   A `Future` that resolves to a `List` of `Note` objects fetched from the API based on the provided
-  /// `categoryName`.
-  Future<List<Note>> fetchNotesByCategory(String categoryName) async {
-    final response = await _dio.get('$_apiUrl?category=$categoryName');
+  ///   The `fetchNotes` function returns a `Future` that resolves to a `FetchAllNotesResponse` object.
+  /// If the HTTP response status code is not `HttpStatus.notModified`, the `FetchAllNotesResponse`
+  /// object will contain an `etag` string and a list of `Note` objects. If the status code is
+  /// `HttpStatus.notModified`, the `FetchAllNotesResponse` object will only
+  Future<FetchAllNotesResponse> fetchNotes([String? etag]) async {
+    final headers = etag != null ? {'If-None-Match': etag} : null;
+
+    final response = await _dio.get(
+      _apiUrl,
+      headers,
+    );
+
+    if (response.statusCode != HttpStatus.notModified) {
+      List<Note> noteFromJson(List<dynamic> e) => List<Note>.from(
+            e.map((ee) => Note.fromJson(ee as Map<String, dynamic>)),
+          );
+
+      return FetchAllNotesResponse(
+        etag: response.headers.value('etag')!,
+        notes: noteFromJson(response.data as List),
+      );
+    }
+    return FetchAllNotesResponse(
+      etag: response.headers.value('etag')!,
+    );
+  }
+
+  /// This function fetches all notes belonging to a specific category and returns them along with an
+  /// etag value.
+  ///
+  /// Args:
+  ///   categoryName (String): A string representing the name of the category for which notes are to be
+  /// fetched.
+  ///   etag (String): etag is an optional parameter that represents the entity tag of the previously
+  /// fetched response. It is used to check if the response has been modified since the last fetch. If
+  /// the response has not been modified, the server can return a 304 Not Modified status code, and the
+  /// client can use the cached response
+  ///
+  /// Returns:
+  ///   A `Future` of `FetchAllNotesResponse` object is being returned.
+  Future<FetchAllNotesResponse> fetchNotesByCategory(
+    String categoryName, [
+    String? etag,
+  ]) async {
+    final headers = etag != null ? {'If-None-Match': etag} : null;
+
+    final response = await _dio.get('$_apiUrl?category=$categoryName', headers);
 
     List<Note> noteFromJson(List<dynamic> e) => List<Note>.from(
           e.map((ee) => Note.fromJson(ee as Map<String, dynamic>)),
         );
 
-    return noteFromJson(response.data as List<dynamic>);
+    final remoteEtag = response.headers.value('etag');
+
+    return FetchAllNotesResponse(
+      etag: remoteEtag!,
+      notes: noteFromJson(response.data as List<dynamic>),
+    );
   }
 
   /// This function fetches a note with a specific ID from an API and returns it as a Note object.

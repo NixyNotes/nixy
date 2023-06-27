@@ -3,11 +3,37 @@ import 'package:isar/isar.dart';
 import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
+import 'package:nextcloudnotes/models/notes_storage.model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// The NoteStorage class provides methods for saving, retrieving, and deleting notes using Isar
 /// database in Dart.
 @lazySingleton
 class NoteStorage {
+  /// This function fetches the ETag value from SharedPreferences.
+  ///
+  /// Returns:
+  ///   A `String` value wrapped in a `Future` with a nullable type (`String?`). The value is retrieved
+  /// from the `SharedPreferences` instance using the key `NotesStorageKeys.notesEtag.name`.
+  Future<String?> fetchEtag() async {
+    final instance = await SharedPreferences.getInstance();
+
+    return instance.getString(NotesStorageKeys.notesEtag.name);
+  }
+
+  /// This function saves an etag value to the shared preferences.
+  ///
+  /// Args:
+  ///   etag (String): The `etag` parameter is a string that represents the entity tag (ETag) of a
+  /// resource. In this context, it is being used to save the ETag value to the device's shared
+  /// preferences. The ETag is typically used for caching purposes and to check if a resource has been
+  /// modified
+  Future<void> saveEtag(String etag) async {
+    final instance = await SharedPreferences.getInstance();
+
+    await instance.setString(NotesStorageKeys.notesEtag.name, etag);
+  }
+
   /// This function saves a list of notes to a local database using Isar.
   ///
   /// Args:
