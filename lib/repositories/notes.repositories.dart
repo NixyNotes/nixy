@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/services/dio/init_dio.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
+import 'package:nextcloudnotes/models/note_response.model.dart';
 import 'package:nextcloudnotes/models/notes_response.model.dart';
 
 @lazySingleton
@@ -88,20 +89,38 @@ class NoteRepositories {
     );
   }
 
-  /// This function fetches a note with a specific ID from an API and returns it as a Note object.
+  /// This function fetches a note from an API and returns it along with its ETag, or just the ETag if
+  /// the note has not been modified since the last request.
   ///
   /// Args:
-  ///   noteId (int): The ID of the note that needs to be fetched from the API.
+  ///   noteId (int): An integer representing the ID of the note to be fetched.
+  ///   etag (String): The `etag` parameter is an optional string that represents the entity tag
+  /// associated with the requested resource. It is used to check if the resource has been modified
+  /// since the last time it was accessed. If the resource has not been modified, the server can return
+  /// a `304 Not Modified` response with the
   ///
   /// Returns:
-  ///   A `Future` object that will eventually resolve to a `Note` object. The `fetchNote` function
-  /// retrieves a note with the specified `noteId` from an API endpoint using the `_dio` HTTP client, and
-  /// then converts the response data into a `Note` object using the `fromJson` method.
-
-  Future<Note> fetchNote(int noteId) async {
+  ///   The `fetchNote` function returns a `Future` that resolves to a `FetchNoteResponse` object. The
+  /// `FetchNoteResponse` object contains an `etag` string and a `note` object. If the response status
+  /// code is `HttpStatus.notModified`, only the `etag` string is returned. Otherwise, both the `etag`
+  /// string and the `note` object are returned.
+  Future<FetchNoteResponse> fetchNote(
+    int noteId, [
+    String? etag,
+  ]) async {
     final response = await _dio.get('$_apiUrl/$noteId');
+    final remoteEtag = response.headers.value('etag');
 
-    return Note.fromJson(response.data as Map<String, dynamic>);
+    if (response.statusCode == HttpStatus.notModified) {
+      return FetchNoteResponse(
+        etag: remoteEtag!,
+      );
+    }
+
+    return FetchNoteResponse(
+      etag: remoteEtag!,
+      note: Note.fromJson(response.data as Map<String, dynamic>),
+    );
   }
 
   /// This function sends a DELETE request to a specified API endpoint to delete a note with a given ID

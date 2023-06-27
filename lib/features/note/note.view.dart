@@ -32,7 +32,7 @@ class _NoteViewState extends State<NoteView> {
   @override
   void initState() {
     super.initState();
-    controller.init(widget.noteId, context);
+    controller.init(context);
   }
 
   @override

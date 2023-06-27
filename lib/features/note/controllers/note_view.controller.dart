@@ -70,7 +70,7 @@ abstract class _NoteViewControllerBase with Store {
 
   late Note note;
 
-  void init(int noteId, BuildContext context) {
+  void init(BuildContext context) {
     markdownController = NixyTextFieldController(
       NixyMarkdownControllerPatterns,
       context,
