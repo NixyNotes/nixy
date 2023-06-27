@@ -1,10 +1,8 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nextcloudnotes/core/router/parameters/home.parameters.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
-import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
 import 'package:nextcloudnotes/models/category.model.dart';
 
 // ignore: public_member_api_docs
@@ -24,15 +22,9 @@ class CategoriesView extends StatefulWidget {
 
 class _CategoriesViewState extends State<CategoriesView> {
   void navigateToPosts(String label) {
-    isViewingCategoryPosts.value = true;
-
-    final parameters = HomeParameters(
-      categoryName: label,
-    );
-
     context.pushNamed(
-      RouterMeta.Home.name,
-      queryParameters: parameters.toMap(),
+      RouterMeta.CategoryPosts.name,
+      pathParameters: {'categoryName': label},
     );
   }
 

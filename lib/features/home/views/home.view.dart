@@ -1,6 +1,5 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -39,42 +38,36 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final controller = getIt<HomeViewController>();
   final authStorage = getIt<AuthController>();
-  Null Function() get listener => () {
-        if (!isViewingCategoryPosts.value && widget.byCategoryName == null) {
-          controller.init();
-        }
-      };
 
   @override
   void initState() {
     super.initState();
 
-    if (!isViewingCategoryPosts.value) {
-      controller.init();
-    } else {
-      controller.init(widget.byCategoryName);
-    }
+    controller.init(widget.byCategoryName);
 
-    isViewingCategoryPosts.addListener(listener);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      GoRouter.of(context).addListener(() {
+        if (GoRouter.of(context).location.startsWith('/category-posts')) {
+          getIt.resetLazySingleton<HomeViewController>();
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
     getIt.resetLazySingleton<HomeViewController>();
-    isViewingCategoryPosts.removeListener(listener);
     super.dispose();
   }
 
   void navigateToPosts(String label) {
-    isViewingCategoryPosts.value = true;
-
     final parameters = HomeParameters(
       categoryName: label,
     );
 
     context.pushNamed(
-      RouterMeta.Home.name,
-      queryParameters: parameters.toMap(),
+      RouterMeta.CategoryPosts.name,
+      pathParameters: {'categoryName': label},
     );
   }
 
@@ -264,9 +257,7 @@ class _HomeViewState extends State<HomeView> {
 
     return Stack(
       children: [
-        Animate(
-          child: noteView,
-        ).fade().slideX(),
+        noteView,
         if (controller.selectedNotes
             .where((element) => element.id == note.id)
             .isNotEmpty)

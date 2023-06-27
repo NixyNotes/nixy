@@ -27,6 +27,11 @@ enum RouterMeta {
     path: '/introduction-screen',
     title: 'Nixy',
     name: 'introduction-screen',
+  ),
+  CategoryPosts(
+    path: '/category-posts/:categoryName',
+    title: 'Nixy',
+    name: 'category-posts',
   );
 
   const RouterMeta({

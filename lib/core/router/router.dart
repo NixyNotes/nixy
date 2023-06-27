@@ -133,6 +133,16 @@ class AppRouter {
               key: state.pageKey,
             ),
           ),
+          GoRoute(
+            name: RouterMeta.CategoryPosts.name,
+            path: RouterMeta.CategoryPosts.path,
+            pageBuilder: (context, state) => MaterialPage<HomeView>(
+              child: HomeView(
+                byCategoryName: state.pathParameters['categoryName'],
+              ),
+              key: state.pageKey,
+            ),
+          ),
         ],
         redirect: (context, state) async {
           final isLoggedIn = _authController.isLoggedIn;
