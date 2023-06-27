@@ -21,7 +21,7 @@ class AuthInterceptor extends Interceptor {
     if (isLoggedIn) {
       _authController.currentAccount.observe((value) {
         if (value.newValue != null) {
-          options.headers['Authorization'] = 'Bearer ${value.newValue?.token}';
+          options.headers['Authorization'] = 'Basic ${value.newValue?.token}';
         }
       });
 
