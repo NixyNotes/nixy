@@ -7,10 +7,12 @@ import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
+import 'package:nextcloudnotes/core/shared/patterns.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
+import 'package:nixy_markdown/nixi_markdown.dart';
 
 part 'new_note.controller.g.dart';
 
@@ -45,8 +47,7 @@ abstract class _NewNoteControllerBase with Store {
 
   final FocusNode focusNode = FocusNode();
   final UndoHistoryController undoHistoryController = UndoHistoryController();
-  final TextEditingController markdownController =
-      TextEditingController(text: '# New Note');
+  late final NixyTextFieldController markdownController;
 
   @observable
   bool previewMode = false;
@@ -67,7 +68,11 @@ abstract class _NewNoteControllerBase with Store {
   late Note note;
 
   @action
-  void init() {
+  void init(BuildContext context) {
+    markdownController = NixyTextFieldController(
+      NixyMarkdownControllerPatterns,
+      context,
+    );
     markdownController.addListener(() {
       final lines = markdownController.text.split('\n');
       final firstLine = lines.first;

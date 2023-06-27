@@ -701,14 +701,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  nixi_markdown:
+  nixy_markdown:
     dependency: "direct main"
     description:
-      name: nixi_markdown
-      sha256: a0c24f5ee21829a477dc9d88f367d6e4e731753a98577f68e78675f69e83fdd4
+      name: nixy_markdown
+      sha256: a30bc37a0533707b8cb703e48824ee76793bae5541b4b82de3a864666c98b8c0
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.1"
+    version: "0.1.3"
+  nixy_markdown_controller:
+    dependency: transitive
+    description:
+      name: nixy_markdown_controller
+      sha256: f04d2dd0f20630a21eeeb68972151b0a624beefb2e627811421aae9f2bd5880b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   nm:
     dependency: transitive
     description:
@@ -1259,5 +1267,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.0.1 <4.0.0"
+  dart: ">=3.0.5 <4.0.0"
   flutter: ">=3.7.0"

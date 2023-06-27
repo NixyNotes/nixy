@@ -9,9 +9,11 @@ import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
+import 'package:nextcloudnotes/core/shared/patterns.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
+import 'package:nixy_markdown/nixi_markdown.dart';
 
 part 'note_view.controller.g.dart';
 
@@ -48,7 +50,7 @@ abstract class _NoteViewControllerBase with Store {
   final FocusNode focusNode = FocusNode();
   final UndoHistoryController undoHistoryController = UndoHistoryController();
 
-  TextEditingController markdownController = TextEditingController();
+  late TextEditingController markdownController;
 
   @observable
   bool isTextFieldFocused = false;
@@ -68,7 +70,11 @@ abstract class _NoteViewControllerBase with Store {
 
   late Note note;
 
-  void init(int noteId) {
+  void init(int noteId, BuildContext context) {
+    markdownController = NixyTextFieldController(
+      NixyMarkdownControllerPatterns,
+      context,
+    );
     autoSaveDisposer = autorun((_) {
       if (isTextFieldFocused) {
         // If text field has focus, auto save every 5 seconds.

@@ -6,7 +6,8 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/features/note/controllers/note_view.controller.dart';
 import 'package:nextcloudnotes/models/keyboard_actions.model.dart';
-import 'package:nixi_markdown/nixi_markdown.dart';
+import 'package:nixy_markdown/nixi_markdown.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// A workaround for making checkbox clickable
 class MarkdownEd extends MarkdownElementBuilder {
@@ -192,11 +193,23 @@ class _MarkdownEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> openUrl(String? url) async {
+      if (url != null) {
+        final uri = Uri.parse(url);
+        final canLaunch = await canLaunchUrl(uri);
+
+        if (canLaunch) {
+          await launchUrl(uri);
+        }
+      }
+    }
+
     if (renderPreview != null && renderPreview!) {
       return Markdown(
         selectable: true,
         data: controller.text,
         builders: {'li': MarkdownEd()},
+        onTapLink: (text, href, title) => openUrl(href),
         imageBuilder: (uri, title, alt) =>
             CachedNetworkImage(imageUrl: uri.toString()),
         styleSheet: MarkdownStyleSheet(

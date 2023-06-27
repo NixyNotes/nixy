@@ -21,7 +21,7 @@ class _NewNoteViewState extends State<NewNoteView> {
   @override
   void initState() {
     super.initState();
-    controller.init();
+    controller.init(context);
   }
 
   @override
