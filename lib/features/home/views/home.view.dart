@@ -6,12 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:nextcloudnotes/components/modal_sheet_menu.component.dart';
 import 'package:nextcloudnotes/core/config.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
-import 'package:nextcloudnotes/core/router/parameters/home.parameters.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
-import 'package:nextcloudnotes/features/home/views/components/category_grid.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_grid.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_list.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/search_deletage.component.dart';
@@ -60,17 +58,6 @@ class _HomeViewState extends State<HomeView> {
     super.dispose();
   }
 
-  void navigateToPosts(String label) {
-    final parameters = HomeParameters(
-      categoryName: label,
-    );
-
-    context.pushNamed(
-      RouterMeta.CategoryPosts.name,
-      pathParameters: {'categoryName': label},
-    );
-  }
-
   void showSearchDialog() {
     showSearch(
       useRootNavigator: true,
@@ -84,88 +71,36 @@ class _HomeViewState extends State<HomeView> {
     return AppScaffold(
       showAppBar: widget.byCategoryName != null,
       bottomBar: _renderBottomBar(context),
-      body: Column(
-        children: [
-          Observer(
-            builder: (_) {
-              if (widget.byCategoryName != null) {
-                return const SizedBox.shrink();
-              }
-
-              if (controller.categories.isEmpty) {
-                return const SizedBox.shrink();
-              }
-
-              return GridView.builder(
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 5,
-                  mainAxisExtent: 50,
-                ),
-                itemBuilder: (context, index) {
-                  final category = controller.categories[index];
-
-                  if (index >= 3) {
-                    return CategoryGrid(
-                      categoryName: 'More categories...',
-                      onTap: () {
-                        context.pushNamed(
-                          RouterMeta.Categories.name,
-                          extra: controller.categories,
-                        );
-                      },
-                    );
-                  }
-
-                  return CategoryGrid(
-                    categoryName: category.label,
-                    onTap: () {
-                      navigateToPosts(category.label);
-                    },
-                  );
-                },
-                itemCount: controller.categories.length >= 4
-                    ? 4
-                    : controller.categories.length,
-              );
-            },
-          ),
-          Expanded(
-            child: RefreshIndicator.adaptive(
-              onRefresh: controller.fetchNotes,
-              child: Observer(
-                builder: (context) {
-                  switch (controller.homeNotesView.value) {
-                    case HomeListView.grid:
-                      return GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          mainAxisExtent: 250,
-                        ),
-                        itemCount: controller.notes.length,
-                        clipBehavior: Clip.antiAlias,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _itemBuilder(index);
-                        },
-                      );
-                    case HomeListView.list:
-                      return ListView.builder(
-                        itemCount: controller.notes.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _itemBuilder(index);
-                        },
-                      );
-                  }
-                },
-              ),
-            ),
-          ),
-        ],
+      body: RefreshIndicator.adaptive(
+        onRefresh: controller.fetchNotes,
+        child: Observer(
+          builder: (context) {
+            switch (controller.homeNotesView.value) {
+              case HomeListView.grid:
+                return GridView.builder(
+                  gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    mainAxisExtent: 250,
+                  ),
+                  itemCount: controller.notes.length,
+                  clipBehavior: Clip.antiAlias,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _itemBuilder(index);
+                  },
+                );
+              case HomeListView.list:
+                return ListView.builder(
+                  itemCount: controller.notes.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _itemBuilder(index);
+                  },
+                );
+            }
+          },
+        ),
       ),
     );
   }
