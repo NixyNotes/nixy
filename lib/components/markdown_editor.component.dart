@@ -199,7 +199,7 @@ class _MarkdownEditor extends StatelessWidget {
         final canLaunch = await canLaunchUrl(uri);
 
         if (canLaunch) {
-          await launchUrl(uri);
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
         }
       }
     }
@@ -209,7 +209,9 @@ class _MarkdownEditor extends StatelessWidget {
         selectable: true,
         data: controller.text,
         builders: {'li': MarkdownEd()},
-        onTapLink: (text, href, title) => openUrl(href),
+        onTapLink: (text, href, title) => openUrl(
+          href,
+        ),
         imageBuilder: (uri, title, alt) =>
             CachedNetworkImage(imageUrl: uri.toString()),
         styleSheet: MarkdownStyleSheet(
