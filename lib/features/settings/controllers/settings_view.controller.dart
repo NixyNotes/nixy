@@ -77,7 +77,7 @@ abstract class _SettingsViewControllerBase with Store {
   }
 
   Future<void> clearCache({bool? showToast = true}) async {
-    _noteStorage.deleteAll();
+    await _noteStorage.deleteAll();
     _offlineQueueStorage.deleteAll();
     await _appController.resetCache();
 
