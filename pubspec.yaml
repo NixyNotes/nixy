@@ -2,7 +2,8 @@ name: nextcloudnotes
 description: A new Flutter project.
 
 
-version: 1.1.1+4
+version: 1.2.1+6
+
 
 environment:
   sdk: '>=3.0.1 <4.0.0'
