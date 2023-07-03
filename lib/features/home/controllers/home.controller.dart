@@ -231,7 +231,11 @@ abstract class _HomeViewControllerBase with Store {
   @action
   Future<void> deleteNote(Note note) async {
     if (_offlineService.hasInternetAccess) {
-      await _noteRepositories.deleteNote(note.id);
+      final loadingToast = _toastService.showLoadingToast('Deleting');
+
+      await _noteRepositories
+          .deleteNote(note.id)
+          .whenComplete(loadingToast.complete);
     } else {
       _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
     }
@@ -250,6 +254,7 @@ abstract class _HomeViewControllerBase with Store {
   Future<void> bunchDeleteNotes() async {
     final futures = <Future<bool>>[];
     final internetAccess = _offlineService.hasInternetAccess;
+    final loadingToast = _toastService.showLoadingToast('Deleting');
 
     for (final note in selectedNotes) {
       if (internetAccess) {
@@ -282,7 +287,7 @@ abstract class _HomeViewControllerBase with Store {
         type: ToastType.success,
       );
       selectedNotes.clear();
-    });
+    }).whenComplete(loadingToast.complete);
   }
 
   @action
