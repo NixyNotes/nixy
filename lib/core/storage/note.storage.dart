@@ -104,8 +104,8 @@ class NoteStorage {
   }
 
   /// The function deletes all local notes using Isar database.
-  void deleteAll() {
-    isarInstance.writeTxn(() async {
+  Future<void> deleteAll() {
+    return isarInstance.writeTxn(() async {
       await isarInstance.localNotes.clear();
     });
   }

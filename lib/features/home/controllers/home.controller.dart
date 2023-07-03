@@ -176,7 +176,9 @@ abstract class _HomeViewControllerBase with Store {
         if (remoteNotes != null) {
           notes = ObservableList.of(remoteNotes);
 
-          _noteStorage.saveAllNotes(remoteNotes);
+          await _noteStorage.deleteAll().whenComplete(() {
+            _noteStorage.saveAllNotes(remoteNotes);
+          });
         }
         syncing = false;
       }
