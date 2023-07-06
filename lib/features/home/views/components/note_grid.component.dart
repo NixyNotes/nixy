@@ -74,13 +74,6 @@ class NoteGrid extends StatelessWidget {
         height: 300,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              offset: Offset(5, 5),
-              spreadRadius: -14,
-              blurRadius: 18,
-            )
-          ],
           color: Theme.of(context).colorScheme.surface,
         ),
         child: Column(
