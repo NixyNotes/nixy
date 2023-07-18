@@ -48,3 +48,4 @@ app.*.map.json
 *.freezed.dart
 di.config.dart
 .vscode
+.vs

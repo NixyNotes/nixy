@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nextcloudnotes/components/modal_sheet_menu.component.dart';
 import 'package:nextcloudnotes/core/config.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
+import 'package:nextcloudnotes/core/controllers/share_view.controller.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
@@ -41,7 +42,7 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
 
-    controller.init(widget.byCategoryName);
+    controller.init(context, widget.byCategoryName);
 
     Future.delayed(const Duration(milliseconds: 200), () {
       GoRouter.of(context).addListener(() {
@@ -54,7 +55,9 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void dispose() {
-    getIt.resetLazySingleton<HomeViewController>();
+    getIt
+      ..resetLazySingleton<HomeViewController>()
+      ..resetLazySingleton<ShareViewController>();
     super.dispose();
   }
 
@@ -78,8 +81,7 @@ class _HomeViewState extends State<HomeView> {
             switch (controller.homeNotesView.value) {
               case HomeListView.grid:
                 return GridView.builder(
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,

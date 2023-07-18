@@ -68,7 +68,7 @@ abstract class _NewNoteControllerBase with Store {
   late Note note;
 
   @action
-  void init(BuildContext context) {
+  void init(BuildContext context, {String? localTitle, String? content}) {
     markdownController = NixyTextFieldController(
       NixyMarkdownControllerPatterns,
       context,
@@ -92,6 +92,11 @@ abstract class _NewNoteControllerBase with Store {
 
       textFieldHasFocus = false;
     });
+
+    if (localTitle != null && content != null) {
+      markdownController.text = content;
+      title = localTitle;
+    }
   }
 
   Future<void> createNote() async {

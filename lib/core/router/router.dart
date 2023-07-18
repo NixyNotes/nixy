@@ -118,11 +118,16 @@ class AppRouter {
           GoRoute(
             name: RouterMeta.NewNote.name,
             path: RouterMeta.NewNote.path,
-            pageBuilder: (context, state) => MaterialPage<NewNoteView>(
-              child: const NewNoteView(),
-              key: state.pageKey,
-              fullscreenDialog: true,
-            ),
+            pageBuilder: (context, state) {
+              final title = state.queryParameters['title'];
+              final content = state.queryParameters['content'];
+
+              return MaterialPage<NewNoteView>(
+                child: NewNoteView(title: title, content: content),
+                key: state.pageKey,
+                fullscreenDialog: true,
+              );
+            },
           ),
           GoRoute(
             name: RouterMeta.IntroductionScreen.name,

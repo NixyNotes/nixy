@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
+import 'package:nextcloudnotes/core/controllers/share_view.controller.dart';
 import 'package:nextcloudnotes/core/router/router.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
@@ -38,6 +39,7 @@ abstract class _HomeViewControllerBase with Store {
     this._offlineService,
     this._authController,
     this._appController,
+    this._shareViewController,
   );
   final NoteRepositories _noteRepositories;
   final ToastService _toastService;
@@ -45,6 +47,7 @@ abstract class _HomeViewControllerBase with Store {
   final OfflineService _offlineService;
   final AuthController _authController;
   final AppController _appController;
+  final ShareViewController _shareViewController;
 
   @computed
   Observable<HomeListView> get homeNotesView => _appController.homeNotesView;
@@ -90,7 +93,8 @@ abstract class _HomeViewControllerBase with Store {
   late ReactionDisposer syncCategoriesWithPosts;
   late Completer<void>? _toast;
 
-  Future<void> init([String? byCategoryName]) async {
+  Future<void> init(BuildContext context, [String? byCategoryName]) async {
+    await _shareViewController.init(context);
     sortAutomaticallyDisposer = autorun((_) {
       notes.sort((a, b) => b.favorite ? 1 : 0);
     });

@@ -9,7 +9,13 @@ import 'package:nextcloudnotes/features/new_note/controllers/new_note.controller
 // ignore: public_member_api_docs
 class NewNoteView extends StatefulWidget {
 // ignore: public_member_api_docs
-  const NewNoteView({super.key});
+  const NewNoteView({super.key, this.title, this.content});
+
+  ///
+  final String? title;
+
+  ///
+  final String? content;
 
   @override
   State<NewNoteView> createState() => _NewNoteViewState();
@@ -21,7 +27,7 @@ class _NewNoteViewState extends State<NewNoteView> {
   @override
   void initState() {
     super.initState();
-    controller.init(context);
+    controller.init(context, content: widget.content, localTitle: widget.title);
   }
 
   @override
