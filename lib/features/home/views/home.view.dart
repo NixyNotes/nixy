@@ -201,7 +201,7 @@ class _HomeViewState extends State<HomeView> {
           InkWell(
             onTap: () => controller.addToSelectedNote(note),
             child: Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
               alignment: Alignment.bottomRight,
               child: const Icon(EvaIcons.checkmarkSquare2),
