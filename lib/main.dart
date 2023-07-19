@@ -17,16 +17,16 @@ import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
 
 void main() async {
-  configureDependencies();
+  await runZonedGuarded(
+    () async {
+      configureDependencies();
 
-  WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-    await InAppWebViewController.setWebContentsDebuggingEnabled(true);
-  }
-  await initDb([UserSchema, LocalNoteSchema, OfflineQueueSchema]);
+      WidgetsFlutterBinding.ensureInitialized();
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+        await InAppWebViewController.setWebContentsDebuggingEnabled(true);
+      }
+      await initDb([UserSchema, LocalNoteSchema, OfflineQueueSchema]);
 
-  runZonedGuarded(
-    () {
       runApp(const NixyApp());
     },
     (error, stack) {
