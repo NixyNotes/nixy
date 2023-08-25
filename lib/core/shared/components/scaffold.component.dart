@@ -13,6 +13,7 @@ class AppScaffold extends StatelessWidget {
     this.showAppBar = true,
     this.bottomBar,
     this.innerPadding = true,
+    this.appBarLeading,
   });
 
   /// The `final Widget body;` is declaring a required parameter named `body` of type `Widget` for the
@@ -36,6 +37,13 @@ class AppScaffold extends StatelessWidget {
   /// not be displayed.
   final bool? showAppBar;
 
+  /// The `final Widget? appBarLeading;` is declaring a nullable final variable named `appBarLeading` of
+  /// type `Widget`. It is an optional parameter for the `AppScaffold` class that can be used to specify a
+  /// widget to display as the leading widget in the app bar. The leading widget is typically used to
+  /// display a back button or an icon on the left side of the app bar. If no widget is specified, the app
+  /// bar will not display a leading widget.
+  final Widget? appBarLeading;
+
   /// The `final Widget? bottomBar;` is declaring a nullable final variable named `bottomBar` of type
   /// `Widget`. It is an optional parameter for the `AppScaffold` class that can be used to specify a
   /// widget to display as the bottom navigation bar. If no widget is specified, the bottom navigation bar
@@ -58,6 +66,7 @@ class AppScaffold extends StatelessWidget {
       appBar: showAppBar!
           ? AppBar(
               title: Text(title ?? ''),
+              leading: appBarLeading,
               actions: actions,
             )
           : null,

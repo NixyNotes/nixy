@@ -9,7 +9,6 @@ import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/controllers/share_view.controller.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
-import 'package:nextcloudnotes/core/shared/components/scaffold.component.dart';
 import 'package:nextcloudnotes/features/home/controllers/home.controller.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_grid.component.dart';
 import 'package:nextcloudnotes/features/home/views/components/note_list.component.dart';
@@ -71,39 +70,56 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      showAppBar: widget.byCategoryName != null,
-      bottomBar: _renderBottomBar(context),
-      body: RefreshIndicator.adaptive(
-        onRefresh: controller.fetchNotes,
-        child: Observer(
-          builder: (context) {
-            switch (controller.homeNotesView.value) {
-              case HomeListView.grid:
-                return GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    mainAxisExtent: 250,
-                  ),
-                  itemCount: controller.notes.length,
-                  clipBehavior: Clip.antiAlias,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _itemBuilder(index);
+    return Builder(
+      builder: (contextt) {
+        return Scaffold(
+          appBar: AppBar(
+            leading: Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: const Icon(EvaIcons.menu2),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
                   },
                 );
-              case HomeListView.list:
-                return ListView.builder(
-                  itemCount: controller.notes.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _itemBuilder(index);
-                  },
-                );
-            }
-          },
-        ),
-      ),
+              },
+            ),
+          ),
+          drawer: const AppDrawer(),
+          bottomNavigationBar: _renderBottomBar(context),
+          body: RefreshIndicator.adaptive(
+            onRefresh: controller.fetchNotes,
+            child: Observer(
+              builder: (context) {
+                switch (controller.homeNotesView.value) {
+                  case HomeListView.grid:
+                    return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        mainAxisExtent: 250,
+                      ),
+                      itemCount: controller.notes.length,
+                      clipBehavior: Clip.antiAlias,
+                      itemBuilder: (BuildContext context, int index) {
+                        return _itemBuilder(index);
+                      },
+                    );
+                  case HomeListView.list:
+                    return ListView.builder(
+                      itemCount: controller.notes.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return _itemBuilder(index);
+                      },
+                    );
+                }
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -283,6 +299,28 @@ class _HomeViewState extends State<HomeView> {
           landscapeLayout: BottomNavigationBarLandscapeLayout.spread,
         );
       },
+    );
+  }
+}
+
+class AppDrawer extends StatelessWidget {
+  const AppDrawer({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: [
+          const DrawerHeader(margin: EdgeInsets.all(0), child: Text('Nixy')),
+          ListTile(
+            title: const Text('Category'),
+            onTap: () {},
+            shape: const RoundedRectangleBorder(),
+          )
+        ],
+      ),
     );
   }
 }

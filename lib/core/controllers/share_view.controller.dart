@@ -13,10 +13,9 @@ void disposeShareViewController(ShareViewController instance) {
   instance.dispose();
 }
 
-@LazySingleton(dispose: disposeShareViewController)
-
 /// The `ShareViewController` class handles sharing media files and text from outside the app in
 /// Flutter, allowing users to create new notes based on the shared content.
+@LazySingleton(dispose: disposeShareViewController)
 class ShareViewController {
   late final BuildContext _context;
 
