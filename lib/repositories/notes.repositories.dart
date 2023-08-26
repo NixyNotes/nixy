@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
+import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/services/dio/init_dio.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 import 'package:nextcloudnotes/models/note_response.model.dart';
@@ -14,8 +17,10 @@ import 'package:nextcloudnotes/models/notes_response.model.dart';
 class NoteRepositories {
   /// The NoteRepositories class contains methods for fetching, deleting, updating, and creating notes
   /// using an API endpoint.
-  NoteRepositories(this._dio);
+  NoteRepositories(this._dio, this._authController, this._adapter);
   final DioService _dio;
+  final AuthController _authController;
+  final Adapter _adapter;
 
   String get _apiUrl => '/index.php/apps/notes/api/v1/notes';
 
@@ -133,14 +138,8 @@ class NoteRepositories {
   ///   a `Future<bool>` value. It returns `true` if the HTTP response status code is `HttpStatus.ok`
   /// (which is equivalent to 200), indicating that the note with the specified ID was successfully
   /// deleted. Otherwise, it returns `false`.
-  Future<bool> deleteNote(int noteId) async {
-    final response = await _dio.delete('$_apiUrl/$noteId');
-
-    if (response?.statusCode == HttpStatus.ok) {
-      return true;
-    }
-
-    return false;
+  Future<bool?> deleteNote(int noteId) async {
+    return _adapter.currentAdapter?.deleteNote(id: noteId);
   }
 
   /// This function updates a note with the given ID and returns a boolean indicating whether the update

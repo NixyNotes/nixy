@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
@@ -38,12 +39,14 @@ abstract class _NewNoteControllerBase with Store {
     this._offlineService,
     this._homeViewController,
     this._toastService,
+    this._authController,
   );
   final NoteRepositories _noteRepositories;
   final NoteStorage _notesStorage;
   final OfflineService _offlineService;
   final HomeViewController _homeViewController;
   final ToastService _toastService;
+  final AuthController _authController;
 
   final FocusNode focusNode = FocusNode();
   final UndoHistoryController undoHistoryController = UndoHistoryController();
@@ -113,7 +116,7 @@ abstract class _NewNoteControllerBase with Store {
       favorite: false,
     );
 
-    if (!internetAccess) {
+    if (!internetAccess || !_authController.isLoggedIn) {
       if (alreadyCreatedNote) {
         return _updateNote();
       }
@@ -173,7 +176,7 @@ abstract class _NewNoteControllerBase with Store {
 
     _notesStorage.saveNote(updateNote);
 
-    if (!internetAccess) {
+    if (!internetAccess || !_authController.isLoggedIn) {
       return;
     }
 

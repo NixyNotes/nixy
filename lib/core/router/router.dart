@@ -35,7 +35,7 @@ class AppRouter {
   /// Router
   GoRouter get router => GoRouter(
         navigatorKey: navigatorKey,
-        initialLocation: RouterMeta.IntroductionScreen.path,
+        initialLocation: RouterMeta.Home.path,
         refreshListenable: Listenable.merge([_authController, _appController]),
         debugLogDiagnostics: true,
         errorPageBuilder: (context, state) =>
@@ -150,39 +150,41 @@ class AppRouter {
           ),
         ],
         redirect: (context, state) async {
-          final isLoggedIn = _authController.isLoggedIn;
-          final showIntroductionScreen =
-              _appController.showIntroductionScreen.value;
-
-          final loginLocation = state.namedLocation(RouterMeta.Login.name);
-          final homeLocation = state.namedLocation(RouterMeta.Home.name);
-          final introductionLocation =
-              state.namedLocation(RouterMeta.IntroductionScreen.name);
-
-          final isInLoginPage = state.location == loginLocation;
-          final isInIntroductionPage = state.location == introductionLocation;
-
-          if (showIntroductionScreen != null && showIntroductionScreen) {
-            return null;
-          }
-
-          if (!isLoggedIn) {
-            if (isInLoginPage) {
-              return null;
-            }
-
-            if (state.location.startsWith('/connect')) {
-              return null;
-            }
-
-            return loginLocation;
-          }
-
-          if (isLoggedIn && (isInLoginPage || isInIntroductionPage)) {
-            return homeLocation;
-          }
-
           return null;
+
+          // final isLoggedIn = _authController.isLoggedIn;
+          // final showIntroductionScreen =
+          //     _appController.showIntroductionScreen.value;
+
+          // final loginLocation = state.namedLocation(RouterMeta.Login.name);
+          // final homeLocation = state.namedLocation(RouterMeta.Home.name);
+          // final introductionLocation =
+          //     state.namedLocation(RouterMeta.IntroductionScreen.name);
+
+          // final isInLoginPage = state.location == loginLocation;
+          // final isInIntroductionPage = state.location == introductionLocation;
+
+          // // if (showIntroductionScreen != null && showIntroductionScreen) {
+          // //   return null;
+          // // }
+
+          // if (!isLoggedIn) {
+          //   // if (isInLoginPage) {
+          //   //   return null;
+          //   // }
+
+          //   // if (state.location.startsWith('/connect')) {
+          //   //   return null;
+          //   // }
+
+          //   return homeLocation;
+          // }
+
+          // // if (isLoggedIn && (isInLoginPage || isInIntroductionPage)) {
+          // //   return homeLocation;
+          // // }
+
+          // return null;
         },
       );
 }

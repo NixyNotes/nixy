@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logger/logger.dart';
+import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/router/router.dart';
 import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
@@ -15,6 +16,7 @@ import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
+import 'package:nextcloudnotes/core/services/provider.service.dart';
 
 void main() async {
   await runZonedGuarded(
@@ -45,11 +47,15 @@ class NixyApp extends StatefulWidget {
 class _NixyAppState extends State<NixyApp> {
   final appRouter = getIt<AppRouter>();
   final AppController _appController = getIt<AppController>();
+  final Adapter _adapter = getIt<Adapter>();
+  final ProviderService _providerService = getIt<ProviderService>();
 
   @override
   void initState() {
     super.initState();
     _appController.init();
+    _adapter.init();
+    _providerService.init();
   }
 
   @override

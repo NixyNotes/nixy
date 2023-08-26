@@ -91,6 +91,12 @@ class _HomeViewState extends State<HomeView> {
             onRefresh: controller.fetchNotes,
             child: Observer(
               builder: (context) {
+                if (controller.notes.isEmpty) {
+                  return const Center(
+                    child: Text('No notes found.'),
+                  );
+                }
+
                 switch (controller.homeNotesView.value) {
                   case HomeListView.grid:
                     return GridView.builder(

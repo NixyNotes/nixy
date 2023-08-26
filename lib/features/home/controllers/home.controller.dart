@@ -12,6 +12,7 @@ import 'package:nextcloudnotes/core/router/router.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
+import 'package:nextcloudnotes/core/services/provider.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/models/category.model.dart';
@@ -40,6 +41,7 @@ abstract class _HomeViewControllerBase with Store {
     this._authController,
     this._appController,
     this._shareViewController,
+    this._providerService,
   );
   final NoteRepositories _noteRepositories;
   final ToastService _toastService;
@@ -48,6 +50,7 @@ abstract class _HomeViewControllerBase with Store {
   final AuthController _authController;
   final AppController _appController;
   final ShareViewController _shareViewController;
+  final ProviderService _providerService;
 
   @computed
   Observable<HomeListView> get homeNotesView => _appController.homeNotesView;
@@ -172,28 +175,28 @@ abstract class _HomeViewControllerBase with Store {
     if (localNotes.isNotEmpty) {
       notes = ObservableList.of(localNotes);
 
-      if (_offlineService.hasInternetAccess) {
-        syncing = true;
-        await _offlineService.runQueue();
-        final remoteNotes = await _fetchRemoteNotes(byCategoryName);
+      // if (_offlineService.hasInternetAccess) {
+      //   syncing = true;
+      //   await _offlineService.runQueue();
+      //   final remoteNotes = await _fetchRemoteNotes(byCategoryName);
 
-        if (remoteNotes != null) {
-          notes = ObservableList.of(remoteNotes);
+      //   if (remoteNotes != null) {
+      //     notes = ObservableList.of(remoteNotes);
 
-          await _noteStorage.deleteAll().whenComplete(() {
-            _noteStorage.saveAllNotes(remoteNotes);
-          });
-        }
-        syncing = false;
-      }
+      //     await _noteStorage.deleteAll().whenComplete(() {
+      //       _noteStorage.saveAllNotes(remoteNotes);
+      //     });
+      //   }
+      //   syncing = false;
+      // }
     } else {
-      if (_offlineService.hasInternetAccess) {
-        final remoteNotes = await _fetchRemoteNotes(byCategoryName);
-        if (remoteNotes != null) {
-          notes = ObservableList.of(remoteNotes);
-          _noteStorage.saveAllNotes(remoteNotes);
-        }
-      }
+      // if (_offlineService.hasInternetAccess) {
+      //   final remoteNotes = await _fetchRemoteNotes(byCategoryName);
+      //   if (remoteNotes != null) {
+      //     notes = ObservableList.of(remoteNotes);
+      //     _noteStorage.saveAllNotes(remoteNotes);
+      //   }
+      // }
     }
   }
 
@@ -236,17 +239,15 @@ abstract class _HomeViewControllerBase with Store {
 
   @action
   Future<void> deleteNote(Note note) async {
-    if (_offlineService.hasInternetAccess) {
-      final loadingToast = _toastService.showLoadingToast('Deleting');
+    final action = ProviderAction(
+      action: ProviderActionType.DELETE,
+      note: note,
+      noteId: note.id,
+    );
 
-      await _noteRepositories
-          .deleteNote(note.id)
-          .whenComplete(loadingToast.complete);
-    } else {
-      _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
-    }
-
-    _noteStorage.deleteNote(note);
+    _providerService.addAction(action);
+    // _noteStorage.deleteNote(note);
+    // // await _noteRepositories.deleteNote(note.id);
 
     notes.removeWhere((element) => element.id == note.id);
 
@@ -258,42 +259,42 @@ abstract class _HomeViewControllerBase with Store {
 
   @action
   Future<void> bunchDeleteNotes() async {
-    final futures = <Future<bool>>[];
-    final internetAccess = _offlineService.hasInternetAccess;
-    final loadingToast = _toastService.showLoadingToast('Deleting');
+    // final futures = <Future<bool>>[];
+    // final internetAccess = _offlineService.hasInternetAccess;
+    // final loadingToast = _toastService.showLoadingToast('Deleting');
 
-    for (final note in selectedNotes) {
-      if (internetAccess) {
-        final future = _noteRepositories.deleteNote(note.id);
-        futures.add(future);
-      }
-    }
+    // for (final note in selectedNotes) {
+    //   if (internetAccess) {
+    //     final future = _noteRepositories.deleteNote(note.id);
+    //     futures.add(future);
+    //   }
+    // }
 
-    if (!internetAccess) {
-      for (final note in selectedNotes) {
-        _noteStorage.deleteNote(note);
-        notes.removeWhere((element) => element.id == note.id);
-        _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
-      }
-      _toastService.showTextToast(
-        'Deleted (${selectedNotes.length}) notes.',
-        type: ToastType.success,
-      );
-      selectedNotes.clear();
-      return;
-    }
+    // if (!internetAccess) {
+    //   for (final note in selectedNotes) {
+    //     _noteStorage.deleteNote(note);
+    //     notes.removeWhere((element) => element.id == note.id);
+    //     _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
+    //   }
+    //   _toastService.showTextToast(
+    //     'Deleted (${selectedNotes.length}) notes.',
+    //     type: ToastType.success,
+    //   );
+    //   selectedNotes.clear();
+    //   return;
+    // }
 
-    await Future.wait<bool>(futures).then((value) {
-      for (final note in selectedNotes) {
-        notes.removeWhere((element) => element.id == note.id);
-      }
+    // await Future.wait<bool>(futures).then((value) {
+    //   for (final note in selectedNotes) {
+    //     notes.removeWhere((element) => element.id == note.id);
+    //   }
 
-      _toastService.showTextToast(
-        'Deleted (${selectedNotes.length}) notes.',
-        type: ToastType.success,
-      );
-      selectedNotes.clear();
-    }).whenComplete(loadingToast.complete);
+    //   _toastService.showTextToast(
+    //     'Deleted (${selectedNotes.length}) notes.',
+    //     type: ToastType.success,
+    //   );
+    //   selectedNotes.clear();
+    // }).whenComplete(loadingToast.complete);
   }
 
   @action

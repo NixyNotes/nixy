@@ -115,29 +115,35 @@ abstract class _NoteViewControllerBase with Store {
   }
 
   Future<bool> deleteNote(int noteId) async {
-    final checkInternetAccess = _offlineService.hasInternetAccess;
+    _noteStorage.deleteNote(note);
 
-    if (!checkInternetAccess) {
-      _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
-      _noteStorage.deleteNote(note);
+    await _noteRepositories.deleteNote(noteId);
 
-      return false;
-    }
+    return true;
 
-    final deleted = await _noteRepositories.deleteNote(noteId);
+    // final checkInternetAccess = _offlineService.hasInternetAccess;
 
-    if (deleted) {
-      _toastService.showTextToast(
-        '${note.title} has been moved to trash.',
-        type: ToastType.success,
-      );
+    // if (!checkInternetAccess) {
+    //   _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
+    //
 
-      _noteStorage.deleteNote(note);
+    //   return false;
+    // }
 
-      return true;
-    }
+    // final deleted = await _noteRepositories.deleteNote(noteId);
 
-    return false;
+    // if (deleted) {
+    //   _toastService.showTextToast(
+    //     '${note.title} has been moved to trash.',
+    //     type: ToastType.success,
+    //   );
+
+    //   _noteStorage.deleteNote(note);
+
+    //   return true;
+    // }
+
+    // return false;
   }
 
   @action
