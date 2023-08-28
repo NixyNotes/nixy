@@ -110,27 +110,6 @@ class NoteStorage {
     });
   }
 
-  /// This function retrieves all notes from a local database that belong to a specific category and
-  /// returns them as a list of Note objects.
-  ///
-  /// Args:
-  ///   categoryName (String): The parameter `categoryName` is a `String` that represents the name of
-  /// the category for which we want to retrieve all the notes. The method `getAllNotesByCategory` uses
-  /// Isar database to query all the notes that belong to the specified category and returns a `Future`
-  /// that resolves to
-  ///
-  /// Returns:
-  ///   A `Future` that resolves to a list of `Note` objects that belong to the specified category.
-  Future<List<Note>> getAllNotesByCategory(String categoryName) async {
-    final notes = await isarInstance.localNotes
-        .where()
-        .categoryEqualTo(categoryName)
-        .findAll();
-    final modifiedList = notes.map((e) => Note.fromJson(e.toMap())).toList();
-
-    return modifiedList;
-  }
-
   /// The function searches for notes in Isar database based on a given text input and returns a list of
   /// matching notes.
   ///

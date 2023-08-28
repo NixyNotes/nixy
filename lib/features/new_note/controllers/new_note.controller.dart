@@ -107,8 +107,6 @@ abstract class _NewNoteControllerBase with Store {
     final unixTimestamp = DateTime.now().millisecondsSinceEpoch;
     final model = Note(
       id: Random().nextInt(9999),
-      etag: 'etag',
-      readonly: false,
       modified: unixTimestamp,
       title: title!,
       category: '',
@@ -131,8 +129,6 @@ abstract class _NewNoteControllerBase with Store {
   Future<void> _updateNote() async {
     final updateNote = Note(
       id: note.id,
-      etag: note.etag,
-      readonly: note.readonly,
       modified: DateTime.now().millisecondsSinceEpoch,
       title: title!,
       category: note.title,

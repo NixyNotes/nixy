@@ -1,7 +1,17 @@
+import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/adapters/base.adapter.dart';
+import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
+import 'package:nextcloudnotes/core/services/dio/init_dio.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
 
+@lazySingleton
 class MoteAdapter implements BaseAdapter {
+  MoteAdapter(this._dioService, this._adapter);
+  final DioService _dioService;
+  final Adapter _adapter;
+
+  String get uri => _adapter.currentServerUri;
+
   @override
   Future<Note> createNewNote({required NewNote data}) {
     // TODO: implement createNewNote
@@ -22,9 +32,24 @@ class MoteAdapter implements BaseAdapter {
   }
 
   @override
-  Future<List<Note>> fetchNotes() {
-    // TODO: implement fetchNotes
-    throw UnimplementedError();
+  Future<List<Note>> fetchNotes() async {
+    final response = await _dioService.get('$uri/notes');
+
+    List<Note> noteFromJson(List<dynamic> e) => List<Note>.from(
+          e.map(
+            (ee) => Note(
+              category: '',
+              content: ee['content'] as String,
+              favorite: false,
+              id: ee['id'] as int,
+              modified: DateTime.parse(ee['updated_at'] as String)
+                  .millisecondsSinceEpoch,
+              title: ee['title'] as String,
+            ),
+          ),
+        );
+
+    return noteFromJson(response.data['data'] as List<dynamic>);
   }
 
   @override

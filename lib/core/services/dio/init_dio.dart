@@ -50,11 +50,11 @@ class DioService {
   ///
   /// Returns:
   ///   A `Future` object that resolves to a `Response<dynamic>` object.
-  Future<Response<dynamic>> get(
+  Future<Response<dynamic>> get<T>(
     String path, [
     Map<String, dynamic>? headers,
   ]) async {
-    final request = await _dio.get(path, options: Options(headers: headers));
+    final request = await _dio.get<T>(path, options: Options(headers: headers));
 
     if (request.statusCode == HttpStatus.ok ||
         request.statusCode == HttpStatus.notModified) {

@@ -13,20 +13,17 @@ class LocalNote {
 
   LocalNote();
 
-  /// The function creates a new LocalNote object by merging the properties of a Note object.
+  /// The `LocalNote.merge` factory method creates a new `LocalNote` object by merging the properties of
+  /// a `Note` object.
   ///
   /// Args:
-  ///   note (Note): `note` is an instance of the `Note` class, which contains properties such as `id`,
-  /// `etag`, `readonly`, `modified`, `title`, `category`, `content`, and `favorite`. These properties
-  /// represent the attributes of a note object. The `merge` method in the
+  ///   note (Note): The "note" parameter is an instance of the "Note" class.
   ///
   /// Returns:
-  ///   A `LocalNote` object is being returned.
+  ///   The factory function is returning a new instance of the LocalNote class.
   factory LocalNote.merge(Note note) {
     return LocalNote()
       ..id = note.id
-      ..etag = note.etag
-      ..readonly = note.readonly
       ..modified = note.modified
       ..title = note.title
       ..category = note.category
@@ -38,14 +35,12 @@ class LocalNote {
   @Index(unique: true, replace: true)
   late int id;
 
-  late String etag;
-  late bool readonly;
   late int modified;
   late String title;
   @Index()
-  late String category;
   late String content;
-  late bool favorite;
+  late bool? favorite;
+  late String? category;
 
   @Index(type: IndexType.value, caseSensitive: false)
   List<String> get contentWords =>
@@ -59,13 +54,11 @@ class LocalNote {
   List<String> get titleWords => title.split(' ');
 
   @Index(type: IndexType.value, caseSensitive: false)
-  List<String> get categoryWords => category.split(' ');
+  List<String>? get categoryWords => category?.split(' ');
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'etag': etag,
-      'readonly': readonly,
       'modified': modified,
       'title': title,
       'category': category,

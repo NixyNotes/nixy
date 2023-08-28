@@ -96,7 +96,7 @@ abstract class _HomeViewControllerBase with Store {
   Future<void> init(BuildContext context, [String? byCategoryName]) async {
     await _shareViewController.init(context);
     sortAutomaticallyDisposer = autorun((_) {
-      notes.sort((a, b) => b.favorite ? 1 : 0);
+      notes.sort((a, b) => b.favorite != null && b.favorite! ? 1 : 0);
     });
 
     showToastWhenSycingDisposer = autorun((_) {
@@ -136,8 +136,8 @@ abstract class _HomeViewControllerBase with Store {
   @action
   void fetchCategories() {
     for (final note in notes) {
-      if (note.category.isNotEmpty) {
-        final model = CategoryModel(label: note.category);
+      if (note.category != null) {
+        final model = CategoryModel(label: note.category!);
 
         categories.add(model);
       }
@@ -157,13 +157,11 @@ abstract class _HomeViewControllerBase with Store {
   Future<void> toggleFavorite(Note note) async {
     final model = Note(
       id: note.id,
-      etag: note.etag,
-      readonly: note.readonly,
       modified: DateTime.now().millisecondsSinceEpoch,
       title: note.title,
       category: note.category,
       content: note.content,
-      favorite: !note.favorite,
+      favorite: note.favorite != null ? !note.favorite! : false,
     );
 
     await updateNote(model);

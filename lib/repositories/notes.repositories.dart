@@ -19,6 +19,7 @@ class NoteRepositories {
   final NoteStorage _noteStorage;
 
   Future<List<Note>?> fetchNotes([String? etag]) async {
+    // return _adapter.currentAdapter?.fetchNotes();
     return _noteStorage.getAllNotes();
   }
 

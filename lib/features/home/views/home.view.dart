@@ -193,7 +193,7 @@ class _HomeViewState extends State<HomeView> {
             title: note.title,
             content: content,
             date: note.modified,
-            isFavorite: note.favorite,
+            isFavorite: note.favorite ?? false,
             onTap: () => controller.selectedNotes.isEmpty
                 ? context.pushNamed(
                     RouterMeta.SingleNote.name,
@@ -205,8 +205,8 @@ class _HomeViewState extends State<HomeView> {
         : NoteList(
             title: note.title,
             date: note.modified,
-            category: note.category,
-            isFavorite: note.favorite,
+            category: note.category ?? '',
+            isFavorite: note.favorite ?? false,
             onTap: () => controller.selectedNotes.isEmpty
                 ? context.pushNamed(
                     RouterMeta.SingleNote.name,

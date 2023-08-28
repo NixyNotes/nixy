@@ -21,12 +21,12 @@ class AuthInterceptor extends Interceptor {
     if (isLoggedIn) {
       _authController.currentAccount.observe((value) {
         if (value.newValue != null) {
-          options.headers['Authorization'] = 'Basic ${value.newValue?.token}';
+          options.headers['Authorization'] = '${value.newValue?.token}';
         }
       });
 
       final account = _authController.currentAccount.value;
-      options.headers['Authorization'] = 'Basic ${account?.token}';
+      options.headers['Authorization'] = '${account?.token}';
     }
 
     options.headers['OCS-APIRequest'] = 'true';
