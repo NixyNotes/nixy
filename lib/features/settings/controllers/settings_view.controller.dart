@@ -6,7 +6,6 @@ import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
-import 'package:nextcloudnotes/core/storage/offline_queue.storage.dart';
 import 'package:nextcloudnotes/models/list_view.model.dart';
 
 part 'settings_view.controller.g.dart';
@@ -32,14 +31,12 @@ abstract class _SettingsViewControllerBase with Store {
   _SettingsViewControllerBase(
     this._authController,
     this._noteStorage,
-    this._offlineQueueStorage,
     this._toastService,
     this._appController,
   );
 
   final AuthController _authController;
   final NoteStorage _noteStorage;
-  final OfflineQueueStorage _offlineQueueStorage;
   final ToastService _toastService;
   final AppController _appController;
 
@@ -78,7 +75,6 @@ abstract class _SettingsViewControllerBase with Store {
 
   Future<void> clearCache({bool? showToast = true}) async {
     await _noteStorage.deleteAll();
-    _offlineQueueStorage.deleteAll();
     await _appController.resetCache();
 
     if (showToast != null && showToast) {
