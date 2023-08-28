@@ -116,7 +116,7 @@ abstract class _ConnectToServerControllerBase with Store {
       ..username = username
       ..server = serverAddress
       ..adapter = AdapterType.Nextcloud
-      ..token = stringToBase64.encode('Basic $username:$password');
+      ..token = 'Basic ${stringToBase64.encode('$username:$password')}';
 
     _authController.login(userModel);
   }
