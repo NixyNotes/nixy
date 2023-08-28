@@ -3,7 +3,7 @@ import 'package:nextcloudnotes/models/note.model.dart';
 /// Adapter for backends
 abstract class BaseAdapter {
   /// Fetch notes
-  Future<Note> fetchNotes();
+  Future<List<Note>> fetchNotes();
 
   /// Fetch notes by category name
   Future<Note> fetchNotesByCategory({required String categoryName});

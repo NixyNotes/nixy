@@ -1,13 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
-import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
+import 'package:nextcloudnotes/core/services/provider.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/shared/patterns.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
@@ -40,12 +39,14 @@ abstract class _NoteViewControllerBase with Store {
     this._noteStorage,
     this._appController,
     this._toastService,
+    this._providerService,
   );
   final NoteRepositories _noteRepositories;
   final OfflineService _offlineService;
   final NoteStorage _noteStorage;
   final AppController _appController;
   final ToastService _toastService;
+  final ProviderService _providerService;
 
   final FocusNode focusNode = FocusNode();
   final UndoHistoryController undoHistoryController = UndoHistoryController();
@@ -114,41 +115,23 @@ abstract class _NoteViewControllerBase with Store {
     return data;
   }
 
-  Future<bool> deleteNote(int noteId) async {
-    _noteStorage.deleteNote(note);
+  Future<void> deleteNote(int noteId) async {
+    _providerService.addAction(
+      ProviderAction(
+        action: ProviderActionType.DELETE,
+        note: note,
+        noteId: noteId,
+      ),
+    );
 
-    await _noteRepositories.deleteNote(noteId);
-
-    return true;
-
-    // final checkInternetAccess = _offlineService.hasInternetAccess;
-
-    // if (!checkInternetAccess) {
-    //   _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
-    //
-
-    //   return false;
-    // }
-
-    // final deleted = await _noteRepositories.deleteNote(noteId);
-
-    // if (deleted) {
-    //   _toastService.showTextToast(
-    //     '${note.title} has been moved to trash.',
-    //     type: ToastType.success,
-    //   );
-
-    //   _noteStorage.deleteNote(note);
-
-    //   return true;
-    // }
-
-    // return false;
+    _toastService.showTextToast(
+      '${note.title} has been moved to trash.',
+      type: ToastType.success,
+    );
   }
 
   @action
   Future<void> updateNote() async {
-    final checkInternetAccess = _offlineService.hasInternetAccess;
     final note0 = note.toJson();
     final lines = markdownController.text.split('\n');
     final firstLine = lines.first;
@@ -158,19 +141,13 @@ abstract class _NoteViewControllerBase with Store {
     note0['title'] = title;
     note = Note.fromJson(note0);
 
-    if (!checkInternetAccess) {
-      _offlineService.addQueue(
-        OfflineQueueAction.UPDATE,
+    _providerService.addAction(
+      ProviderAction(
+        action: ProviderActionType.UPDATE,
+        note: note,
         noteId: note.id,
-        noteAsJson: jsonEncode(note),
-      );
-      _noteStorage.saveNote(note);
-
-      return;
-    }
-
-    await _noteRepositories.updateNote(note.id, note);
-    _noteStorage.saveNote(note);
+      ),
+    );
   }
 
   void onTapDone() {

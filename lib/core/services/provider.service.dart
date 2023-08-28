@@ -11,13 +11,13 @@ enum ProviderActionType { ADD, UPDATE, DELETE }
 class ProviderAction {
   ProviderAction({
     required this.action,
-    required this.noteId,
     required this.note,
+    this.noteId,
   });
 
   final ProviderActionType action;
 
-  final int noteId;
+  final int? noteId;
 
   final Note note;
 }
@@ -42,9 +42,9 @@ class ProviderService {
       case ProviderActionType.DELETE:
         return _deleteAction(action);
       case ProviderActionType.ADD:
-        return _deleteAction(action);
+        return _addAction(action);
       case ProviderActionType.UPDATE:
-        return _deleteAction(action);
+        return _addAction(action);
     }
   }
 
@@ -52,7 +52,23 @@ class ProviderService {
     _noteStorage.deleteNote(action.note);
 
     try {
-      await _noteRepositories.deleteNote(action.noteId);
+      await _noteRepositories.deleteNote(action.noteId!);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _addAction(ProviderAction action) async {
+    _noteStorage.saveNote(action.note);
+
+    final model = NewNote.fromJson(action.note.toJson());
+
+    try {
+      if (action.action == ProviderActionType.UPDATE) {
+        await _noteRepositories.updateNote(action.noteId!, action.note);
+      } else {
+        await _noteRepositories.createNewNote(model);
+      }
     } catch (e) {
       print(e);
     }

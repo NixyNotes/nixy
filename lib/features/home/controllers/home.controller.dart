@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -10,15 +9,14 @@ import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/controllers/share_view.controller.dart';
 import 'package:nextcloudnotes/core/router/router.dart';
 import 'package:nextcloudnotes/core/router/router_meta.dart';
-import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
-import 'package:nextcloudnotes/core/services/offline.service.dart';
+import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
+import 'package:nextcloudnotes/core/services/init_isar.dart';
 import 'package:nextcloudnotes/core/services/provider.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/models/category.model.dart';
 import 'package:nextcloudnotes/models/list_view.model.dart';
 import 'package:nextcloudnotes/models/note.model.dart';
-import 'package:nextcloudnotes/models/notes_response.model.dart';
 import 'package:nextcloudnotes/repositories/notes.repositories.dart';
 
 part 'home.controller.g.dart';
@@ -37,7 +35,6 @@ abstract class _HomeViewControllerBase with Store {
     this._noteRepositories,
     this._toastService,
     this._noteStorage,
-    this._offlineService,
     this._authController,
     this._appController,
     this._shareViewController,
@@ -46,7 +43,6 @@ abstract class _HomeViewControllerBase with Store {
   final NoteRepositories _noteRepositories;
   final ToastService _toastService;
   final NoteStorage _noteStorage;
-  final OfflineService _offlineService;
   final AuthController _authController;
   final AppController _appController;
   final ShareViewController _shareViewController;
@@ -94,6 +90,7 @@ abstract class _HomeViewControllerBase with Store {
   late ReactionDisposer sortAutomaticallyDisposer;
   late ReactionDisposer showToastWhenSycingDisposer;
   late ReactionDisposer syncCategoriesWithPosts;
+  late StreamSubscription<dynamic> isarPostsWatcher;
   late Completer<void>? _toast;
 
   Future<void> init(BuildContext context, [String? byCategoryName]) async {
@@ -123,6 +120,16 @@ abstract class _HomeViewControllerBase with Store {
       }
     });
 
+    isarPostsWatcher = isarInstance.localNotes
+        .watchLazy(fireImmediately: true)
+        .listen((e) async {
+      final updatedNotes = await _noteRepositories.fetchNotes();
+
+      if (updatedNotes != null) {
+        notes = ObservableList.of(updatedNotes);
+      }
+    });
+
     await fetchNotes(byCategoryName);
   }
 
@@ -137,66 +144,13 @@ abstract class _HomeViewControllerBase with Store {
     }
   }
 
-  Future<List<Note>?> _fetchRemoteNotes([String? byCategoryName]) async {
-    FetchAllNotesResponse remoteNotes;
-    final notesLocalEtag = await _noteStorage.fetchEtag();
-
-    if (byCategoryName != null) {
-      remoteNotes =
-          await _noteRepositories.fetchNotesByCategory(byCategoryName);
-    } else {
-      remoteNotes = await _noteRepositories.fetchNotes(notesLocalEtag);
-    }
-
-    final responseEtag = remoteNotes.etag;
-
-    if (notesLocalEtag != responseEtag) {
-      await _noteStorage.saveEtag(responseEtag);
-    }
-
-    return remoteNotes.notes;
-  }
-
-  Future<List<Note>> _fetchLocalNotes([String? byCategoryName]) async {
-    var localNotes = <Note>[];
-    if (byCategoryName != null) {
-      localNotes = await _noteStorage.getAllNotesByCategory(byCategoryName);
-    } else {
-      localNotes = await _noteStorage.getAllNotes();
-    }
-
-    return localNotes;
-  }
-
   @action
   Future<void> fetchNotes([String? byCategoryName]) async {
-    final localNotes = await _fetchLocalNotes(byCategoryName);
+    final localNotes = await _noteRepositories.fetchNotes();
 
-    if (localNotes.isNotEmpty) {
+    if (localNotes != null) {
       notes = ObservableList.of(localNotes);
-
-      // if (_offlineService.hasInternetAccess) {
-      //   syncing = true;
-      //   await _offlineService.runQueue();
-      //   final remoteNotes = await _fetchRemoteNotes(byCategoryName);
-
-      //   if (remoteNotes != null) {
-      //     notes = ObservableList.of(remoteNotes);
-
-      //     await _noteStorage.deleteAll().whenComplete(() {
-      //       _noteStorage.saveAllNotes(remoteNotes);
-      //     });
-      //   }
-      //   syncing = false;
-      // }
-    } else {
-      // if (_offlineService.hasInternetAccess) {
-      //   final remoteNotes = await _fetchRemoteNotes(byCategoryName);
-      //   if (remoteNotes != null) {
-      //     notes = ObservableList.of(remoteNotes);
-      //     _noteStorage.saveAllNotes(remoteNotes);
-      //   }
-      // }
+      syncing = false;
     }
   }
 
@@ -222,19 +176,13 @@ abstract class _HomeViewControllerBase with Store {
   }
 
   Future<void> updateNote(Note note) async {
-    final internetAccess = _offlineService.hasInternetAccess;
-
-    if (!internetAccess) {
-      _offlineService.addQueue(
-        OfflineQueueAction.UPDATE,
+    _providerService.addAction(
+      ProviderAction(
+        action: ProviderActionType.UPDATE,
+        note: note,
         noteId: note.id,
-        noteAsJson: jsonEncode(note),
-      );
-
-      return;
-    }
-
-    await _noteRepositories.updateNote(note.id, note);
+      ),
+    );
   }
 
   @action
@@ -246,8 +194,6 @@ abstract class _HomeViewControllerBase with Store {
     );
 
     _providerService.addAction(action);
-    // _noteStorage.deleteNote(note);
-    // // await _noteRepositories.deleteNote(note.id);
 
     notes.removeWhere((element) => element.id == note.id);
 
@@ -259,42 +205,23 @@ abstract class _HomeViewControllerBase with Store {
 
   @action
   Future<void> bunchDeleteNotes() async {
-    // final futures = <Future<bool>>[];
-    // final internetAccess = _offlineService.hasInternetAccess;
-    // final loadingToast = _toastService.showLoadingToast('Deleting');
+    for (final note in selectedNotes) {
+      _providerService.addAction(
+        ProviderAction(
+          action: ProviderActionType.DELETE,
+          noteId: note.id,
+          note: note,
+        ),
+      );
 
-    // for (final note in selectedNotes) {
-    //   if (internetAccess) {
-    //     final future = _noteRepositories.deleteNote(note.id);
-    //     futures.add(future);
-    //   }
-    // }
+      notes.removeWhere((element) => element.id == note.id);
+    }
 
-    // if (!internetAccess) {
-    //   for (final note in selectedNotes) {
-    //     _noteStorage.deleteNote(note);
-    //     notes.removeWhere((element) => element.id == note.id);
-    //     _offlineService.addQueue(OfflineQueueAction.DELETE, noteId: note.id);
-    //   }
-    //   _toastService.showTextToast(
-    //     'Deleted (${selectedNotes.length}) notes.',
-    //     type: ToastType.success,
-    //   );
-    //   selectedNotes.clear();
-    //   return;
-    // }
-
-    // await Future.wait<bool>(futures).then((value) {
-    //   for (final note in selectedNotes) {
-    //     notes.removeWhere((element) => element.id == note.id);
-    //   }
-
-    //   _toastService.showTextToast(
-    //     'Deleted (${selectedNotes.length}) notes.',
-    //     type: ToastType.success,
-    //   );
-    //   selectedNotes.clear();
-    // }).whenComplete(loadingToast.complete);
+    _toastService.showTextToast(
+      'Deleted (${selectedNotes.length}) notes.',
+      type: ToastType.success,
+    );
+    selectedNotes.clear();
   }
 
   @action
@@ -318,5 +245,6 @@ abstract class _HomeViewControllerBase with Store {
     sortAutomaticallyDisposer();
     showToastWhenSycingDisposer();
     syncCategoriesWithPosts();
+    isarPostsWatcher.cancel();
   }
 }

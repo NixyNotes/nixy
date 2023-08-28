@@ -1,12 +1,11 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
-import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/services/offline.service.dart';
+import 'package:nextcloudnotes/core/services/provider.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/shared/patterns.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
@@ -40,6 +39,7 @@ abstract class _NewNoteControllerBase with Store {
     this._homeViewController,
     this._toastService,
     this._authController,
+    this._providerService,
   );
   final NoteRepositories _noteRepositories;
   final NoteStorage _notesStorage;
@@ -47,6 +47,7 @@ abstract class _NewNoteControllerBase with Store {
   final HomeViewController _homeViewController;
   final ToastService _toastService;
   final AuthController _authController;
+  final ProviderService _providerService;
 
   final FocusNode focusNode = FocusNode();
   final UndoHistoryController undoHistoryController = UndoHistoryController();
@@ -103,7 +104,6 @@ abstract class _NewNoteControllerBase with Store {
   }
 
   Future<void> createNote() async {
-    final internetAccess = _offlineService.hasInternetAccess;
     final unixTimestamp = DateTime.now().millisecondsSinceEpoch;
     final model = Note(
       id: Random().nextInt(9999),
@@ -116,49 +116,16 @@ abstract class _NewNoteControllerBase with Store {
       favorite: false,
     );
 
-    if (!internetAccess || !_authController.isLoggedIn) {
-      if (alreadyCreatedNote) {
-        return _updateNote();
-      }
-
-      _notesStorage.saveNote(model);
-
-      _offlineService.addQueue(
-        OfflineQueueAction.ADD,
-        noteAsJson: jsonEncode(model),
-      );
-
-      alreadyCreatedNote = true;
-      note = model;
-
-      _toastService.showTextToast('Created $title', type: ToastType.success);
-
-      return;
-    }
-
-    _notesStorage.saveNote(model);
-
     if (alreadyCreatedNote) {
       return _updateNote();
     }
 
-    isLoading = true;
+    note = model;
 
-    final newNote = NewNote(
-      modified: DateTime.now().millisecondsSinceEpoch,
-      title: title!,
-      content: markdownController.text,
-      category: '',
-    );
-
-    final response = await _noteRepositories.createNewNote(newNote);
-
-    if (response != null) {
-      isLoading = false;
-      alreadyCreatedNote = true;
-      note = response;
-      _toastService.showTextToast('Created $title', type: ToastType.success);
-    }
+    _providerService
+        .addAction(ProviderAction(action: ProviderActionType.ADD, note: note));
+    _toastService.showTextToast('Created $title', type: ToastType.success);
+    alreadyCreatedNote = true;
   }
 
   Future<void> _updateNote() async {
@@ -172,18 +139,16 @@ abstract class _NewNoteControllerBase with Store {
       content: markdownController.text,
       favorite: note.favorite,
     );
-    final internetAccess = _offlineService.hasInternetAccess;
 
-    _notesStorage.saveNote(updateNote);
+    _providerService.addAction(
+      ProviderAction(
+        action: ProviderActionType.UPDATE,
+        note: updateNote,
+        noteId: note.id,
+      ),
+    );
 
-    if (!internetAccess || !_authController.isLoggedIn) {
-      return;
-    }
-
-    isLoading = true;
-
-    await _noteRepositories.updateNote(note.id, updateNote);
-    isLoading = false;
+    _toastService.showTextToast('Updated $title', type: ToastType.success);
   }
 
   Future<void> dispose() async {

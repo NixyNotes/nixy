@@ -22,7 +22,7 @@ class MoteAdapter implements BaseAdapter {
   }
 
   @override
-  Future<Note> fetchNotes() {
+  Future<List<Note>> fetchNotes() {
     // TODO: implement fetchNotes
     throw UnimplementedError();
   }

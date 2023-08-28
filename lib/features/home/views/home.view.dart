@@ -74,6 +74,8 @@ class _HomeViewState extends State<HomeView> {
       builder: (contextt) {
         return Scaffold(
           appBar: AppBar(
+            title: const Text('Nixy'),
+            centerTitle: true,
             leading: Builder(
               builder: (context) {
                 return IconButton(
