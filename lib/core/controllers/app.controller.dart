@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
-import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/storage/app.storage.dart';
 import 'package:nextcloudnotes/models/list_view.model.dart';
 
@@ -19,12 +18,10 @@ abstract class _AppControllerBase extends ChangeNotifier with Store {
   _AppControllerBase(
     this._appStorage,
     this._authController,
-    this._offlineService,
   );
 
   final AppStorage _appStorage;
   final AuthController _authController;
-  final OfflineService _offlineService;
 
   @observable
   Observable<Duration> autoSaveTimer = Observable(const Duration(seconds: 10));
@@ -39,7 +36,6 @@ abstract class _AppControllerBase extends ChangeNotifier with Store {
 
   Future<void> init() async {
     await _authController.initState();
-    await _offlineService.checkForNetworkConditions();
     await _loadAutoSaveSettings();
 
     isInitialized = true;

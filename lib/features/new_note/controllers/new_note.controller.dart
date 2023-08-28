@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
-import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/provider.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/shared/patterns.dart';
@@ -35,7 +34,6 @@ abstract class _NewNoteControllerBase with Store {
   _NewNoteControllerBase(
     this._noteRepositories,
     this._notesStorage,
-    this._offlineService,
     this._homeViewController,
     this._toastService,
     this._authController,
@@ -43,7 +41,6 @@ abstract class _NewNoteControllerBase with Store {
   );
   final NoteRepositories _noteRepositories;
   final NoteStorage _notesStorage;
-  final OfflineService _offlineService;
   final HomeViewController _homeViewController;
   final ToastService _toastService;
   final AuthController _authController;

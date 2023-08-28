@@ -5,7 +5,6 @@ import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
-import 'package:nextcloudnotes/core/services/offline.service.dart';
 import 'package:nextcloudnotes/core/services/provider.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/shared/patterns.dart';
@@ -35,14 +34,12 @@ class NoteViewController = _NoteViewControllerBase with _$NoteViewController;
 abstract class _NoteViewControllerBase with Store {
   _NoteViewControllerBase(
     this._noteRepositories,
-    this._offlineService,
     this._noteStorage,
     this._appController,
     this._toastService,
     this._providerService,
   );
   final NoteRepositories _noteRepositories;
-  final OfflineService _offlineService;
   final NoteStorage _noteStorage;
   final AppController _appController;
   final ToastService _toastService;

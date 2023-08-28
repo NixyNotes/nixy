@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/services/dio/interceptors/auth.interceptor.dart';
 import 'package:nextcloudnotes/core/services/dio/interceptors/base_url.interceptor.dart';
-import 'package:nextcloudnotes/core/services/dio/interceptors/network_checker.interceptor.dart';
 
 /// The DioService class is a singleton class that provides methods for making HTTP requests using the
 /// Dio package in Dart.
@@ -17,18 +16,15 @@ class DioService {
   DioService(
     this._authInterceptor,
     this._baseUrlInterceptor,
-    this._networkCheckerInterceptor,
   ) {
     _dio = Dio(_baseOptions);
     _dio.interceptors.addAll([
       _authInterceptor,
-      _networkCheckerInterceptor,
       _baseUrlInterceptor,
     ]);
   }
   final AuthInterceptor _authInterceptor;
   final BaseUrlInterceptor _baseUrlInterceptor;
-  final NetworkCheckerInterceptor _networkCheckerInterceptor;
 
   late Dio _dio;
 
