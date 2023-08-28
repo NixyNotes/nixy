@@ -7,6 +7,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/log.service.dart';
@@ -112,10 +113,10 @@ abstract class _ConnectToServerControllerBase with Store {
     final stringToBase64 = utf8.fuse(base64);
 
     final userModel = User()
-      ..password = password
       ..username = username
       ..server = serverAddress
-      ..token = stringToBase64.encode('$username:$password');
+      ..adapter = AdapterType.Nextcloud
+      ..token = stringToBase64.encode('Basic $username:$password');
 
     _authController.login(userModel);
   }

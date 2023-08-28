@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
-import 'package:nextcloudnotes/core/router/router_meta.dart';
+import 'package:nextcloudnotes/core/adapters/auth.adapter.dart';
+import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
 
 part 'login_view.controller.g.dart';
 
@@ -11,26 +10,24 @@ part 'login_view.controller.g.dart';
 class LoginViewController = _LoginViewControllerBase with _$LoginViewController;
 
 abstract class _LoginViewControllerBase with Store {
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TextEditingController serverFormController = TextEditingController();
+  _LoginViewControllerBase(this._adapter);
+  final Adapter _adapter;
 
-  void onPressLogin(BuildContext context) {
-    if (formKey.currentState!.validate()) {
-      context.pushNamed(
-        RouterMeta.ConnectToServer.name,
-        pathParameters: {'url': serverFormController.text},
-      );
+  ObservableMap<String, AuthAdapter> authProviders = ObservableMap();
+
+  @observable
+  Observable<String> selectedAuthAdapter = Observable('');
+
+  @action
+  void init() {
+    for (final adapter in _adapter.authAdapters) {
+      final keyName = adapter.title.toLowerCase();
+      authProviders.addAll({keyName: adapter});
     }
   }
 
-  String? urlFormValidator(String? value) {
-    if (value != null) {
-      if (!value.startsWith('http')) {
-        return 'Url please';
-      }
-
-      return null;
-    }
-    return null;
+  @action
+  void onSelectAuthAdapter(String e) {
+    selectedAuthAdapter.value = e;
   }
 }

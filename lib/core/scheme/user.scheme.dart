@@ -13,8 +13,6 @@ class User {
 
   late String username;
 
-  late String password;
-
   late String token;
 
   late String server;

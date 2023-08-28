@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
+import 'package:nextcloudnotes/core/adapters/auth.adapter.dart';
+import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
+import 'package:nextcloudnotes/core/adapters/mote/models/login_response.model.dart';
+import 'package:nextcloudnotes/core/adapters/mote/views/auth.view.dart';
+import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
+import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
+import 'package:nextcloudnotes/core/services/dio/init_dio.dart';
+
+void disposeMoteAuthAdapter(MoteAuthAdapter instance) {
+  instance.dispose();
+}
+
+@LazySingleton(
+  dispose: disposeMoteAuthAdapter,
+)
+class MoteAuthAdapter implements AuthAdapter {
+  MoteAuthAdapter(this._dioService, this._authController);
+
+  final DioService _dioService;
+  final AuthController _authController;
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  String serverUri = 'http://localhost:8000';
+
+  @override
+  Future<bool> onLogin() async {
+    try {
+      final response = await _dioService.post('$serverUri/auth/log-in', {
+        'email': usernameController.text,
+        'password': passwordController.text
+      });
+
+      final serializedData =
+          MoteLoginResponse.fromJson(response.data as Map<String, dynamic>);
+
+      final model = User()
+        ..adapter = AdapterType.Mote
+        ..id = serializedData.user.id
+        ..isCurrent = true
+        ..server = serverUri
+        ..token = serializedData.accessToken
+        ..username = serializedData.user.username;
+
+      _authController.login(model);
+
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  @override
+  AuthAdapterType get type => AuthAdapterType.JWT;
+
+  @override
+  Widget view() => const MoteAuthView();
+
+  @override
+  String get title => 'Mote';
+
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+  }
+}
