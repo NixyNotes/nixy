@@ -12,7 +12,6 @@ import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/router/router.dart';
 import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
-import 'package:nextcloudnotes/core/scheme/offline_queue.scheme.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
@@ -27,7 +26,7 @@ void main() async {
       if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
         await InAppWebViewController.setWebContentsDebuggingEnabled(true);
       }
-      await initDb([UserSchema, LocalNoteSchema, OfflineQueueSchema]);
+      await initDb([UserSchema, LocalNoteSchema]);
 
       runApp(const NixyApp());
     },

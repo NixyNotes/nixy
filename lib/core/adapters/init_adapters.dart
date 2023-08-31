@@ -46,7 +46,7 @@ class Adapter {
         return getIt<MoteAdapter>();
 
       case AdapterType.Nextcloud:
-        return NextcloudAdapter();
+        return getIt<NextcloudAdapter>();
     }
   }
 }
