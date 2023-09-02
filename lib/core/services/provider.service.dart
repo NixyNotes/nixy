@@ -26,6 +26,8 @@ class ProviderAction {
 class ProviderService {
   ProviderService(this._noteStorage, this._noteRepositories);
   final StreamController<ProviderAction> _stream = StreamController();
+  final StreamController<ProviderAction> returnedResponses =
+      StreamController.broadcast();
   final NoteStorage _noteStorage;
   final NoteRepositories _noteRepositories;
 
@@ -65,9 +67,26 @@ class ProviderService {
 
     try {
       if (action.action == ProviderActionType.UPDATE) {
-        await _noteRepositories.updateNote(action.noteId!, action.note);
+        final response =
+            await _noteRepositories.updateNote(action.noteId!, action.note);
+
+        returnedResponses.sink.add(
+          ProviderAction(
+            action: ProviderActionType.UPDATE,
+            note: response!,
+            noteId: action.noteId,
+          ),
+        );
       } else {
-        await _noteRepositories.createNewNote(model);
+        final response = await _noteRepositories.createNewNote(model);
+
+        returnedResponses.sink.add(
+          ProviderAction(
+            action: ProviderActionType.ADD,
+            note: response!,
+            noteId: action.noteId,
+          ),
+        );
       }
     } catch (e) {
       print(e);

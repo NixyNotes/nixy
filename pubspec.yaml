@@ -42,6 +42,7 @@ dependencies:
   flutter_isolate: ^2.0.4
   flutter_sharing_intent:
     git: https://github.com/superlistapp/flutter_sharing_intent.git
+  diffutil_dart: ^4.0.0
 
 dev_dependencies:
   injectable_generator: ^2.1.5

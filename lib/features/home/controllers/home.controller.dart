@@ -12,6 +12,7 @@ import 'package:nextcloudnotes/core/router/router_meta.dart';
 import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
 import 'package:nextcloudnotes/core/services/provider.service.dart';
+import 'package:nextcloudnotes/core/services/sync.service.dart';
 import 'package:nextcloudnotes/core/services/toast.service.dart';
 import 'package:nextcloudnotes/core/storage/note.storage.dart';
 import 'package:nextcloudnotes/models/category.model.dart';
@@ -39,6 +40,7 @@ abstract class _HomeViewControllerBase with Store {
     this._appController,
     this._shareViewController,
     this._providerService,
+    this._syncService,
   );
   final NoteRepositories _noteRepositories;
   final ToastService _toastService;
@@ -47,15 +49,13 @@ abstract class _HomeViewControllerBase with Store {
   final AppController _appController;
   final ShareViewController _shareViewController;
   final ProviderService _providerService;
+  final SyncService _syncService;
 
   @computed
   Observable<HomeListView> get homeNotesView => _appController.homeNotesView;
 
   @observable
   ObservableList<Note> notes = ObservableList();
-
-  @observable
-  bool syncing = false;
 
   @observable
   ObservableList<Note> selectedNotes = ObservableList();
@@ -88,10 +88,10 @@ abstract class _HomeViewControllerBase with Store {
   }
 
   late ReactionDisposer sortAutomaticallyDisposer;
-  late ReactionDisposer showToastWhenSycingDisposer;
   late ReactionDisposer syncCategoriesWithPosts;
+  late Dispose showToastWhenSycingDisposer;
   late StreamSubscription<dynamic> isarPostsWatcher;
-  late Completer<void>? _toast;
+  Completer<void>? _toast;
 
   Future<void> init(BuildContext context, [String? byCategoryName]) async {
     await _shareViewController.init(context);
@@ -99,13 +99,20 @@ abstract class _HomeViewControllerBase with Store {
       notes.sort((a, b) => b.favorite != null && b.favorite! ? 1 : 0);
     });
 
-    showToastWhenSycingDisposer = autorun((_) {
-      if (syncing) {
-        _toast = _toastService.showLoadingToast('Syncing...');
-      } else {
-        _toast?.complete();
-      }
-    });
+    showToastWhenSycingDisposer = _syncService.isSyncing.observe(
+      (value) {
+        if (value.newValue!) {
+          _toast = _toastService.showLoadingToast('Syncing...');
+        } else {
+          if (_toast != null) {
+            Future.delayed(const Duration(seconds: 1), () {
+              _toast?.complete();
+            });
+          }
+        }
+      },
+      fireImmediately: true,
+    );
 
     syncCategoriesWithPosts = autorun((_) {
       if (notes.isNotEmpty) {
@@ -150,7 +157,6 @@ abstract class _HomeViewControllerBase with Store {
 
     if (localNotes != null) {
       notes = ObservableList.of(localNotes);
-      syncing = false;
     }
   }
 

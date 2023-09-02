@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -68,8 +69,19 @@ abstract class _NewNoteControllerBase with Store {
 
   late Note note;
 
+  late StreamSubscription<ProviderAction> returnedResponses;
+
   @action
   void init(BuildContext context, {String? localTitle, String? content}) {
+    returnedResponses =
+        _providerService.returnedResponses.stream.listen((event) {
+      if (event.action == ProviderActionType.ADD) {
+        _notesStorage
+          ..deleteNote(note)
+          ..saveNote(event.note);
+      }
+    });
+
     markdownController = NixyTextFieldController(
       NixyMarkdownControllerPatterns,
       context,
@@ -148,6 +160,7 @@ abstract class _NewNoteControllerBase with Store {
     await _homeViewController.fetchNotes();
     focusNode.dispose();
     markdownController.dispose();
+    await returnedResponses.cancel();
   }
 
   @action

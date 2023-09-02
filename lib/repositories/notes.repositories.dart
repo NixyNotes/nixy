@@ -27,20 +27,20 @@ class NoteRepositories {
     int noteId, [
     String? etag,
   ]) async {
-    return _adapter.currentAdapter?.fetchNote(id: noteId);
+    return _adapter.currentAdapter.value?.fetchNote(id: noteId);
   }
 
   Future<bool?> deleteNote(int noteId) async {
-    return _adapter.currentAdapter?.deleteNote(id: noteId);
+    return _adapter.currentAdapter.value?.deleteNote(id: noteId);
   }
 
   Future<Note?> updateNote(int noteId, Note note) async {
-    return _adapter.currentAdapter?.updateNote(id: noteId, data: note);
+    return _adapter.currentAdapter.value?.updateNote(id: noteId, data: note);
   }
 
   Future<Note?> createNewNote(NewNote note) async {
     try {
-      return _adapter.currentAdapter?.createNewNote(data: note);
+      return _adapter.currentAdapter.value?.createNewNote(data: note);
     } on DioError {
       rethrow;
     }

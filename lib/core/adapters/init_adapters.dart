@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:mobx/mobx.dart';
 import 'package:nextcloudnotes/core/adapters/auth.adapter.dart';
 import 'package:nextcloudnotes/core/adapters/base.adapter.dart';
 import 'package:nextcloudnotes/core/adapters/mote/auth.adapter.dart';
@@ -21,7 +22,7 @@ class Adapter {
   final List<AuthAdapter> authAdapters = [];
 
   /// Active adapter
-  BaseAdapter? currentAdapter;
+  Observable<BaseAdapter?> currentAdapter = Observable(null);
 
   late String currentServerUri;
 
@@ -35,7 +36,7 @@ class Adapter {
       if (account.newValue != null) {
         currentServerUri = account.newValue!.server;
         final adapter = account.newValue!.adapter;
-        currentAdapter = _getAdapterByType(adapter);
+        currentAdapter.value = _getAdapterByType(adapter);
       }
     });
   }

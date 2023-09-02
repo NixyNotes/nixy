@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:logger/logger.dart';
 import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/router/router.dart';
@@ -15,23 +14,27 @@ import 'package:nextcloudnotes/core/scheme/note.scheme.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 import 'package:nextcloudnotes/core/services/init_isar.dart';
+import 'package:nextcloudnotes/core/services/log.service.dart';
 import 'package:nextcloudnotes/core/services/provider.service.dart';
+import 'package:nextcloudnotes/core/services/sync.service.dart';
 
 void main() async {
   await runZonedGuarded(
     () async {
       configureDependencies();
+      await getIt<LogService>().init();
 
       WidgetsFlutterBinding.ensureInitialized();
       if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
         await InAppWebViewController.setWebContentsDebuggingEnabled(true);
       }
+
       await initDb([UserSchema, LocalNoteSchema]);
 
       runApp(const NixyApp());
     },
     (error, stack) {
-      Logger().e('ERROR', error, stack);
+      getIt<LogService>().logger.e('ERROR', error, stack);
     },
   );
 }
@@ -48,6 +51,7 @@ class _NixyAppState extends State<NixyApp> {
   final AppController _appController = getIt<AppController>();
   final Adapter _adapter = getIt<Adapter>();
   final ProviderService _providerService = getIt<ProviderService>();
+  final SyncService _syncService = getIt<SyncService>();
 
   @override
   void initState() {
@@ -55,6 +59,7 @@ class _NixyAppState extends State<NixyApp> {
     _appController.init();
     _adapter.init();
     _providerService.init();
+    _syncService.init();
   }
 
   @override

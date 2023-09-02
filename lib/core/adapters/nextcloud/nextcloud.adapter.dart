@@ -36,9 +36,18 @@ class NextcloudAdapter implements BaseAdapter {
   }
 
   @override
-  Future<List<Note>> fetchNotes() {
-    // TODO: implement fetchNotes
-    throw UnimplementedError();
+  Future<List<Note>> fetchNotes() async {
+    try {
+      final response = await _dioService.get(_apiUrl);
+
+      List<Note> noteFromJson(List<dynamic> e) => List<Note>.from(
+            e.map((ee) => Note.fromJson(ee as Map<String, dynamic>)),
+          );
+
+      return noteFromJson(response.data as List<dynamic>);
+    } on DioError {
+      rethrow;
+    }
   }
 
   @override
