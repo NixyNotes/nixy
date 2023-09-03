@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flash/flash.dart';
 import 'package:flutter/foundation.dart';
@@ -19,12 +20,12 @@ import 'package:nextcloudnotes/core/services/provider.service.dart';
 import 'package:nextcloudnotes/core/services/sync.service.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  configureDependencies();
+  await getIt<LogService>().init();
+
   await runZonedGuarded(
     () async {
-      configureDependencies();
-      await getIt<LogService>().init();
-
-      WidgetsFlutterBinding.ensureInitialized();
       if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
         await InAppWebViewController.setWebContentsDebuggingEnabled(true);
       }
@@ -34,7 +35,13 @@ void main() async {
       runApp(const NixyApp());
     },
     (error, stack) {
-      getIt<LogService>().logger.e('ERROR', error, stack);
+      final logService = getIt<LogService>();
+
+      if (logService.isInitialized) {
+        logService.logger.e('ERROR', error, stack);
+      } else {
+        print(e);
+      }
     },
   );
 }

@@ -12,6 +12,9 @@ class LogService {
   /// `logger` variable. This allows the `LogService` class to use the `Logger` instance to log messages.
   late final Logger logger;
 
+  /// If class is initilazed
+  bool isInitialized = false;
+
   /// Init logger
   Future<void> init() async {
     final folder = await getApplicationDocumentsDirectory();
@@ -29,5 +32,7 @@ class LogService {
         colors: false,
       ),
     );
+
+    isInitialized = true;
   }
 }
