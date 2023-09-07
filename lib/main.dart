@@ -1,8 +1,5 @@
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
-import 'dart:math';
-
 import 'package:flash/flash.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,27 +20,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
   await getIt<LogService>().init();
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    await InAppWebViewController.setWebContentsDebuggingEnabled(true);
+  }
 
-  await runZonedGuarded(
-    () async {
-      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-        await InAppWebViewController.setWebContentsDebuggingEnabled(true);
-      }
+  await initDb([UserSchema, LocalNoteSchema]);
 
-      await initDb([UserSchema, LocalNoteSchema]);
-
-      runApp(const NixyApp());
-    },
-    (error, stack) {
-      final logService = getIt<LogService>();
-
-      if (logService.isInitialized) {
-        logService.logger.e('ERROR', error, stack);
-      } else {
-        print(e);
-      }
-    },
-  );
+  runApp(const NixyApp());
 }
 
 class NixyApp extends StatefulWidget {

@@ -12,8 +12,8 @@ class AuthStorage {
   /// Args:
   ///   user (User): The parameter "user" is an instance of the "User" class that contains information
   /// about a user. This method saves the user object to a database using Isar.
-  void saveUser(User user) {
-    isarInstance.writeTxn(() async {
+  Future<void> saveUser(User user) async {
+    return isarInstance.writeTxn(() async {
       await isarInstance.users.put(user);
     });
   }

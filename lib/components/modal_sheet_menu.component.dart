@@ -29,6 +29,7 @@ class ModalSheetMenu extends StatelessWidget {
           .map(
             (e) => ListTile(
               leading: e.icon != null ? Icon(e.icon) : null,
+              enabled: e.enabled,
               title: Text(
                 e.title,
                 style:
@@ -37,7 +38,7 @@ class ModalSheetMenu extends StatelessWidget {
               onTap: () {
                 e.onTap?.call();
 
-                Navigator.of(context).pop();
+                // Navigator.of(context).pop();
               },
             ),
           )

@@ -49,27 +49,27 @@ abstract class _AuthControllerBase extends ChangeNotifier with Store {
       loginState.value = LoginState.loggedIn;
       currentAccount.value = users.firstWhere((element) => element.isCurrent);
 
-      users.removeWhere((element) => element.id == currentAccount.value!.id);
       availableAccounts = ObservableList.of(users);
       notifyListeners();
     }
-
-    currentAccount.observe((_) async {
-      // Check for current account, if changes remove current account from
-      // availableAccounts.
-      final users = await _authStorage.getUsers();
-
-      users.removeWhere((element) => element.id == currentAccount.value!.id);
-
-      availableAccounts = ObservableList.of(users);
-    });
   }
 
   @action
-  void login(User user) {
+  Future<void> switchAccount(User newUser) async {
+    final oldUser = currentAccount.value!..isCurrent = false;
+
+    await _authStorage.saveUser(oldUser);
+
+    await login(newUser);
+    await _refetchAvailableAccounts();
+    // Future.delayed(const Duration(seconds: 2), );
+  }
+
+  @action
+  Future<void> login(User user) async {
     final modifiedUser = user..isCurrent = true;
-    _authStorage.saveUser(modifiedUser);
-    currentAccount.value = user;
+    await _authStorage.saveUser(modifiedUser);
+    currentAccount.value = modifiedUser;
     loginState.value = LoginState.loggedIn;
     notifyListeners();
   }
@@ -95,5 +95,14 @@ abstract class _AuthControllerBase extends ChangeNotifier with Store {
   // ignore: use_setters_to_change_properties
   void setLoginState(LoginState lState) {
     loginState.value = lState;
+  }
+
+  @action
+  Future<void> _refetchAvailableAccounts() async {
+    final users = await _authStorage.getUsers();
+
+    // Future.delayed(const Duration(milliseconds: 500), () {
+    availableAccounts = ObservableList.of(users);
+    // });
   }
 }

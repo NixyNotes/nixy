@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nextcloudnotes/core/adapters/mote/auth.adapter.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
 
@@ -45,7 +46,11 @@ class _MoteAuthViewState extends State<MoteAuthView> {
                 onFieldSubmitted: (value) => controller.onLogin(),
               ),
               ElevatedButton(
-                onPressed: controller.onLogin,
+                onPressed: () {
+                  controller
+                      .onLogin()
+                      .then((value) => GoRouter.of(context).pop());
+                },
                 child: const Text('Login'),
               )
             ],

@@ -7,6 +7,7 @@ import 'package:nextcloudnotes/core/adapters/mote/views/auth.view.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
 import 'package:nextcloudnotes/core/services/dio/init_dio.dart';
+import 'package:nextcloudnotes/core/services/toast.service.dart';
 
 void disposeMoteAuthAdapter(MoteAuthAdapter instance) {
   instance.dispose();
@@ -16,10 +17,11 @@ void disposeMoteAuthAdapter(MoteAuthAdapter instance) {
   dispose: disposeMoteAuthAdapter,
 )
 class MoteAuthAdapter implements AuthAdapter {
-  MoteAuthAdapter(this._dioService, this._authController);
+  MoteAuthAdapter(this._dioService, this._authController, this._toastService);
 
   final DioService _dioService;
   final AuthController _authController;
+  final ToastService _toastService;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController usernameController = TextEditingController();
@@ -31,6 +33,7 @@ class MoteAuthAdapter implements AuthAdapter {
   @override
   Future<bool> onLogin() async {
     try {
+      final loadingToast = _toastService.showLoadingToast('Logging in...');
       final response = await _dioService.post('$serverUri/auth/log-in', {
         'email': usernameController.text,
         'password': passwordController.text
@@ -48,6 +51,7 @@ class MoteAuthAdapter implements AuthAdapter {
         ..username = serializedData.user.username;
 
       _authController.login(model);
+      loadingToast.complete();
 
       return true;
     } catch (e) {

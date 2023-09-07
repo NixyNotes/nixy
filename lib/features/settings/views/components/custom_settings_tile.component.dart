@@ -16,7 +16,6 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
     required this.title,
     required this.leading,
     required this.items,
-    this.isEnabled = true,
     this.value,
     super.key,
   });
@@ -35,12 +34,6 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
   /// intended for future use or as a placeholder.
   final List<PullDownMenuItem> items;
 
-  /// The `final bool? isEnabled;` is declaring a nullable final variable `isEnabled` of type `bool`. It
-  /// is used in the `CustomPopupMenuSettingsTile` widget to determine if the tile is enabled or disabled.
-  /// If `isEnabled` is `true` (or not provided), the tile is enabled and can be interacted with. If
-  /// `isEnabled` is `false`, the tile is disabled and cannot be interacted with.
-  final bool? isEnabled;
-
   /// The `final String? value;` is declaring a nullable final variable `value` of type `String`. It is
   /// not used in the code snippet provided and may have been intended for future use or as a placeholder.
   final Widget? value;
@@ -57,7 +50,6 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
                 title: title,
                 leading: leading,
                 onPressed: (context) => showMenu(),
-                enabled: isEnabled ?? true,
               );
             },
           );
@@ -68,7 +60,6 @@ class CustomPopupMenuSettingsTile extends AbstractSettingsTile {
     return SettingsTile.navigation(
       title: title,
       leading: leading,
-      enabled: isEnabled ?? true,
       value: value,
       onPressed: (context) {
         showPlatformModalSheet<void>(

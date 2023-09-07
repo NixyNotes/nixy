@@ -30,12 +30,14 @@ class SettingsViewController = _SettingsViewControllerBase
 abstract class _SettingsViewControllerBase with Store {
   _SettingsViewControllerBase(
     this._authController,
+    this.authController,
     this._noteStorage,
     this._toastService,
     this._appController,
   );
 
   final AuthController _authController;
+  final AuthController authController;
   final NoteStorage _noteStorage;
   final ToastService _toastService;
   final AppController _appController;
@@ -82,9 +84,9 @@ abstract class _SettingsViewControllerBase with Store {
     }
   }
 
-  void switchAccount(User user) {
-    _authController.login(user);
-    clearCache(showToast: false);
+  Future<void> switchAccount(User user) async {
+    await _authController.switchAccount(user);
+    await clearCache(showToast: false);
 
     _toastService.showTextToast(
       'Switched to instance: ${user.server}',
