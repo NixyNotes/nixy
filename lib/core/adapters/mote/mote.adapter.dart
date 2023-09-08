@@ -62,7 +62,11 @@ class MoteAdapter implements BaseAdapter {
   @override
   Future<Note> updateNote({required int id, required Note data}) async {
     try {
-      final response = await _dioService.put('$uri/$id', data.toJson());
+      final response = await _dioService.patch('$uri/notes', {
+        'id': data.id,
+        'content': data.content,
+        'title': data.title,
+      });
 
       return data;
     } on DioError {

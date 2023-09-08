@@ -128,4 +128,30 @@ class DioService {
       throw Exception('Could not send PUT request: $path: $e');
     }
   }
+
+  /// The function `patch` sends a PATCH request to a specified path with a payload and returns the
+  /// response.
+  ///
+  /// Args:
+  ///   path (String): The path parameter is a string that represents the endpoint or URL where the PATCH
+  /// request will be sent to. It specifies the location of the resource that needs to be updated or
+  /// modified.
+  ///   payload (Map<String, dynamic>): A map containing the data to be sent in the PATCH request body.
+  /// The keys in the map represent the field names, and the values represent the corresponding field
+  /// values. The values can be of any type, as long as they are JSON-serializable.
+  ///
+  /// Returns:
+  ///   a `Future<Response<dynamic>?>`.
+  Future<Response<dynamic>?> patch(
+    String path,
+    Map<String, dynamic> payload,
+  ) async {
+    try {
+      final request = await _dio.patch(path, data: payload);
+
+      return request;
+    } catch (e) {
+      throw Exception('Could not send PATCH request: $path: $e');
+    }
+  }
 }
