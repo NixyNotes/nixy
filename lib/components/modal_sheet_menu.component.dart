@@ -38,7 +38,7 @@ class ModalSheetMenu extends StatelessWidget {
               onTap: () {
                 e.onTap?.call();
 
-                // Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
             ),
           )

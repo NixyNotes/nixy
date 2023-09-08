@@ -100,28 +100,20 @@ class _SettingsViewState extends State<SettingsView> {
     return SettingsSection(
       title: const Text('Providers'),
       tiles: [
-        CustomPopupMenuSettingsTile(
-          title: Observer(
-            builder: (_) {
-              return Text(
-                '${controller.currentAccount!.server} - ${controller.currentAccount!.adapter.name}' ??
-                    '',
+        CustomSettingsTile(
+          child: Observer(
+            builder: (context) {
+              return CustomPopupMenuSettingsTile(
+                items: availableAccounts,
+                title: Text(
+                  '${controller.currentAccount!.server} - ${controller.currentAccount!.adapter.name}',
+                ),
+                leading: const Icon(
+                  EvaIcons.activity,
+                ),
               );
             },
           ),
-          leading: const Icon(
-            EvaIcons.activity,
-          ),
-          items: controller.authController.availableAccounts
-              .map(
-                (element) => PullDownMenuItem(
-                  onTap: () => controller.switchAccount(element),
-                  title:
-                      '${element.server} - ${element.adapter.name} - ${element.isCurrent}',
-                  enabled: element.isCurrent ? false : true,
-                ),
-              )
-              .toList(),
         ),
         SettingsTile.navigation(
           title: const Text('Add another provider'),
@@ -164,53 +156,49 @@ class _SettingsViewState extends State<SettingsView> {
   Widget build(BuildContext context) {
     return AppScaffold(
       innerPadding: false,
-      body: Observer(
-        builder: (context) {
-          return SettingsList(
-            sections: [
-              ...authSection,
-              SettingsSection(
-                title: const Text('Common'),
-                tiles: <SettingsTile>[
-                  SettingsTile.navigation(
-                    title: const Text('Auto save delay'),
-                    value: Observer(
-                      builder: (_) {
-                        return Text(
-                          controller.currentAutoSaveDelayValueAsString,
-                        );
-                      },
-                    ),
-                    onPressed: (_) => showAutoSaveDialog(),
-                    leading: const Icon(
-                      EvaIcons.clockOutline,
-                    ),
-                  ),
-                  SettingsTile(
-                    leading: const Icon(EvaIcons.trash2),
-                    title: const Text('Clear cache'),
-                    onPressed: (context) => controller.clearCache(),
-                  ),
-                ],
+      body: SettingsList(
+        sections: [
+          ...authSection,
+          SettingsSection(
+            title: const Text('Common'),
+            tiles: <SettingsTile>[
+              SettingsTile.navigation(
+                title: const Text('Auto save delay'),
+                value: Observer(
+                  builder: (_) {
+                    return Text(
+                      controller.currentAutoSaveDelayValueAsString,
+                    );
+                  },
+                ),
+                onPressed: (_) => showAutoSaveDialog(),
+                leading: const Icon(
+                  EvaIcons.clockOutline,
+                ),
               ),
-              SettingsSection(
-                title: const Text('Theming'),
-                tiles: [
-                  CustomPopupMenuSettingsTile(
-                    title: const Text('Home notes view'),
-                    leading: const Icon(EvaIcons.browserOutline),
-                    items: homeListViews,
-                    value: Observer(
-                      builder: (_) {
-                        return Text(controller.currentHomeListView.title);
-                      },
-                    ),
-                  )
-                ],
+              SettingsTile(
+                leading: const Icon(EvaIcons.trash2),
+                title: const Text('Clear cache'),
+                onPressed: (context) => controller.clearCache(),
               ),
             ],
-          );
-        },
+          ),
+          SettingsSection(
+            title: const Text('Theming'),
+            tiles: [
+              CustomPopupMenuSettingsTile(
+                title: const Text('Home notes view'),
+                leading: const Icon(EvaIcons.browserOutline),
+                items: homeListViews,
+                value: Observer(
+                  builder: (_) {
+                    return Text(controller.currentHomeListView.title);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
