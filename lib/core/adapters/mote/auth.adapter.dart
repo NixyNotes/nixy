@@ -36,7 +36,7 @@ class MoteAuthAdapter implements AuthAdapter {
       final loadingToast = _toastService.showLoadingToast('Logging in...');
       final response = await _dioService.post('$serverUri/auth/log-in', {
         'email': usernameController.text,
-        'password': passwordController.text
+        'password': passwordController.text,
       });
 
       final serializedData =
@@ -47,10 +47,10 @@ class MoteAuthAdapter implements AuthAdapter {
         ..id = serializedData.user.id
         ..isCurrent = true
         ..server = serverUri
-        ..token = serializedData.accessToken
+        ..token = 'Bearer ${serializedData.accessToken}'
         ..username = serializedData.user.username;
 
-      _authController.login(model);
+      await _authController.login(model);
       loadingToast.complete();
 
       return true;

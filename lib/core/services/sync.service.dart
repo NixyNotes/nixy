@@ -92,6 +92,7 @@ class SyncService {
     try {
       return await _adapter.currentAdapter.value?.fetchNotes();
     } catch (e) {
+      _logService.logger.e(e);
       return null;
     }
   }

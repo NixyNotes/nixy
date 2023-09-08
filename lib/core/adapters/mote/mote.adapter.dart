@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/adapters/base.adapter.dart';
 import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
@@ -59,9 +60,14 @@ class MoteAdapter implements BaseAdapter {
   }
 
   @override
-  Future<Note> updateNote({required int id, required Note data}) {
-    // TODO: implement updateNote
-    throw UnimplementedError();
+  Future<Note> updateNote({required int id, required Note data}) async {
+    try {
+      final response = await _dioService.put('$uri/$id', data.toJson());
+
+      return data;
+    } on DioError {
+      rethrow;
+    }
   }
 
   @override
