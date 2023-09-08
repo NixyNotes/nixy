@@ -79,10 +79,9 @@ abstract class _AuthControllerBase extends ChangeNotifier with Store {
     if (currentAccount.value != null) {
       await _authStorage.deleteAccount(currentAccount.value!.id);
     }
-    final users = await _authStorage.getUsers();
-
-    if (users.isNotEmpty) {
-      currentAccount.value = users.last;
+    await _refetchAvailableAccounts();
+    if (availableAccounts.isNotEmpty) {
+      await login(availableAccounts.last);
     } else {
       loginState.value = LoginState.none;
       currentAccount.value = null;
@@ -101,8 +100,6 @@ abstract class _AuthControllerBase extends ChangeNotifier with Store {
   Future<void> _refetchAvailableAccounts() async {
     final users = await _authStorage.getUsers();
 
-    // Future.delayed(const Duration(milliseconds: 500), () {
     availableAccounts = ObservableList.of(users);
-    // });
   }
 }
