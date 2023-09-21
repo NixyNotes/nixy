@@ -48,6 +48,7 @@ class _NixyAppState extends State<NixyApp> {
     super.initState();
     _appController.init();
     _adapter.init();
+    _adapter.currentAuthAdapter.value?.tokenRenewBackgroundService();
     _providerService.init();
     _syncService.init();
   }

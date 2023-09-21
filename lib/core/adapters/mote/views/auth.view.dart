@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nextcloudnotes/core/adapters/mote/auth.adapter.dart';
 import 'package:nextcloudnotes/core/services/di/di.dart';
+import 'package:nextcloudnotes/core/services/toast.service.dart';
 
 class MoteAuthView extends StatefulWidget {
   const MoteAuthView({super.key});
@@ -12,11 +13,22 @@ class MoteAuthView extends StatefulWidget {
 
 class _MoteAuthViewState extends State<MoteAuthView> {
   final controller = getIt<MoteAuthAdapter>();
+  final toastService = getIt<ToastService>();
 
   @override
   void dispose() {
     getIt.resetLazySingleton<MoteAuthAdapter>();
     super.dispose();
+  }
+
+  onLoginWrapper() async {
+    final response = await controller.onLogin();
+
+    if (response) {
+      GoRouter.of(context).pop();
+    } else {
+      toastService.showTextToast('Could not login!', type: ToastType.error);
+    }
   }
 
   @override
@@ -46,13 +58,9 @@ class _MoteAuthViewState extends State<MoteAuthView> {
                 onFieldSubmitted: (value) => controller.onLogin(),
               ),
               ElevatedButton(
-                onPressed: () {
-                  controller
-                      .onLogin()
-                      .then((value) => GoRouter.of(context).pop());
-                },
+                onPressed: onLoginWrapper,
                 child: const Text('Login'),
-              )
+              ),
             ],
           ),
         ),

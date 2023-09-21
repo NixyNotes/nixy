@@ -41,7 +41,6 @@ abstract class _AuthControllerBase extends ChangeNotifier with Store {
   @action
   Future<void> initState() async {
     final hasUsers = await _authStorage.hasUsers();
-
     if (hasUsers) {
       // App initiliazed.
       final users = await _authStorage.getUsers();
@@ -50,6 +49,7 @@ abstract class _AuthControllerBase extends ChangeNotifier with Store {
       currentAccount.value = users.firstWhere((element) => element.isCurrent);
 
       availableAccounts = ObservableList.of(users);
+
       notifyListeners();
     }
   }

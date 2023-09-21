@@ -33,7 +33,8 @@ class SyncService {
 
   Future<void> init() async {
     _adapter.currentAdapter.observe((p0) {
-      Future.delayed(const Duration(), _calculateDiff);
+      //FIXME: seconds 3
+      Future.delayed(Duration.zero, _calculateDiff);
     });
   }
 
@@ -46,29 +47,32 @@ class SyncService {
         isSyncing.value = true;
 
         final s = calculateDiff<Note>(
-          _DataObjectListDiff(localNotes, remoteNotes),
+          _DataObjectListDiff(remoteNotes, localNotes),
           detectMoves: true,
         );
 
         final diffrences = s.getUpdatesWithData();
 
         for (final diffrence in diffrences) {
-          diffrence.when(
-            remove: (position, data) {
-              _noteStorage.deleteNote(data);
+          await diffrence.when(
+            remove: (position, data) async {
+              await _adapter.currentAdapter.value?.deleteNote(id: data.id);
 
               _logService.logger.i(
                 'SYNC: Removing ${data.title} from local notes, as it is removed.',
               );
             },
-            change: (pos, oldData, newData) {
+            change: (pos, oldData, newData) async {
+              await _adapter.currentAdapter.value
+                  ?.updateNote(id: oldData.id, data: newData);
               _logService.logger.i(
                 'SYNC: Changing ${oldData.title} to ${newData.title}',
               );
               _noteStorage.saveNote(newData);
             },
-            insert: (position, data) {
-              _noteStorage.saveNote(data);
+            insert: (position, data) async {
+              await _adapter.currentAdapter.value
+                  ?.createNewNote(data: NewNote.fromJson(data.toJson()));
               _logService.logger.i(
                 'SYNC: Inserted ${data.title}',
               );

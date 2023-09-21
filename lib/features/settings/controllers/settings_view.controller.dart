@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
+import 'package:nextcloudnotes/core/adapters/init_adapters.dart';
 import 'package:nextcloudnotes/core/controllers/app.controller.dart';
 import 'package:nextcloudnotes/core/controllers/auth.controller.dart';
 import 'package:nextcloudnotes/core/scheme/user.scheme.dart';
@@ -34,6 +35,7 @@ abstract class _SettingsViewControllerBase with Store {
     this._noteStorage,
     this._toastService,
     this._appController,
+    this._adapter,
   );
 
   final AuthController _authController;
@@ -41,6 +43,7 @@ abstract class _SettingsViewControllerBase with Store {
   final NoteStorage _noteStorage;
   final ToastService _toastService;
   final AppController _appController;
+  final Adapter _adapter;
 
   final TextEditingController autoSaveMinutesController =
       TextEditingController();
@@ -110,6 +113,19 @@ abstract class _SettingsViewControllerBase with Store {
   Future<void> saveHomeNotesView(HomeListView view) async {
     await _appController.setHomeNotesView(view);
     _toastService.showTextToast('Switched to ${view.title}');
+  }
+
+  Future<void> importAllNotesFromProvider() async {
+    final remoteNotes = await _adapter.currentAdapter.value?.fetchNotes();
+
+    if (remoteNotes != null) {
+      _noteStorage.saveAllNotes(remoteNotes);
+      _toastService.showTextToast('All notes imported!',
+          type: ToastType.success);
+      return;
+    }
+
+    _toastService.showTextToast('No remote notes found!');
   }
 
   void dispose() {

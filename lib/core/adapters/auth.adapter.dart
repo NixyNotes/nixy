@@ -9,5 +9,7 @@ abstract class AuthAdapter {
 
   Future<bool> onLogin();
 
+  Future<void>? tokenRenewBackgroundService();
+
   Widget view();
 }

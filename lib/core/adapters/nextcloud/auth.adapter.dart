@@ -22,4 +22,10 @@ class NextcloudAuthAdapter extends AuthAdapter {
 
   @override
   String get serverUri => throw UnimplementedError();
+
+  @override
+  Future<void>? tokenRenewBackgroundService() {
+    // TODO: implement renewToken
+    throw UnimplementedError();
+  }
 }

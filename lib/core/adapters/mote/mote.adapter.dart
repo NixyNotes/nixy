@@ -14,9 +14,13 @@ class MoteAdapter implements BaseAdapter {
   String get uri => _adapter.currentServerUri;
 
   @override
-  Future<Note> createNewNote({required NewNote data}) {
-    // TODO: implement createNewNote
-    throw UnimplementedError();
+  Future<Note> createNewNote({required NewNote data}) async {
+    final response = await _dioService.post('$uri/notes', {
+      'title': data.title,
+      'content': data.content,
+    });
+
+    return Note.fromJson(response.data! as Map<String, dynamic>);
   }
 
   @override

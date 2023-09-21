@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nextcloudnotes/core/adapters/auth.adapter.dart';
@@ -16,7 +18,7 @@ void disposeMoteAuthAdapter(MoteAuthAdapter instance) {
 @LazySingleton(
   dispose: disposeMoteAuthAdapter,
 )
-class MoteAuthAdapter implements AuthAdapter {
+class MoteAuthAdapter extends AuthAdapter {
   MoteAuthAdapter(this._dioService, this._authController, this._toastService);
 
   final DioService _dioService;
@@ -26,6 +28,7 @@ class MoteAuthAdapter implements AuthAdapter {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  late Timer _timer;
 
   @override
   String serverUri = 'http://localhost:8000';
@@ -72,5 +75,12 @@ class MoteAuthAdapter implements AuthAdapter {
   void dispose() {
     usernameController.dispose();
     passwordController.dispose();
+    _timer.cancel();
+  }
+
+  @override
+  Future<void>? tokenRenewBackgroundService() {
+    _timer = Timer.periodic(const Duration(minutes: 15), (_) => onLogin());
+    return null;
   }
 }

@@ -123,6 +123,13 @@ class _SettingsViewState extends State<SettingsView> {
           onPressed: (context) =>
               context.pushNamed(RouterMeta.AddNewAccount.name),
         ),
+        SettingsTile.navigation(
+          title: const Text('Import all notes from the provider'),
+          leading: const Icon(
+            EvaIcons.cloudDownloadOutline,
+          ),
+          onPressed: (context) => controller.importAllNotesFromProvider(),
+        ),
         SettingsTile(
           title: const Text('Logout'),
           onPressed: (context) => controller.logout(),

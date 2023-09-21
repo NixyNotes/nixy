@@ -11,8 +11,6 @@ import 'package:nextcloudnotes/core/services/di/di.dart';
 
 enum AdapterType { Mote, Nextcloud }
 
-final authAdapters = [getIt<MoteAuthAdapter>()];
-
 @lazySingleton
 class Adapter {
   /// Adapter bindings
@@ -23,6 +21,9 @@ class Adapter {
 
   /// Active adapter
   Observable<BaseAdapter?> currentAdapter = Observable(null);
+
+  /// Active auth adapter
+  Observable<AuthAdapter?> currentAuthAdapter = Observable(null);
 
   late String currentServerUri;
 
@@ -37,6 +38,7 @@ class Adapter {
         currentServerUri = account.newValue!.server;
         final adapter = account.newValue!.adapter;
         currentAdapter.value = _getAdapterByType(adapter);
+        currentAuthAdapter.value = _getAuthAdapterByType(adapter);
       }
     });
   }
@@ -48,6 +50,16 @@ class Adapter {
 
       case AdapterType.Nextcloud:
         return getIt<NextcloudAdapter>();
+    }
+  }
+
+  AuthAdapter _getAuthAdapterByType(AdapterType type) {
+    switch (type) {
+      case AdapterType.Mote:
+        return getIt<MoteAuthAdapter>();
+
+      case AdapterType.Nextcloud:
+        return getIt<NextcloudAuthAdapter>();
     }
   }
 }
