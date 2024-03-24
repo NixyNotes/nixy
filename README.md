@@ -2,6 +2,9 @@
 
 Nixi is a markdown-based note-taking app that uses nextcloud as backend. It allows you to create and edit notes in markdown format, sync them with your nextcloud account, and access them offline. You can also switch between multiple nextcloud accounts and enjoy a beautiful and responsive user interface built with flutter.
 
+![nixy](https://github.com/NixyNotes/nixy/assets/17166855/fce0b840-c3be-49c4-8a28-0cc805a41e42)
+
+
 ## Features
 
 - Create and edit notes in markdown format with a rich text editor
